@@ -13,6 +13,7 @@ export default function Home() {
 
 			<main className={styles.main}>
 				<h1 className="text-3xl font-bold underline">Hello there from timezoner</h1>
+				
 			</main>
 
 			<footer className={styles.footer}>
