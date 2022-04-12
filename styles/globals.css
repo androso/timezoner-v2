@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* POPPINS  */
 @font-face {
 	font-family: "Poppins";
@@ -72,4 +73,9 @@
 	font-style: normal;
 	font-weight: 900;
 	font-display: swap;
+}
+
+
+* {
+	box-sizing: border-box;
 }

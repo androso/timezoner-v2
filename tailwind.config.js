@@ -14,7 +14,9 @@ module.exports = {
 				whiteText1: "#EFF2FA",
 				purpleGradientStart: "#DFA4D9",
 				purpleGradientMid: "#BBABE7",
-				purpleGradientEnd: "#ABB8FF"
+				purpleGradientEnd: "#ABB8FF",
+				containerGray: "#606368",
+				darkLabel: "#414549"
 			},
 			fontFamily: {
 				"sans": ["Inter", 'Poppins', 'Roboto']
