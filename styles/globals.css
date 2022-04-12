@@ -2,19 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-.linear-gradient-sema-color {
-	/* color: linear-gradient(
-		90deg,
-		hsl(182deg 100% 89%) 0%,
-		hsl(177deg 100% 89%) 10%,
-		hsl(172deg 100% 89%) 20%,
-		hsl(166deg 100% 89%) 30%,
-		hsl(161deg 100% 89%) 40%,
-		hsl(156deg 100% 89%) 50%,
-		hsl(151deg 100% 88%) 60%,
-		hsl(146deg 100% 88%) 70%,
-		hsl(140deg 100% 88%) 80%,
-		hsl(135deg 100% 88%) 90%,
-		hsl(130deg 100% 88%) 100%
-	); */
-}

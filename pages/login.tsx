@@ -4,7 +4,10 @@ export default function login() {
 	return (
 		<>
 			<h1 className="title">
-				Schedule events between <span>timezones</span>
+				Schedule events between{" "}
+				<span className="bg-gradient-to-r from-purpleGradientStart via-purpleGradientMid to-purpleGradientEnd text-transparent bg-clip-text">
+					timezones
+				</span>
 			</h1>
 			<div className="auth-container">
 				<div className="auth-label">
@@ -16,18 +19,17 @@ export default function login() {
 				<div className="flex">
 					<LoginButton>
 						<DiscordSVG className="h-5" />
-						<span className="ml-4">DISCORD</span>
+						<span className="ml-4 ">DISCORD</span>
 					</LoginButton>
 					<LoginButton>
-                        <GoogleSVG className="h-5" />
-						<span className="ml-4">GOOGLE</span>
+						<GoogleSVG className="h-5" />
+						<span className="ml-4 ">GOOGLE</span>
 					</LoginButton>
 				</div>
 			</div>
 		</>
 	);
 }
-
 
 // ! in order to add gradients to Svg we had to edit the <svg> directly, perhaps there is another way(?
 const DiscordSVG = ({ className }: { className: string }) => (
@@ -66,7 +68,7 @@ const GoogleSVG = ({ className }: { className: string }) => (
 		viewBox="0 0 18 19"
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
-        className={className}
+		className={className}
 	>
 		<path
 			d="M17.9597 9.71048C17.9597 14.8456 14.4431 18.5 9.25 18.5C4.27097 18.5 0.25 14.479 0.25 9.5C0.25 4.52097 4.27097 0.5 9.25 0.5C11.6742 0.5 13.7137 1.38911 15.2851 2.85524L12.8355 5.21048C9.63105 2.11855 3.67218 4.44113 3.67218 9.5C3.67218 12.6391 6.17984 15.1831 9.25 15.1831C12.8137 15.1831 14.1492 12.6282 14.3597 11.3036H9.25V8.20806H17.8181C17.9016 8.66895 17.9597 9.11169 17.9597 9.71048Z"
@@ -89,5 +91,9 @@ const GoogleSVG = ({ className }: { className: string }) => (
 );
 
 function LoginButton({ children }: any) {
-	return <button className="py-4 px-8 flex items-center ">{children}</button>;
+	return (
+		<button className="py-4 px-8 flex items-center bg-gradient-to-t from-btnGradientBott to-btnGradientTop">
+			{children}
+		</button>
+	);
 }

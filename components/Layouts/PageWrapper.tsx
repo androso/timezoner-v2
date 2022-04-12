@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function PageWrapper({children}:any) {
   return (
-    <div className='page-wrapper bg-gradient-to-t from-gunMetal to-blackCoral h-screen'>
+    <div className='page-wrapper bg-gradient-to-t from-gunMetal to-blackCoral h-screen text-whiteText1'>
       {children}
     </div>
   )
