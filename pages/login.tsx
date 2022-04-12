@@ -1,5 +1,5 @@
 import React from "react";
-import { DiscordSVG, GoogleSVG } from "../components/Layouts/icons";
+import { DiscordSVG, GoogleSVG } from "../components/icons";
 
 export default function login() {
 	return (
