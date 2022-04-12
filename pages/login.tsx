@@ -10,7 +10,7 @@ export default function login() {
 					timezones
 				</span>
 			</h1>
-			<div className="auth-container mt-16 bg-containerGray py-16 w-full max-w-[430px] sm:w-[430px] px-16 rounded-lg relative text-center drop-shadow-2xl">
+			<div className="auth-container mt-16 bg-containerGray py-16 w-full max-w-[430px] px-16 rounded-lg relative text-center drop-shadow-2xl">
 
 				<div className="auth-label absolute -top-5 left-1/2 -translate-x-1/2 px-4 bg-darkLabel py-2 rounded-md ">
 					<p className="bg-gradient-to-r from-lightBlue to-lightGreen text-transparent bg-clip-text font-semibold tracking-tighter">AUTHENTICATED</p>
@@ -39,7 +39,7 @@ export default function login() {
 
 function LoginButton({ children }: any) {
 	return (
-		<button className="w-[170px] sm:min-w-[182px] py-4 px-8 flex items-center bg-gradient-to-t from-btnGradientBott to-btnGradientTop rounded-md mb-2 last:mb-0 drop-shadow-md">
+		<button className="min-w-[180px] sm:min-w-[182px] py-4 px-8 flex items-center bg-gradient-to-t from-btnGradientBott to-btnGradientTop rounded-md mb-2 last:mb-0 drop-shadow-md">
 			{children}
 		</button>
 	);
