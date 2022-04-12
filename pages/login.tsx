@@ -3,8 +3,8 @@ import { DiscordSVG, GoogleSVG } from "../components/icons";
 
 export default function login() {
 	return (
-		<>
-			<h1 className="title">
+		<div className="h-full flex flex-col items-center">
+			<h1 className="title mt-40 text-4xl text-center font-bold font-sans">
 				Schedule events between{" "}
 				<span className="bg-gradient-to-r from-purpleGradientStart via-purpleGradientMid to-purpleGradientEnd text-transparent bg-clip-text">
 					timezones
@@ -28,7 +28,7 @@ export default function login() {
 					</LoginButton>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }
 

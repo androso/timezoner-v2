@@ -15,6 +15,9 @@ module.exports = {
 				purpleGradientStart: "#DFA4D9",
 				purpleGradientMid: "#BBABE7",
 				purpleGradientEnd: "#ABB8FF"
+			},
+			fontFamily: {
+				"sans": ["Inter", 'Poppins', 'Roboto']
 			}
 		},
 	},
