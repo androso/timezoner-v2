@@ -6,7 +6,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY as string;
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_DEV as string;
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function login() {
 	const [loading, setLoading] = useState(false);
