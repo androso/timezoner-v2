@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DiscordSVG, GoogleSVG } from "../components/icons";
+import { signInWithPopup, signOut } from "firebase/auth";
+import { auth, googleAuthProvider } from "../lib/firebase";
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_DEV as string;
 
 export default function login() {
@@ -11,6 +13,14 @@ export default function login() {
 
 	async function signInWithDiscord() {
 		console.log("login with discord");
+	}
+	async function signInWithGoogle() {
+		try {
+			const result = await signInWithPopup(auth, googleAuthProvider);
+			console.log(result);
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 	return (
@@ -37,7 +47,7 @@ export default function login() {
 						</span>
 						<span className=" font-semibold">DISCORD</span>
 					</LoginButton>
-					<LoginButton>
+					<LoginButton onClick={signInWithGoogle}>
 						<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
 							<GoogleSVG className="h-5" />
 						</span>
