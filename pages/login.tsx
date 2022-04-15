@@ -1,27 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { DiscordSVG, GoogleSVG } from "../components/icons";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY as string;
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_DEV as string;
-
-export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function login() {
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		console.log(supabaseKey, "KEY");
+		
 	}, [])
 
 	async function signInWithDiscord() {
-		//TODO IMPROVE THIS THING
-		const { user, session, error } = await supabase.auth.signIn({
-			provider: "discord",
-		}, {
-			redirectTo: `${DOMAIN}/dashboard`
-		})
+		console.log("login with discord");
 	}
 
 	return (
