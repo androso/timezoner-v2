@@ -16,11 +16,40 @@ module.exports = {
 				purpleGradientMid: "#BBABE7",
 				purpleGradientEnd: "#ABB8FF",
 				containerGray: "#606368",
-				darkLabel: "#414549"
+				darkLabel: "#414549",
 			},
 			fontFamily: {
-				"sans": ["Inter", 'Poppins', 'Roboto']
-			}
+				sans: ["Inter", "Poppins", "Roboto"],
+			},
+			animation: {
+				
+			},
+			keyframes: {
+				"lds-ellipsis1": {
+					'0%': {
+						transform: 'scale(0)'
+					}, 
+					'100%': {
+						transform: 'scale(1)'
+					}
+				},
+				"lds-ellipsis2": {
+					'0%': {
+						transform: 'translate(0, 0)'
+					}, 
+					'100%': {
+						transform: 'translate(24px, 0)'
+					}
+				},
+				"lds-ellipsis3": {
+					'0%': {
+						transform: 'scale(1)'
+					}, 
+					'100%': {
+						transform: 'scale(0)'
+					}
+				}
+			},
 		},
 	},
 	variants: {

@@ -109,3 +109,10 @@
 .gradient-transition:active::before {
 	background-color: #2C3334;
 }
+
+
+@layer components {
+	.loading-dot {
+		@apply absolute w-5 h-5 rounded-full bg-slate-200  ;
+	}
+}
