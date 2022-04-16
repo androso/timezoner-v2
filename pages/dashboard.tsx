@@ -4,21 +4,18 @@ import { UserContext } from "../lib/context";
 
 export default function dashboard() {
 	const userData = useContext(UserContext);
-  const [user, setUser] = useState(null);
 
 	useEffect(() => {
-		if (userData.user != null) {
-      setUser(userData.user);
-      console.log(userData.user);
-    }
+		if (userData?.user != null) {
+			console.log(userData.user);
+		}
 	}, [userData]);
-
 	return (
 		<div>
-			{user != null ? (
+			{userData?.user != null ? (
 				<>
-					<h1>{user.displayName}</h1>
-          <img src={user.photoURL}/>
+					<h1>{userData.user.displayName}</h1>
+					<img src={userData.user.photoURL} />
 				</>
 			) : (
 				<p>Loading</p>
