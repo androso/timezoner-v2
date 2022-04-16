@@ -22,9 +22,10 @@ export default function login() {
 	}
 
 	useEffect(() => {
-		if (userData != null) {
+		if (userData.user != null) {
 			router.push('/dashboard');
 		}
+		console.log(userData);
 	}, [userData])
 
 	return (
