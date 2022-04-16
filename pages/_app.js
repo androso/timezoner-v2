@@ -1,13 +1,19 @@
-import '../styles/globals.css'
-// import PageWrapper from "../components/Layouts/PageWrapper.tsx";
-import {PageWrapper } from "../components/Layouts";
+import "../styles/globals.css";
+import { PageWrapper } from "../components/Layouts";
+import { useEffect} from 'react';
+import { useUserData } from '../lib/hooks';
+import { UserContext } from '../lib/context';
 
 function MyApp({ Component, pageProps }) {
-  return (
-    <PageWrapper>
-      <Component {...pageProps} />
-    </PageWrapper>
-  )
+  const userData = useUserData().user;
+  
+	return (
+    <UserContext.Provider value={userData}>
+      <PageWrapper>
+        <Component {...pageProps} />
+      </PageWrapper>
+    </UserContext.Provider>
+	);
 }
 
-export default MyApp
+export default MyApp;

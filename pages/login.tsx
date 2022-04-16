@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { DiscordSVG, GoogleSVG } from "../components/icons";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleAuthProvider } from "../lib/firebase";
+import { UserContext } from "../lib/context";
+import { useRouter } from "next/router";
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_DEV as string;
 
 export default function login() {
-	const [loading, setLoading] = useState(false);
-
-	useEffect(() => {
-		
-	}, [])
+	const userData = useContext(UserContext);
+	const router = useRouter();
 
 	async function signInWithDiscord() {
 		console.log("login with discord");
@@ -17,11 +16,16 @@ export default function login() {
 	async function signInWithGoogle() {
 		try {
 			const result = await signInWithPopup(auth, googleAuthProvider);
-			console.log(result);
 		} catch (error) {
 			console.error(error);
 		}
 	}
+
+	useEffect(() => {
+		if (userData != null) {
+			router.push('/dashboard');
+		}
+	}, [userData])
 
 	return (
 		<div className="h-full flex flex-col items-center mx-auto w-[84%]">

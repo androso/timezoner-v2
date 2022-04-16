@@ -28,7 +28,7 @@ function createFirebaseApp(config: object) {
 	}
 }
 
-export const firebaseApp = createFirebaseApp(firebaseConfig);
+export const firebaseApp = createFirebaseApp(firebaseConfig);   
 export const googleAuthProvider = new GoogleAuthProvider();
 export const auth = getAuth(firebaseApp);
 export const storage = getStorage(firebaseApp);
