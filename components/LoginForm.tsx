@@ -2,7 +2,7 @@ import React from "react";
 import { DiscordSVG, GoogleSVG } from "../components/icons";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleAuthProvider } from "../lib/firebase";
-
+//TODO: REFACTOR THIS THING
 export default function LoginForm() {
 	return (
 		<div className="h-full flex flex-col items-center mx-auto w-[84%]">

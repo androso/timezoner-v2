@@ -1,5 +1,4 @@
 import React from 'react'
-
 // ! in order to add gradients to Svg we had to edit the <svg> directly, perhaps there is another way(?
 
 export const DiscordSVG = ({ className }: { className: string }) => (
