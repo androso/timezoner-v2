@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useUserData } from "../lib/hooks";
 import LoadingSpinner from "./LoadingSpinner";
 import { useRouter } from "next/router";
 import { UserContext } from "../lib/context";
@@ -11,7 +10,7 @@ type props = {
 	};
 };
 
-export default function AuthenticatedRoute({ children, options = {pathAfterFailure: '/login'} }: props) {
+export default function ProtectedRoute({ children, options = {pathAfterFailure: '/login'} }: props) {
 	const {user, isLoggedIn, loading} = useContext(UserContext);
 	const [isLoading, setIsLoading] = useState(true);
 	const router = useRouter();
