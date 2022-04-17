@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useContext } from "react";
 import { UserContext } from "../lib/context";
-import ProtectedRoute from "../components/ProtectedRoute";
 import { auth } from "../lib/firebase";
 import { signOut } from "firebase/auth";
-
+import { ProtectedRoute } from "../components";
 
 export default function Dashboard() {
 

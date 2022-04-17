@@ -59,3 +59,7 @@ export const GoogleSVG = ({ className }: { className: string }) => (
 	</svg>
 );
 
+export default {
+	DiscordSVG,
+	GoogleSVG
+}
