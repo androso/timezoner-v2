@@ -1,6 +1,6 @@
 import React from "react";
 import { DiscordSVG, GoogleSVG } from "../components/icons";
-import { signInWithPopup, signOut } from "firebase/auth";
+import { signInWithPopup, signInWithRedirect } from "firebase/auth";
 import { auth, googleAuthProvider } from "../lib/firebase";
 //TODO: REFACTOR THIS THING
 export default function LoginForm() {
@@ -33,7 +33,8 @@ function OauthProviders({}) {
 	}
 	async function signInWithGoogle() {
 		try {
-			const result = await signInWithPopup(auth, googleAuthProvider);
+			// const result = await signInWithPopup(auth, googleAuthProvider);
+			const result = await signInWithRedirect(auth, googleAuthProvider);
 		} catch (error) {
 			console.error(error);
 		}
