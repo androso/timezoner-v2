@@ -11,7 +11,7 @@ export default function login() {
 	const router = useRouter();
 
 	async function signInWithDiscord() {
-		console.log("login with discord");
+		// console.log("login with discord");
 	}
 	async function signInWithGoogle() {
 		try {
@@ -25,7 +25,6 @@ export default function login() {
 		if (userData.user != null) {
 			router.push('/dashboard');
 		}
-		console.log(userData);
 	}, [userData])
 
 	return (
