@@ -1,9 +1,10 @@
 import { createContext } from "react";
-
-interface UserContext {
-    user: any,
-    isLoggedIn: boolean | undefined,
+import { User } from "firebase/auth";
+export interface userContextType { 
+    user: User | null | undefined,
+    error: Error | undefined,
+    isLoggedIn: boolean,
     loading: boolean
 }
 
-export const UserContext = createContext<UserContext>({ user: undefined, isLoggedIn: undefined, loading: true});
+export const UserContext = createContext<userContextType>({user: null, error: new Error('default values'), isLoggedIn: false, loading: true});
