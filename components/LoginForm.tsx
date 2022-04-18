@@ -30,6 +30,7 @@ export default function LoginForm() {
 function OauthProviders({}) {
 	async function signInWithDiscord() {
 		// console.log("login with discord");
+		
 	}
 	async function signInWithGoogle() {
 		try {

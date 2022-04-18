@@ -10,7 +10,7 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-const firebaseConfig = {
+export const firebaseConfig = {
 	apiKey: "AIzaSyA-ZOPrYdDGK_AvrjS0Qe6j7VINSMGr2qc",
 	authDomain: "timezoner-v2.firebaseapp.com",
 	projectId: "timezoner-v2",
@@ -20,7 +20,7 @@ const firebaseConfig = {
 	measurementId: "G-SVTB7T67BX",
 };
 
-function createFirebaseApp(config: object) {
+export function createFirebaseApp(config: object) {
 	try {
 		return getApp();
 	} catch {
