@@ -10,6 +10,8 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
+
+
 export const firebaseConfig = {
 	apiKey: "AIzaSyA-ZOPrYdDGK_AvrjS0Qe6j7VINSMGr2qc",
 	authDomain: "timezoner-v2.firebaseapp.com",
@@ -24,9 +26,10 @@ export function createFirebaseApp(config: object) {
 	try {
 		return getApp();
 	} catch {
-		return initializeApp(firebaseConfig);
+		return initializeApp(config);
 	}
 }
+
 
 export const firebaseApp = createFirebaseApp(firebaseConfig);   
 export const googleAuthProvider = new GoogleAuthProvider();
