@@ -1,3 +1,6 @@
+//TODO: WHY IS THIS THING SO SLOW?
+
+
 import React, { useState, useEffect } from "react";
 import { useContext } from "react";
 import { UserContext } from "../lib/context";
@@ -23,12 +26,13 @@ export default function Dashboard() {
 
 	useEffect(() => {
 	  if (userData.user != null) {
-		const user = userData.user;
+		const user = userData.user ;
 		setdisplayName(user.displayName);
 		setAvatarURL(user.photoURL);
-		const oauthProvider = user.providerData[0].providerId;
+		const oauthProvider = user?.providerData[0]?.providerId || 'discord';
 		setAuthProvider(oauthProvider);
 	  }
+	  console.log(userData);
 	}, [userData])
 	
 	return (

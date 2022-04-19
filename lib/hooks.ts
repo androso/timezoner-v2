@@ -5,9 +5,10 @@ import { useAuthState } from "react-firebase-hooks/auth";
 export const useUserData = () => {
 	const [user, loading, error] = useAuthState(auth)
 	let isLoggedIn = false;
-	if (user) {
-		console.log("user is logged in", user);
+	if (user != null && !loading ) {
 		isLoggedIn = true;
 	}
 	return { user, error, loading, isLoggedIn };
 };
+
+

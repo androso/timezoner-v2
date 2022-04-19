@@ -1,12 +1,14 @@
+//TODO: handle correctly the possible errors
+
 import { NextApiRequest, NextApiResponse } from "next";
 import url from "url";
 import axios from "axios";
-const DISCORD_API_ENDPOINT = "https://discord.com/api/v8";
+const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
 import { getAuth } from "firebase-admin/auth";
 import { cert, getApp, initializeApp } from "firebase-admin/app";
 
-const serviceAccount = require("../../timezoner-v2-firebase-adminsdk-c0w9x-955156a9ec.json");
 
+const serviceAccount = require("../../timezoner-v2-firebase-adminsdk-c0w9x-955156a9ec.json");
 const loginURL = `${process.env.NEXT_PUBLIC_DOMAIN_DEV}/login`;
 
 export default async function handler(
@@ -41,7 +43,7 @@ export default async function handler(
 			const appConfig = {
 				credential: cert(serviceAccount),
 			};
-			console.log("before app");
+			
 			const adminApp = createFirebaseAdminApp(appConfig);
 			const discordUser = await (
 				await axios.get(`${DISCORD_API_ENDPOINT}/users/@me`, {
@@ -50,23 +52,24 @@ export default async function handler(
 					},
 				})
 			).data;
+
 			if (adminApp) {
-				console.log("app exists", adminApp.name);
-
-				console.log("we don't continue after this");
-				const customToken = await getAuth().createCustomToken(discordUser.id);
-
-				console.log(customToken);
+				const customToken = await getAuth().createCustomToken(discordUser.id, {
+					custom: 'displayname'
+				});
+				// console.log(customToken);
 				const discordAuthParams = new url.URLSearchParams({
 					access_token: access_token,
 					refresh_token: refresh_token,
 					firebase_token: customToken,
 					provider: "discord",
 				});
+			
 				res.redirect(`${loginURL}?${discordAuthParams}`);
 			}
 		} catch (error) {
 			console.error(error, "loading from catch");
+			res.send(500);
 		}
 	} else {
 		res.send(400);

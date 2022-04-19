@@ -2,6 +2,9 @@ import React from "react";
 import { DiscordSVG, GoogleSVG } from "../components/icons";
 import { signInWithPopup, signInWithRedirect } from "firebase/auth";
 import { auth, googleAuthProvider } from "../lib/firebase";
+import { useRouter } from "next/router";
+const DISCORD_AUTH_URL = process.env.NEXT_PUBLIC_DISCORD_AUTH_URL as string;
+
 //TODO: REFACTOR THIS THING
 export default function LoginForm() {
 	return (
@@ -28,9 +31,9 @@ export default function LoginForm() {
 }
 
 function OauthProviders({}) {
+	const router = useRouter();
 	async function signInWithDiscord() {
-		// console.log("login with discord");
-		
+		router.push(DISCORD_AUTH_URL);
 	}
 	async function signInWithGoogle() {
 		try {
