@@ -7,7 +7,6 @@ const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
 import { getAuth } from "firebase-admin/auth";
 import { cert, getApp, initializeApp } from "firebase-admin/app";
 
-
 const serviceAccount = require("../../timezoner-v2-firebase-adminsdk-c0w9x-955156a9ec.json");
 const loginURL = `${process.env.NEXT_PUBLIC_DOMAIN_DEV}/login`;
 
@@ -43,7 +42,7 @@ export default async function handler(
 			const appConfig = {
 				credential: cert(serviceAccount),
 			};
-			
+
 			const adminApp = createFirebaseAdminApp(appConfig);
 			const discordUser = await (
 				await axios.get(`${DISCORD_API_ENDPOINT}/users/@me`, {
@@ -55,7 +54,7 @@ export default async function handler(
 
 			if (adminApp) {
 				const customToken = await getAuth().createCustomToken(discordUser.id, {
-					custom: 'displayname'
+					custom: "displayname",
 				});
 				// console.log(customToken);
 				const discordAuthParams = new url.URLSearchParams({
@@ -64,7 +63,7 @@ export default async function handler(
 					firebase_token: customToken,
 					provider: "discord",
 				});
-			
+
 				res.redirect(`${loginURL}?${discordAuthParams}`);
 			}
 		} catch (error) {
@@ -72,7 +71,14 @@ export default async function handler(
 			res.send(500);
 		}
 	} else {
-		res.send(400);
+		const { error, error_description } = req.query;
+		if (error === 'access_denied') {
+			//The resource owner or authorization server denied the request
+			res.redirect('/login');
+		} else {
+			res.send(400);
+		}
+		
 	}
 }
 
