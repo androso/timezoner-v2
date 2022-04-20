@@ -1,6 +1,5 @@
 //TODO: WHY IS THIS THING SO SLOW?
 
-
 import React, { useState, useEffect } from "react";
 import { useContext } from "react";
 import { UserContext } from "../lib/context";
@@ -9,7 +8,6 @@ import { signOut } from "firebase/auth";
 import { ProtectedRoute } from "../components";
 
 export default function Dashboard() {
-
 	const userData = useContext(UserContext);
 	const [displayName, setdisplayName] = useState<null | string>(null);
 	const [avatarURL, setAvatarURL] = useState<null | string>(null);
@@ -19,29 +17,29 @@ export default function Dashboard() {
 		try {
 			const result = await signOut(auth);
 			console.log("succesfully signed out!");
-		} catch(error) {
+		} catch (error) {
 			console.error(error);
 		}
-	}
+	};
 
 	useEffect(() => {
-	  if (userData.user != null) {
-		const user = userData.user ;
-		setdisplayName(user.displayName);
-		setAvatarURL(user.photoURL);
-		const oauthProvider = user?.providerData[0]?.providerId || 'discord';
-		setAuthProvider(oauthProvider);
-	  }
-	  console.log(userData);
-	}, [userData])
-	
+		if (userData.user != null) {
+			const user = userData.user;
+			setdisplayName(user.displayName);
+			setAvatarURL(user.photoURL);
+			const oauthProvider = user?.providerData[0]?.providerId || "discord";
+			setAuthProvider(oauthProvider);
+		}
+		console.log(userData);
+	}, [userData]);
+
 	return (
 		<div>
 			<ProtectedRoute options={{ pathAfterFailure: "/login" }}>
-					<h1>{displayName}</h1>
-					<img src={avatarURL || undefined} />
-					<button onClick={logOut}>Sign Out</button>
-					<p>Provider: {authProvider}</p>
+				<h1>{displayName}</h1>
+				<img src={avatarURL || undefined} referrerPolicy="no-referrer" />
+				<button onClick={logOut}>Sign Out</button>
+				<p>Provider: {authProvider}</p>
 			</ProtectedRoute>
 		</div>
 	);

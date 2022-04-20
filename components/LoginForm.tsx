@@ -4,7 +4,7 @@ import { signInWithPopup, signInWithRedirect } from "firebase/auth";
 import { auth, googleAuthProvider } from "../lib/firebase";
 import { useRouter } from "next/router";
 const DISCORD_AUTH_URL = process.env.NEXT_PUBLIC_DISCORD_AUTH_URL as string;
-
+import toast from "react-hot-toast";
 //TODO: REFACTOR THIS THING
 export default function LoginForm() {
 	return (
@@ -37,8 +37,8 @@ function OauthProviders({}) {
 	}
 	async function signInWithGoogle() {
 		try {
-			// const result = await signInWithPopup(auth, googleAuthProvider);
 			const result = await signInWithRedirect(auth, googleAuthProvider);
+			
 		} catch (error) {
 			console.error(error);
 		}

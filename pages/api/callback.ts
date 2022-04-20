@@ -56,7 +56,7 @@ export default async function handler(
 				const customToken = await getAuth().createCustomToken(discordUser.id, {
 					custom: "displayname",
 				});
-				// console.log(customToken);
+				
 				const discordAuthParams = new url.URLSearchParams({
 					access_token: access_token,
 					refresh_token: refresh_token,

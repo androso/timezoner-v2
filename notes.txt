@@ -1,0 +1,5 @@
+// We need to deal with a user login in with different providers having the same email RIGHT NOW
+// Should we update the profile in the backend or in the frontend?
+  // Does the profile need to be updated every time we log in the user?
+//Looks like the bottleneck is in checking if a user is logged in
+// What if the user clicks cancel in the auth screen? handle error 

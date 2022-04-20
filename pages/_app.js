@@ -3,6 +3,7 @@ import { PageWrapper } from "../components/Layouts";
 import { useUserData } from "../lib/hooks";
 import { UserContext } from "../lib/context";
 import { useMemo } from "react";
+import { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps }) {
 	const userData = useUserData();
@@ -13,6 +14,7 @@ function MyApp({ Component, pageProps }) {
 			<PageWrapper>
 				<Component {...pageProps} />
 			</PageWrapper>
+			<Toaster />
 		</UserContext.Provider>
 	);
 }
