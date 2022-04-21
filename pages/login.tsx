@@ -9,11 +9,13 @@ import {
 	updateProfile,
 	updateEmail,
 	deleteUser,
+	getRedirectResult,
 	signOut,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { isValidUser } from "../lib/utils";
 
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_DEV as string;
 const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
@@ -23,56 +25,53 @@ export default function loginPage() {
 	const { user, isLoggedIn, loading, error } = useContext(UserContext);
 	const router = useRouter();
 	const [validUser, setvalidUser] = useState(false);
+	const [invalidEmail, setInvalidEmail] = useState(false);
 
 	useEffect(() => {
 		// if it's loggedIn and is a valid user
+		if (!loading && !isLoggedIn && router.query.provider && !invalidEmail) {
 
-		if (!loading && !isLoggedIn && router.query.provider) {
-			// console.log("we should be signing only with discord");
-			// TODO HERE; make sure to call isValidUser after customSignIn.
-			
-			customSignIn(router.query, router); //returns a user 
-			setvalidUser(true);
-			// console.log(user, isLoggedIn);
-			// if (isValidUser(user, isLoggedIn)) {
-			// 	router.push("/dashboard");
-			// }
-		} else if (!loading && isLoggedIn && !validUser) {
-			// TODO: Add a button here to close it instead of time
-			toast.error(
-				"looks like you already have an account with a different provider",
-				{
-					duration: 6000,
+			customSignIn(router.query, router).then(userCredentials => {
+				if (!isValidUser(userCredentials, true)) {
+					setInvalidEmail(true);
+				} else {
+					setvalidUser(true);
 				}
-			);
+			}) 
+
+		} else if (isLoggedIn && user?.providerData[0]?.providerId === 'google.com') {
+			// TODO: prevent user from login with google after login in with discord (rn firebase doesn't throw an error);
+			// const validateGoogleLogin = async () => {
+			// 	const results = await getRedirectResult(auth);
+			// 	if (results) {
+			// 		setvalidUser(true);
+			// 		router.push("/dashboard");	
+			// 	}
+			// }
+			// validateGoogleLogin();
+			router.push("/dashboard");
+
 		}
-		// console.log({
-		// 	user,
-		// 	isLoggedIn,
-		// 	loading,
-		// 	error,
-		// });
-	}, [user, isLoggedIn, loading, error]);
+	}, [isLoggedIn, loading, error, invalidEmail]);
 
-	useEffect(() => {}, [loading]);
-
-	return !loading && !validUser ? <LoginForm /> : <LoadingSpinner />;
+	if (!loading && !isValidUser(user, isLoggedIn)) {
+		return <LoginForm />
+	} else {
+		return <LoadingSpinner/>
+	}
+	
 }
-type AuthQueries = {
-	access_token: string;
-	firebase_token: string;
-	provider: string;
-	refresh_token: string;
-};
+
 
 async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 
 	const { provider, firebase_token, access_token, refresh_token } = queries;
 	switch (provider) {
 		case "discord": {
+			console.log("login discord")			
 			if (typeof firebase_token === "string") {
 				try {
-					const { user } = await signInWithCustomToken(auth, firebase_token);
+					var { user } = await signInWithCustomToken(auth, firebase_token);
 					const discordUser = await (
 						await axios.get(`${DISCORD_API_ENDPOINT}/users/@me`, {
 							headers: {
@@ -87,27 +86,28 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 						photoURL: discordAvatarURL,
 					});
 
-					try {
-						await updateEmail(user, discordUser.email);
-						router.push("/dashboard");
-						return user;
-					} catch (error: unknown) {
-						if (error instanceof Error) {
-							if (
-								error.message === "Firebase: Error (auth/email-already-in-use)."
-							) {
-								console.log("deleting user and returning false");
-								deleteUser(user);
-								signOut(auth);
-								return false;
-							}
+					await updateEmail(user, discordUser.email);
+					router.push("/dashboard");
+					return user;
+
+				} catch (error:unknown) {
+					if (error instanceof Error) {
+						if (error.message === "Firebase: Error (auth/email-already-in-use).") {
+							toast.error(
+								"looks like you already have an account with a different provider",
+								{
+									duration: 6000,
+								}
+							);
+							await deleteUser(user);
+							// await signOut(auth);
+							console.log("sign out");
 						}
 					}
-
-				} catch (error) {
-					console.error(error);
+					return null;
 				}
 			}
 		}
 	}
+	
 }

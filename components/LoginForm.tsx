@@ -1,6 +1,6 @@
 import React from "react";
 import { DiscordSVG, GoogleSVG } from "../components/icons";
-import { signInWithPopup, signInWithRedirect } from "firebase/auth";
+import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { auth, googleAuthProvider } from "../lib/firebase";
 import { useRouter } from "next/router";
 const DISCORD_AUTH_URL = process.env.NEXT_PUBLIC_DISCORD_AUTH_URL as string;
@@ -38,7 +38,7 @@ function OauthProviders({}) {
 	async function signInWithGoogle() {
 		try {
 			const result = await signInWithRedirect(auth, googleAuthProvider);
-			
+			// getRedirectResult(auth);
 		} catch (error) {
 			console.error(error);
 		}
