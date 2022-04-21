@@ -20,7 +20,7 @@ import { isValidUser } from "../lib/utils";
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_DEV as string;
 const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
 const DISCORD_CDN = process.env.NEXT_PUBLIC_DISCORD_CDN;
-
+console.log(DISCORD_CDN);
 export default function loginPage() {
 	const { user, isLoggedIn, loading, error } = useContext(UserContext);
 	const router = useRouter();

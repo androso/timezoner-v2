@@ -4,7 +4,7 @@ import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase
 import { auth, googleAuthProvider } from "../lib/firebase";
 import { useRouter } from "next/router";
 const DISCORD_AUTH_URL = process.env.NEXT_PUBLIC_DISCORD_AUTH_URL as string;
-import toast from "react-hot-toast";
+
 //TODO: REFACTOR THIS THING
 export default function LoginForm() {
 	return (
@@ -33,6 +33,7 @@ export default function LoginForm() {
 function OauthProviders({}) {
 	const router = useRouter();
 	async function signInWithDiscord() {
+    console.log("should be loading discord")
 		router.push(DISCORD_AUTH_URL);
 	}
 	async function signInWithGoogle() {
