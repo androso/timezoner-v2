@@ -49,7 +49,6 @@ export default function loginPage() {
 			// }
 			// validateGoogleLogin();
 			router.push("/dashboard");
-
 		}
 	}, [isLoggedIn, loading, error, invalidEmail]);
 
