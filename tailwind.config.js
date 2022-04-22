@@ -6,6 +6,7 @@ module.exports = {
 		extend: {
 			width: {
 				"avatar-sm-w": "9.375rem",
+				"container-sm": "22.75rem"
 			},
 			colors: {
 				lightBlue: "hsl(182, 100%, 88%)",
@@ -20,6 +21,10 @@ module.exports = {
 				purpleGradientEnd: "#ABB8FF",
 				containerGray: "#606368",
 				darkLabel: "#414549",
+				headerBottom: "hsl(203, 13%, 25%);",
+				headerTop: "hsl(203, 13%, 40%);",
+				logoutBtnBottomColor:"hsl(0, 0%, 20%);",
+				logoutBtnTopColor:"hsl(0, 0%, 32%);"
 			},
 			fontFamily: {
 				sans: ["Inter", "Poppins", "Roboto"],

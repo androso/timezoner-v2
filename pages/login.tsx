@@ -53,6 +53,9 @@ export default function loginPage() {
 			// }
 			// validateGoogleLogin();
 			router.push("/dashboard");
+		} else if (isLoggedIn && isValidUser(user, isLoggedIn)) {
+			// Logged in with Discord
+			router.push("/dashboard");
 		}
 	}, [isLoggedIn, loading, error, invalidEmail]);
 

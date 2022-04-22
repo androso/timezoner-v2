@@ -7,10 +7,10 @@ import { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps }) {
 	const userData = useUserData();
-	const memoUserData = useMemo(() => userData, [userData]);
+	// const memoUserData = useMemo(() => userData, [userData]);
 
 	return (
-		<UserContext.Provider value={memoUserData}>
+		<UserContext.Provider value={userData}>
 			<PageWrapper>
 				<Component {...pageProps} />
 			</PageWrapper>
