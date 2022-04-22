@@ -15,12 +15,12 @@ import {
 import { auth } from "../lib/firebase";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { isValidUser } from "../lib/utils";
+import { isValidUser } from "../lib/utils/client-helpers";
 
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_DEV as string;
 const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
 const DISCORD_CDN = process.env.NEXT_PUBLIC_DISCORD_CDN;
-const defaultDiscordAvatarSize = '128';
+const desiredDiscordAvatarSize = '256';
 
 export default function loginPage() {
 	const { user, isLoggedIn, loading, error } = useContext(UserContext);
@@ -81,7 +81,7 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 						})
 					).data;
 					
-					const discordAvatarURL = `${DISCORD_CDN}/avatars/${discordUser.id}/${discordUser.avatar}.png?size=${defaultDiscordAvatarSize}`;
+					const discordAvatarURL = `${DISCORD_CDN}/avatars/${discordUser.id}/${discordUser.avatar}.png?size=${desiredDiscordAvatarSize}`;
 
 					const profileUpdated = updateProfile(user, {
 						displayName: discordUser.username,

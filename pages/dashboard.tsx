@@ -5,7 +5,7 @@ import { UserContext } from "../lib/context";
 import { auth } from "../lib/firebase";
 import { signOut } from "firebase/auth";
 import { ProtectedRoute } from "../components";
-import { isValidUser } from "../lib/utils";
+import { isValidUser } from "../lib/utils/client-helpers";
 import { User } from "firebase/auth";
 const defaultGoogleAvatarSize = 96;
 import Image from "next/image";
@@ -73,7 +73,7 @@ function getParsedDataFromUser(user:User) {
 	} else {
 		//google
 		// get a bigger image
-		photoURL = user.photoURL?.replace(`s${defaultGoogleAvatarSize}-c`, "s128-c") || '';
+		photoURL = user.photoURL?.replace(`s${defaultGoogleAvatarSize}-c`, "s256-c") || '';
 	}
 
 	return {
