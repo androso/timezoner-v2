@@ -20,7 +20,7 @@ import { isValidUser } from "../lib/utils";
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_DEV as string;
 const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
 const DISCORD_CDN = process.env.NEXT_PUBLIC_DISCORD_CDN;
-console.log(DISCORD_CDN);
+
 export default function loginPage() {
 	const { user, isLoggedIn, loading, error } = useContext(UserContext);
 	const router = useRouter();
@@ -68,7 +68,7 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 	const { provider, firebase_token, access_token, refresh_token } = queries;
 	switch (provider) {
 		case "discord": {
-			console.log("login discord")			
+			// console.log("login discord")			
 			if (typeof firebase_token === "string") {
 				try {
 					var { user } = await signInWithCustomToken(auth, firebase_token);
@@ -100,8 +100,6 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 								}
 							);
 							await deleteUser(user);
-							// await signOut(auth);
-							console.log("sign out");
 						}
 					}
 					return null;

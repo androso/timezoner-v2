@@ -17,15 +17,9 @@ export default async function handler(
 	const { code } = req.query;
 	if (code) {
 		const CLIENT_ID = process.env.NEXT_PUBLIC_DISCORD_OAUTH_CLIENT_ID;
-    
 		const CLIENT_SECRET = process.env.NEXT_PUBLIC_DISCORD_OAUTH_SECRET_KEY;
 		const REDIRECT_URI = `${process.env.NEXT_PUBLIC_DOMAIN}/api/callback`;
-       console.log({
-      CLIENT_ID,
-      CLIENT_SECRET,
-      REDIRECT_URI
-    })
-    
+
 		try {
 			const queryParams = new url.URLSearchParams({
 				client_id: `${CLIENT_ID}`,
@@ -34,7 +28,7 @@ export default async function handler(
 				code: code,
 				redirect_uri: `${REDIRECT_URI}`,
 			});
-      console.log("all working til lhere");
+
 			const response = await axios.post(
 				`${DISCORD_API_ENDPOINT}/oauth2/token`,
 				queryParams.toString(),
@@ -44,8 +38,7 @@ export default async function handler(
 					},
 				}
 			);
-      
-  
+
 			const { access_token, refresh_token } = response.data;
 			const appConfig = {
 				credential: cert(serviceAccount),
@@ -64,7 +57,7 @@ export default async function handler(
 				const customToken = await getAuth().createCustomToken(discordUser.id, {
 					custom: "displayname",
 				});
-				
+
 				const discordAuthParams = new url.URLSearchParams({
 					access_token: access_token,
 					refresh_token: refresh_token,
@@ -74,19 +67,21 @@ export default async function handler(
 
 				res.redirect(`${loginURL}?${discordAuthParams}`);
 			}
-		} catch (error) {
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				console.error(error.message);
+			}
 			// console.error(error, "loading from catch");
 			res.send(500);
 		}
 	} else {
 		const { error, error_description } = req.query;
-		if (error === 'access_denied') {
+		if (error === "access_denied") {
 			//The resource owner or authorization server denied the request
-			res.redirect('/login');
+			res.redirect("/login");
 		} else {
 			res.send(400);
 		}
-		
 	}
 }
 
