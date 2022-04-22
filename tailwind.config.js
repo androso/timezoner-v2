@@ -4,6 +4,9 @@ module.exports = {
 	darkMode: false,
 	theme: {
 		extend: {
+			width: {
+				"avatar-sm-w": "9.375rem",
+			},
 			colors: {
 				lightBlue: "hsl(182, 100%, 88%)",
 				lightGreen: "hsl(130, 100%, 88%)",
@@ -21,34 +24,32 @@ module.exports = {
 			fontFamily: {
 				sans: ["Inter", "Poppins", "Roboto"],
 			},
-			animation: {
-				
-			},
+			animation: {},
 			keyframes: {
 				"lds-ellipsis1": {
-					'0%': {
-						transform: 'scale(0)'
-					}, 
-					'100%': {
-						transform: 'scale(1)'
-					}
+					"0%": {
+						transform: "scale(0)",
+					},
+					"100%": {
+						transform: "scale(1)",
+					},
 				},
 				"lds-ellipsis2": {
-					'0%': {
-						transform: 'translate(0, 0)'
-					}, 
-					'100%': {
-						transform: 'translate(24px, 0)'
-					}
+					"0%": {
+						transform: "translate(0, 0)",
+					},
+					"100%": {
+						transform: "translate(24px, 0)",
+					},
 				},
 				"lds-ellipsis3": {
-					'0%': {
-						transform: 'scale(1)'
-					}, 
-					'100%': {
-						transform: 'scale(0)'
-					}
-				}
+					"0%": {
+						transform: "scale(1)",
+					},
+					"100%": {
+						transform: "scale(0)",
+					},
+				},
 			},
 		},
 	},

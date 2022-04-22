@@ -20,6 +20,7 @@ import { isValidUser } from "../lib/utils";
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_DEV as string;
 const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
 const DISCORD_CDN = process.env.NEXT_PUBLIC_DISCORD_CDN;
+const defaultDiscordAvatarSize = '128';
 
 export default function loginPage() {
 	const { user, isLoggedIn, loading, error } = useContext(UserContext);
@@ -79,7 +80,8 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 							},
 						})
 					).data;
-					const discordAvatarURL = `${DISCORD_CDN}/avatars/${discordUser.id}/${discordUser.avatar}.png?size=256`;
+					
+					const discordAvatarURL = `${DISCORD_CDN}/avatars/${discordUser.id}/${discordUser.avatar}.png?size=${defaultDiscordAvatarSize}`;
 
 					const profileUpdated = updateProfile(user, {
 						displayName: discordUser.username,

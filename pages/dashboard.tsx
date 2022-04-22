@@ -8,6 +8,7 @@ import { ProtectedRoute } from "../components";
 import { isValidUser } from "../lib/utils";
 import { User } from "firebase/auth";
 const defaultGoogleAvatarSize = 96;
+import Image from "next/image";
 
 export default function Dashboard() {
 	const userData = useContext(UserContext);
@@ -39,8 +40,19 @@ export default function Dashboard() {
 		<div>
 			<ProtectedRoute options={{ pathAfterFailure: "/login" }}>
 				<h1>{displayName}</h1>
-				<img src={avatarURL || undefined} referrerPolicy="no-referrer" />
-				<button onClick={logOut}>Sign Out</button>
+				<div className="w-avatar-sm-w md:w-40 relative ">
+					<Image 
+						src={avatarURL || ""}
+						width="128"
+						height="128"
+						layout="responsive"
+						className="rounded-full"
+						priority
+						quality="100"
+					/>
+				</div> 
+				
+				<button className="block" onClick={logOut}>Sign Out</button>
 				<p>Provider: {authProvider}</p>
 			</ProtectedRoute>
 		</div>
@@ -53,14 +65,15 @@ function getParsedDataFromUser(user:User) {
 	// 	username = user.displayName?.split(" ")[0];		
 	// }
 	const username = user.displayName?.split(" ")[0] || '';
-	const provider = user?.providerData[0].providerId || 'discord';
+	const provider = user?.providerData[0]?.providerId || 'discord';
+	console.log(provider); 
 	let photoURL = '';
 	if (provider === 'discord') { 
-		
+		photoURL = user.photoURL || '';
 	} else {
 		//google
 		// get a bigger image
-		photoURL = user.photoURL?.replace(`s${defaultGoogleAvatarSize}-c`, "s164-c") || '';
+		photoURL = user.photoURL?.replace(`s${defaultGoogleAvatarSize}-c`, "s128-c") || '';
 	}
 
 	return {
