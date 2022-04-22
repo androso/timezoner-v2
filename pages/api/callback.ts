@@ -32,7 +32,7 @@ export default async function handler(
 			};
 
 			const response = await exchangeAccessCodeForCredentials(queryParams);
-			const { access_token, refresh_token } = response.data;
+			const { access_token, refresh_token }: {access_token:string, refresh_token:string} = response.data;
 
 			const appConfig = {
 				credential: cert(serviceAccount),
@@ -43,13 +43,14 @@ export default async function handler(
 
 			if (adminApp) {
 				const customToken = await getAuth().createCustomToken(discordUser.id);
-				const discordAuthParams = new url.URLSearchParams({
+				const discordAuthCredentials = new url.URLSearchParams({
 					access_token: access_token,
 					refresh_token: refresh_token,
 					firebase_token: customToken,
 					provider: "discord",
 				});
-				res.redirect(`${loginURL}?${discordAuthParams}`);
+
+				res.redirect(`${loginURL}?${discordAuthCredentials}`);
 			}
 		} catch (error: unknown) {
 			if (error instanceof Error) {

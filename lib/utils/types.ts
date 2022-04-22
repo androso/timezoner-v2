@@ -19,4 +19,9 @@ export type ExchangeCodeRequestParamsDiscord = {
 	redirect_uri: string;
 };
 
-
+export type DiscordAuthCredentials = {
+	access_token: string;
+	refresh_token: string;
+	firebase_token: string;
+	provider: string;
+};
