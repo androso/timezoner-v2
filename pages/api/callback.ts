@@ -3,9 +3,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import url from "url";
 import axios from "axios";
-const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
 import { getAuth } from "firebase-admin/auth";
-import { cert, getApp, initializeApp } from "firebase-admin/app";
+import { cert } from "firebase-admin/app";
+import { createFirebaseAdminApp } from "../../lib/utils/node-helpers";
+import { DISCORD_API_ENDPOINTS } from "../../lib/utils/types";
 
 const serviceAccount = require("../../timezoner-v2-firebase-adminsdk-c0w9x-955156a9ec.json");
 const loginURL = `${process.env.NEXT_PUBLIC_DOMAIN}/login`;
@@ -28,9 +29,9 @@ export default async function handler(
 				code: code,
 				redirect_uri: `${REDIRECT_URI}`,
 			});
-
+			
 			const response = await axios.post(
-				`${DISCORD_API_ENDPOINT}/oauth2/token`,
+				DISCORD_API_ENDPOINTS.OAUTH2_TOKEN,
 				queryParams.toString(),
 				{
 					headers: {
@@ -45,8 +46,9 @@ export default async function handler(
 			};
 
 			const adminApp = createFirebaseAdminApp(appConfig);
+			
 			const discordUser = await (
-				await axios.get(`${DISCORD_API_ENDPOINT}/users/@me`, {
+				await axios.get(DISCORD_API_ENDPOINTS.USER, {
 					headers: {
 						Authorization: `Bearer ${access_token}`,
 					},
@@ -54,9 +56,7 @@ export default async function handler(
 			).data;
 
 			if (adminApp) {
-				const customToken = await getAuth().createCustomToken(discordUser.id, {
-					custom: "displayname",
-				});
+				const customToken = await getAuth().createCustomToken(discordUser.id);
 
 				const discordAuthParams = new url.URLSearchParams({
 					access_token: access_token,
@@ -71,7 +71,6 @@ export default async function handler(
 			if (error instanceof Error) {
 				console.error(error.message);
 			}
-			// console.error(error, "loading from catch");
 			res.send(500);
 		}
 	} else {
@@ -82,13 +81,5 @@ export default async function handler(
 		} else {
 			res.send(400);
 		}
-	}
-}
-
-export function createFirebaseAdminApp(config: object) {
-	try {
-		return getApp();
-	} catch {
-		return initializeApp(config);
 	}
 }

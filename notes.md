@@ -6,3 +6,9 @@ Side effects:
  Observations:
   - on mobile: i need to put email and password in the browser, even though i have logged in with google in my phone (outside the browser)
     - Is it because i'm using redirect instead of popup?
+
+
+TODO:
+ - Refactor callback.ts, abstract requests into their own files/functions
+ - We shouldn't request from the discord api, instead it should be from our own database
+ - See the documentation from next js to handle typography

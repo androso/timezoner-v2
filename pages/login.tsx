@@ -9,17 +9,15 @@ import {
 	updateProfile,
 	updateEmail,
 	deleteUser,
-	getRedirectResult,
-	signOut,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { isValidUser } from "../lib/utils/client-helpers";
+import { DISCORD_API_ENDPOINTS } from "../lib/utils/types";
 
-const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_DEV as string;
 const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
-const DISCORD_CDN = process.env.NEXT_PUBLIC_DISCORD_CDN;
+
 const desiredDiscordAvatarSize = '256';
 
 export default function loginPage() {
@@ -81,7 +79,7 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 						})
 					).data;
 					
-					const discordAvatarURL = `${DISCORD_CDN}/avatars/${discordUser.id}/${discordUser.avatar}.png?size=${desiredDiscordAvatarSize}`;
+					const discordAvatarURL = `${DISCORD_API_ENDPOINTS.CDN}/avatars/${discordUser.id}/${discordUser.avatar}.png?size=${desiredDiscordAvatarSize}`;
 
 					const profileUpdated = updateProfile(user, {
 						displayName: discordUser.username,
