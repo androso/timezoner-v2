@@ -8,6 +8,11 @@ module.exports = {
 				"avatar-sm-w": "9.375rem",
 				"container-sm": "22.75rem"
 			},
+			maxWidth: {
+				'tablet-max-w': '90%',
+				'mobile-max-w': '95%',
+				'desktop-max-w': '1300px'
+			},
 			colors: {
 				lightBlue: "hsl(182, 100%, 88%)",
 				lightGreen: "hsl(130, 100%, 88%)",

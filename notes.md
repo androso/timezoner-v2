@@ -11,5 +11,6 @@ Side effects:
 TODO:
  X Refactor callback.ts, abstract requests into their own files/functions
  - Make Dashboard frontend
+  - Fix responsiveness in less than 369px
  - We shouldn't request from the discord api, instead it should be from our own database
  - See the documentation from next js to handle typography

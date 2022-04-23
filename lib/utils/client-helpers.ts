@@ -22,3 +22,10 @@ export const getDiscordUser = async (accessToken:string) => {
 		}
 	})
 }
+
+export const capitalizeFirstLetter = (string:string | null) => {
+	if (typeof string === 'string') {
+		return string.charAt(0).toUpperCase() + string.slice(1);
+	} 
+	return '';
+}
