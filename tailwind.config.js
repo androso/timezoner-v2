@@ -29,7 +29,10 @@ module.exports = {
 				headerBottom: "hsl(203, 13%, 25%);",
 				headerTop: "hsl(203, 13%, 40%);",
 				logoutBtnBottomColor:"hsl(0, 0%, 20%);",
-				logoutBtnTopColor:"hsl(0, 0%, 32%);"
+				logoutBtnTopColor:"hsl(0, 0%, 32%);",
+				lightBtnBottColor: "hsl(184, 26%, 61%);",
+				lightBtnTopColor: "hsl(184, 27%, 83%);",
+				darkText: "hsl(210, 6%, 27%);"
 			},
 			fontFamily: {
 				sans: ["Inter", "Poppins", "Roboto"],

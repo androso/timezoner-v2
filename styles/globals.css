@@ -74,14 +74,22 @@
 	font-display: swap;
 }
 
+:root {
+	--lightBtnTopColor: hsl(184, 27%, 83%);
+	--lightBtnBottColor: hsl(184, 26%, 61%);
+	--lightBtnGradientBg: linear-gradient(to top, var(--lightBtnBottColor), var(--lightBtnTopColor));
+	--lightBtnHoverBg: hsl(184, 30%, 76%);
+	--lightBtnActiveBg: hsl(184, 30%, 70%);
+}
+
 * {
 	box-sizing: border-box;
 }
 html {
 	background-image: linear-gradient(to top, hsl(192, 15%, 18%), hsl(205, 13%, 37%));
-	/* bg-gradient-to-t from-gunMetal to-blackCoral */
 }
 
+/* -------- LOGIN BUTTONS -------- */
 .gradient-transition {
 	background-image: linear-gradient(
 		to top,
@@ -112,6 +120,7 @@ html {
 	background-color: #2c3334;
 }
 
+/* -------- LOGOUT BUTTON -------- */
 .logout-transition {
 	background-image: linear-gradient(to top, hsl(0, 0%, 20%), hsl(0, 0%, 32%));
 	z-index: 1;
@@ -138,8 +147,39 @@ html {
 	background-color: hsl(187, 8%, 19%);
 }
 
+/* -------- LOADING ANIMATION -------- */
 @layer components {
 	.loading-dot {
 		@apply absolute w-5 h-5 rounded-full bg-slate-200;
 	}
+}
+
+
+/* -------- LIGHT-COLOR BUTTONS -------- */
+
+.light-btn-transition {
+	background-image: var(--lightBtnGradientBg);
+	z-index: 1;
+}
+
+.light-btn-transition::before {
+	position: absolute;
+	content: "";
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	border-radius: 0.375rem;
+	background-color: var(--lightBtnHoverBg);
+	z-index: -1;
+	transition: opacity 0.2s linear, background-color 0.08s linear;
+	opacity: 0;
+}
+
+.light-btn-transition:hover::before {
+	opacity: 1;
+}
+
+.light-btn-transition:active::before {
+	background-color: var(--lightBtnActiveBg);
 }

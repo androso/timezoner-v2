@@ -4,9 +4,11 @@ import { useContext } from "react";
 import { UserContext } from "../lib/context";
 import { auth } from "../lib/firebase";
 import { signOut } from "firebase/auth";
-import { ProtectedRoute, Header } from "../components";
+import { ProtectedRoute, Header, LightButton, UpcomingEvents } from "../components";
 import { isValidUser } from "../lib/utils/client-helpers";
 import { User } from "firebase/auth";
+import Container from "../components/Layouts/Container";
+
 const defaultGoogleAvatarSize = 96;
 
 export default function Dashboard() {
@@ -34,6 +36,7 @@ export default function Dashboard() {
 		}
 		console.log(userData);
 	}, [userData]);
+
 	useEffect(() => {
 		console.log("first render of /dashboard!");
 	}, []);
@@ -46,6 +49,12 @@ export default function Dashboard() {
 					screenName="PROFILE"
 					photoURL={avatarURL}
 				/>
+				<Container className="pt-8">
+					<LightButton innerText="Create Event" className="mr-5"/>
+					<LightButton innerText="Join Event"/>
+					<UpcomingEvents />
+				</Container>
+				
 			</ProtectedRoute>
 		</div>
 	);

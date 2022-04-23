@@ -21,7 +21,7 @@ export default function Header({
 }: props) {
 	return (
         <div className="bg-gradient-to-t from-headerBottom to-headerTop flex items-end relative h-56 sm:h-60 shadow-md">
-                <Container styles="relative flex items-end">
+                <Container className="relative flex items-end">
                     <LogoutButton />
                     <div className="flex items-center">
                         <div className="avatar w-avatar-sm-w sm:w-40 md:w-44 relative mb-4 mr-3 ">
