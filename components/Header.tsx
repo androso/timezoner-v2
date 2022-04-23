@@ -20,11 +20,11 @@ export default function Header({
 	screenName,
 }: props) {
 	return (
-        <div className="bg-gradient-to-t from-headerBottom to-headerTop flex items-end relative h-64 sm:h-72 lg:h-80">
+        <div className="bg-gradient-to-t from-headerBottom to-headerTop flex items-end relative h-56 sm:h-60 shadow-md">
                 <Container styles="relative flex items-end">
                     <LogoutButton />
                     <div className="flex items-center">
-                        <div className="avatar w-avatar-sm-w sm:w-40 md:w-44 lg:w-52 xl:w-56 relative mb-4 mr-3 ">
+                        <div className="avatar w-avatar-sm-w sm:w-40 md:w-44 relative mb-4 mr-3 ">
                             <Image
                                 src={photoURL || ""}
                                 width="128"
@@ -35,7 +35,6 @@ export default function Header({
                                 quality="100"
                             />
                         </div>
-
                         <div className="">
                             <p className="font-bold text-sm sm:text-base xl:text-lg">{screenName}</p>
                             <h1 className="text-4xl font-bold break-words max-w-[100%] sm:text-6xl xl:text-8xl">{capitalizeFirstLetter(username)}</h1>
@@ -50,7 +49,7 @@ function LogoutButton({}) {
 	const logOut = async () => {
 		try {
 			const result = await signOut(auth);
-			console.log("succesfully signed out!");
+			console.log("succesfully signed out!");	
 		} catch (error) {
 			console.error(error);
 			toast.error("There was an error while login out", {
