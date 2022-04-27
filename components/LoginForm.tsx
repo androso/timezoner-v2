@@ -8,7 +8,8 @@ import {
 import { auth, googleAuthProvider, firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
 import { User } from "firebase/auth";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+
+import { sendUserToFirestore } from "../lib/utils/client-helpers";
 const DISCORD_AUTH_URL = process.env.NEXT_PUBLIC_DISCORD_AUTH_URL as string;
 
 //TODO: REFACTOR THIS THING
@@ -38,19 +39,16 @@ export default function LoginForm() {
 
 function OauthProviders({}) {
 	const router = useRouter();
+
 	async function signInWithDiscord() {
 		console.log("should be loading discord");
 		router.push(DISCORD_AUTH_URL);
 	}
+
 	async function signInWithGoogle() {
 		try {
 			const {user} = await signInWithPopup(auth, googleAuthProvider);
-			const userId = user.uid;
-			await setDoc(doc(firestore, 'users', userId), {
-				username: user.displayName,
-				email: user.email,
-				avatar_url: user.photoURL
-			})
+			await sendUserToFirestore(user, 'google.com');
 		} catch (error) {
 			console.error(error);
 		}
