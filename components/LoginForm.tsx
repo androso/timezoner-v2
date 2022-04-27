@@ -1,8 +1,14 @@
 import React from "react";
 import { DiscordSVG, GoogleSVG } from "../components/icons";
-import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
-import { auth, googleAuthProvider } from "../lib/firebase";
+import {
+	signInWithPopup,
+	signInWithRedirect,
+	getRedirectResult,
+} from "firebase/auth";
+import { auth, googleAuthProvider, firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
+import { User } from "firebase/auth";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 const DISCORD_AUTH_URL = process.env.NEXT_PUBLIC_DISCORD_AUTH_URL as string;
 
 //TODO: REFACTOR THIS THING
@@ -33,13 +39,18 @@ export default function LoginForm() {
 function OauthProviders({}) {
 	const router = useRouter();
 	async function signInWithDiscord() {
-    console.log("should be loading discord")
+		console.log("should be loading discord");
 		router.push(DISCORD_AUTH_URL);
 	}
 	async function signInWithGoogle() {
 		try {
-			const result = await signInWithRedirect(auth, googleAuthProvider);
-			// getRedirectResult(auth);
+			const {user} = await signInWithPopup(auth, googleAuthProvider);
+			const userId = user.uid;
+			await setDoc(doc(firestore, 'users', userId), {
+				username: user.displayName,
+				email: user.email,
+				avatar_url: user.photoURL
+			})
 		} catch (error) {
 			console.error(error);
 		}
