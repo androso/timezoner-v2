@@ -10,12 +10,11 @@ import {
 	LightButton,
 	UpcomingEvents,
 } from "../components";
-import { isValidUser } from "../lib/utils/client-helpers";
+import { isValidUser, getParsedDataFromUser } from "../lib/utils/client-helpers";
 import { User } from "firebase/auth";
 import Container from "../components/Layouts/Container";
-import { collection, addDoc } from "firebase/firestore";
 
-const defaultGoogleAvatarSize = 96;
+
 
 export default function Dashboard() {
 	const userData = useContext(UserContext);
@@ -40,13 +39,13 @@ export default function Dashboard() {
 			setusername(username);
 			setAvatarURL(photoURL);
 			setAuthProvider(provider);
-			console.log(user);
+			// console.log(user);
 		}
 	}, [userData]);
 
 	useEffect(() => {
-		console.log("first render of /dashboard!");
-	}, []);
+		console.log("userData inside of dashboard", userData);
+	}, [userData]);
 
 	// const submitUserData = async () => {
 	// 	console.log("sending to db");
@@ -75,23 +74,3 @@ export default function Dashboard() {
 	);
 }
 
-function getParsedDataFromUser(user: User) {
-	const username = user.displayName?.split(" ")[0] || "";
-	const provider = user?.providerData[0]?.providerId || "discord";
-	console.log(provider);
-	let photoURL = "";
-	if (provider === "discord") {
-		photoURL = user.photoURL || "";
-	} else {
-		//google
-		// get a bigger image
-		photoURL =
-			user.photoURL?.replace(`s${defaultGoogleAvatarSize}-c`, "s256-c") || "";
-	}
-
-	return {
-		username,
-		photoURL,
-		provider,
-	};
-}

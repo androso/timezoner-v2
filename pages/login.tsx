@@ -11,7 +11,6 @@ import {
 	deleteUser,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { getDiscordUser, isValidUser } from "../lib/utils/client-helpers";
 import {

@@ -7,7 +7,6 @@ import {
 } from "firebase/auth";
 import { auth, googleAuthProvider, firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
-import { User } from "firebase/auth";
 
 import { sendUserToFirestore } from "../lib/utils/client-helpers";
 const DISCORD_AUTH_URL = process.env.NEXT_PUBLIC_DISCORD_AUTH_URL as string;
@@ -47,6 +46,7 @@ function OauthProviders({}) {
 
 	async function signInWithGoogle() {
 		try {
+			console.log("signing in with google");
 			const {user} = await signInWithPopup(auth, googleAuthProvider);
 			await sendUserToFirestore(user, 'google.com');
 		} catch (error) {

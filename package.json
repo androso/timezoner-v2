@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "next dev",
+        "emulators": "firebase emulators:start",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"
