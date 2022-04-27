@@ -2,12 +2,18 @@
 import React, { useState, useEffect } from "react";
 import { useContext } from "react";
 import { UserContext } from "../lib/context";
-import { auth } from "../lib/firebase";
+import { auth, firestore } from "../lib/firebase";
 import { signOut } from "firebase/auth";
-import { ProtectedRoute, Header, LightButton, UpcomingEvents } from "../components";
+import {
+	ProtectedRoute,
+	Header,
+	LightButton,
+	UpcomingEvents,
+} from "../components";
 import { isValidUser } from "../lib/utils/client-helpers";
 import { User } from "firebase/auth";
 import Container from "../components/Layouts/Container";
+import { collection, addDoc } from "firebase/firestore";
 
 const defaultGoogleAvatarSize = 96;
 
@@ -29,17 +35,27 @@ export default function Dashboard() {
 	useEffect(() => {
 		if (userData.user != null && isValidUser(userData.user, true)) {
 			const user = userData.user as User;
+
 			const { username, photoURL, provider } = getParsedDataFromUser(user);
 			setusername(username);
 			setAvatarURL(photoURL);
 			setAuthProvider(provider);
+			console.log(user);
 		}
-		console.log(userData);
 	}, [userData]);
 
 	useEffect(() => {
 		console.log("first render of /dashboard!");
 	}, []);
+
+	// const submitUserData = async () => {
+	// 	console.log("sending to db");
+	// 	const docRef = await addDoc(collection(firestore, "users"), {
+	// 		username,
+	// 		avatar_url: avatarURL,
+	// 	});
+	// 	console.log("Document written with ID: ", docRef.id);
+	// };
 
 	return (
 		<div>
@@ -49,12 +65,11 @@ export default function Dashboard() {
 					screenName="PROFILE"
 					photoURL={avatarURL}
 				/>
-				<Container className="pt-8">
-					<LightButton innerText="Create Event" className="mr-5"/>
-					<LightButton innerText="Join Event"/>
+				<Container className="pt-4 sm:pt-6">
+					<LightButton innerText="Create Event" className="mr-5" />
+					<LightButton innerText="Join Event" />
 					<UpcomingEvents />
 				</Container>
-				
 			</ProtectedRoute>
 		</div>
 	);

@@ -10,7 +10,10 @@ Side effects:
 
 TODO:
  X Refactor callback.ts, abstract requests into their own files/functions
- - Make Dashboard frontend
-  - Fix responsiveness in less than 369px
+ X Make Dashboard frontend
+  X Fix responsiveness in less than 369px
+ X Connect to firestore emulator
+ - First time i get discord user in the backend, send to firestore, then pull from it in the frontend
+ - Use References data types instead of writing the ids of users/events in a string field
  - We shouldn't request from the discord api, instead it should be from our own database
  - See the documentation from next js to handle typography
