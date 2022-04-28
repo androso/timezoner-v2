@@ -1,7 +1,7 @@
 import axios from "axios";
 import { User } from "firebase/auth";
 import { DISCORD_API_ENDPOINTS } from "./types";
-import {  doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
 
 const defaultGoogleAvatarSize = 96;
@@ -34,21 +34,34 @@ export const capitalizeFirstLetter = (string: string | null) => {
 };
 
 export const sendUserToFirestore = async (user: User, provider: string) => {
+	//     - if document exist
+	//       - we use that
+	//     - if not we create that document
+	//       - we set that document to our global user
+
 	if (provider === "google.com") {
 		const userId = user.uid;
-		return await setDoc(doc(firestore, "users", userId), {
-			username: user.displayName,
-			email: user.email,
-			avatar_url: user.photoURL,
-			provider
-		});
+		const userDocRef = doc(firestore, "users", userId);
+		const userDocSnap = await getDoc(userDocRef);
+		if (userDocSnap.exists()) {
+			console.log("we're not writing to database in this case");
+			return;
+		} else {
+			console.log("we're writing to database");
+			return await setDoc(doc(firestore, "users", userId), {
+				username: user.displayName,
+				email: user.email,
+				avatar_url: user.photoURL,
+				provider,
+			});
+		}
 	}
 };
 
 export const getParsedDataFromUser = (user: User) => {
 	const username = user.displayName?.split(" ")[0] || "";
 	const provider = user?.providerData[0]?.providerId || "discord";
-	
+
 	let photoURL = "";
 	if (provider === "discord") {
 		photoURL = user.photoURL || "";
@@ -63,4 +76,4 @@ export const getParsedDataFromUser = (user: User) => {
 		photoURL,
 		provider,
 	};
-}
+};

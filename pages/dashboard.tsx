@@ -18,6 +18,7 @@ import Container from "../components/Layouts/Container";
 
 export default function Dashboard() {
 	const userData = useContext(UserContext);
+
 	const [username, setusername] = useState<null | string>(null);
 	const [avatarURL, setAvatarURL] = useState<null | string>(null);
 	const [authProvider, setAuthProvider] = useState<null | string>(null);
@@ -34,27 +35,25 @@ export default function Dashboard() {
 	useEffect(() => {
 		if (userData.user != null && isValidUser(userData.user, true)) {
 			const user = userData.user as User;
-
+			// console.log(user, "user we parse")
 			const { username, photoURL, provider } = getParsedDataFromUser(user);
 			setusername(username);
 			setAvatarURL(photoURL);
 			setAuthProvider(provider);
-			// console.log(user);
 		}
 	}, [userData]);
 
 	useEffect(() => {
-		console.log("userData inside of dashboard", userData);
+		// console.log("userData inside of dashboard", userData);
 	}, [userData]);
 
-	// const submitUserData = async () => {
-	// 	console.log("sending to db");
-	// 	const docRef = await addDoc(collection(firestore, "users"), {
-	// 		username,
-	// 		avatar_url: avatarURL,
-	// 	});
-	// 	console.log("Document written with ID: ", docRef.id);
-	// };
+	useEffect(() => {
+		if (isValidUser(userData.user, true)) {
+			console.log('valid user, info should be displayed next render', userData)
+		}
+	}, [userData])
+
+	
 
 	return (
 		<div>

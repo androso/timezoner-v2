@@ -1,10 +1,23 @@
-[debug] [2022-04-27T16:56:08.678Z] ----------------------------------------------------------------------
-[debug] [2022-04-27T16:56:08.682Z] Command:       C:\Users\andro\.nvm\versions\node\v16.13.1\bin\node.exe C:\Users\andro\.nvm\versions\node\v16.13.1\bin\node_modules\firebase-tools\lib\bin\firebase.js emulators:start
-[debug] [2022-04-27T16:56:08.684Z] CLI Version:   10.6.0
-[debug] [2022-04-27T16:56:08.684Z] Platform:      win32
-[debug] [2022-04-27T16:56:08.684Z] Node Version:  v16.13.1
-[debug] [2022-04-27T16:56:08.686Z] Time:          Wed Apr 27 2022 10:56:08 GMT-0600 (Central Standard Time)
-[debug] [2022-04-27T16:56:08.686Z] ----------------------------------------------------------------------
+[debug] [2022-04-28T13:42:21.378Z] ----------------------------------------------------------------------
+[debug] [2022-04-28T13:42:21.380Z] Command:       C:\Users\andro\.nvm\versions\node\v16.13.1\bin\node.exe C:\Users\andro\.nvm\versions\node\v16.13.1\bin\node_modules\firebase-tools\lib\bin\firebase.js emulators:start
+[debug] [2022-04-28T13:42:21.381Z] CLI Version:   10.6.0
+[debug] [2022-04-28T13:42:21.381Z] Platform:      win32
+[debug] [2022-04-28T13:42:21.381Z] Node Version:  v16.13.1
+[debug] [2022-04-28T13:42:21.382Z] Time:          Thu Apr 28 2022 07:42:21 GMT-0600 (Central Standard Time)
+[debug] [2022-04-28T13:42:21.382Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2022-04-27T16:56:08.841Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2022-04-27T16:56:08.842Z] > authorizing via signed-in user (androso421@gmail.com)
+[debug] [2022-04-28T13:42:21.458Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-04-28T13:42:21.459Z] > authorizing via signed-in user (androso421@gmail.com)
+[debug] [2022-04-28T13:42:21.567Z] java version "1.8.0_301"
+Java(TM) SE Runtime Environment (build 1.8.0_301-b09
+[debug] [2022-04-28T13:42:21.568Z] )
+Java HotSpot(TM) Client VM (build 25.301-b09, mixed mode, sharing)
+
+[debug] [2022-04-28T13:42:21.572Z] Parsed Java major version: 1
+[warn] !  emulators: Support for Java version <= 10 will be dropped soon in firebase-tools@11. Please upgrade to Java version 11 or above to continue using the emulators. 
+[info] i  emulators: Starting emulators: auth, firestore, database, storage {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, firestore, database, storage"}}
+[debug] [2022-04-28T13:42:21.589Z] [hub] writing locator at C:\Users\andro\AppData\Local\Temp\hub-timezoner-v2.json
+[debug] [2022-04-28T13:42:21.604Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2022-04-28T13:42:21.604Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2022-04-28T13:42:21.604Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\andro\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.14.1.jar","--host","localhost","--port",8080,"--rules","C:\\Users\\andro\\.config\\Documents\\Web dev\\timezoner-v2\\firestore.rules"],"optionalArgs":["port","webchannel_port","host","rules","functions_emulator","seed_from_export"],"joinArgs":false} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\andro\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.14.1.jar\",\"--host\",\"localhost\",\"--port\",8080,\"--rules\",\"C:\\\\Users\\\\andro\\\\.config\\\\Documents\\\\Web dev\\\\timezoner-v2\\\\firestore.rules\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"functions_emulator\",\"seed_from_export\"],\"joinArgs\":false}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}

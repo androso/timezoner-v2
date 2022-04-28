@@ -25,3 +25,10 @@ export type DiscordAuthCredentials = {
 	firebase_token: string;
 	provider: string;
 };
+
+export type UserData = {
+	username: string,
+	email: string,
+	provider: string,
+	avatar_url: string,
+}
