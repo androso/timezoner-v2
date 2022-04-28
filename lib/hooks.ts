@@ -1,6 +1,9 @@
 import { auth, firestore } from "./firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { isValidUser } from "./utils/client-helpers";
+import {
+	isValidUser,
+	getProviderFromFirebaseUser,
+} from "./utils/client-helpers";
 import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { UserData } from "./utils/types";
@@ -12,50 +15,61 @@ export const useUserData = () => {
 	const [username, setUsername] = useState<null | string>(null);
 	const [avatarURL, setAvatarURL] = useState<null | string>(null);
 	const [userData, setUserData] = useState<UserData | null>(null);
+	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-	let isLoggedIn = false;
-
-	if (user != null && !loading) {
-		if (isValidUser(user, true)) {
-			isLoggedIn = true;
-		}
-	}
-	
 	useEffect(() => {
 		// turn off realtime subscription when user is no longer logged in
 		let unsubscribe;
-		if (user && isLoggedIn) {
-			if (
-				user.providerData[0].providerId &&
-				user.providerData[0].providerId === "google.com"
-			) {
-				console.log("checking from database");
-				const docRef = doc(firestore, "users", user.uid);
-				unsubscribe = onSnapshot(docRef, (doc) => {
-					const data = doc.data() as UserData;
+
+		if (user != null && !loading && isValidUser(user, true)) {
+			setIsLoggedIn(true);
+			// if (
+			// 	getProviderFromFirebaseUser(user) === "google.com"
+			// ) {
+			// 	const docRef = doc(firestore, "users", user.uid);
+			// 	unsubscribe = onSnapshot(docRef, (doc) => {
+			// 		const data = doc.data() as UserData;
+			// 		setUserData({
+			// 			...data,
+			// 			avatar_url: getHighQualityAvatar(data.avatar_url, data.provider),
+			// 		});
+			// 	});
+			// } else {
+			// 	// From discord
+
+			// }
+			const docRef = doc(firestore, "users", user.uid);
+
+			unsubscribe = onSnapshot(docRef, (doc) => {
+				const data = doc.data() as UserData;
+				if (data) {
 					setUserData({
 						...data,
 						avatar_url: getHighQualityAvatar(data.avatar_url, data.provider),
 					});
-				});
-				// console.log("from google!");
-			} else {
-				// From discord
-				// console.log("from discord!");
-			}
-		} else {
+				}
+			});
+		} else if (!loading) {
+			setIsLoggedIn(false);
 			setUsername(null);
 			setAvatarURL(null);
 		}
 
+		// if (user && isLoggedIn) {
+
+		// } else {
+
+		// }
+
 		return unsubscribe;
-	}, [user]);
+	}, [user, loading]);
 
 	useEffect(() => {
-		if (userData) {
-			console.log("parsed user data", userData);
-		}
-	}, [userData]);
+		// if (userData) {
+		// 	console.log("parsed user data", userData);
+		// }
+		// console.log("user from hooks", user);
+	}, [user]);
 
 	return { user, error, loading, isLoggedIn, userData };
 };

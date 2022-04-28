@@ -9,8 +9,8 @@ import {
 	exchangeAccessCodeForCredentials,
 } from "../../lib/utils/node-helpers";
 import { getDiscordUser } from "../../lib/utils/client-helpers";
-import { firestore } from "../../lib/firebase";
-import { collection, doc, setDoc } from "firebase/firestore";
+
+//TODO: we should refresh the tokens from discord so that user never gets kicked out
 
 const serviceAccount = require("../../timezoner-v2-firebase-adminsdk-c0w9x-955156a9ec.json");
 const loginURL = `${process.env.NEXT_PUBLIC_DOMAIN}/login`;
@@ -45,7 +45,7 @@ export default async function handler(
 			};
 			const adminApp = createFirebaseAdminApp(appConfig);
 			const discordUser = await (await getDiscordUser(access_token)).data;
-
+			console.log("discord user", discordUser)
 			if (adminApp) {
 				const customToken = await getAuth().createCustomToken(discordUser.id);
 				const discordAuthCredentials = new url.URLSearchParams({
@@ -54,12 +54,7 @@ export default async function handler(
 					firebase_token: customToken,
 					provider: "discord",
 				});
-
-				// const docRef = doc(collection(firestore, "users"));
-				// const userData = {
-				// 	displayName: discordUser.username,
-				// };
-				// await setDoc(docRef, userData);
+				//TODO: 
 				res.redirect(`${loginURL}?${discordAuthCredentials}`);
 			}
 		} catch (error: unknown) {

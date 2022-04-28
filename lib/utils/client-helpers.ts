@@ -2,7 +2,7 @@ import axios from "axios";
 import { User } from "firebase/auth";
 import { DISCORD_API_ENDPOINTS } from "./types";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { firestore } from "../firebase";
+import { firestore, googleAuthProvider } from "../firebase";
 
 const defaultGoogleAvatarSize = 96;
 
@@ -11,6 +11,7 @@ export const isValidUser = (
 	isLoggedIn: boolean
 ) => {
 	if (user) {
+		// console.log("validating user", user, "isloggedin", isLoggedIn);
 		if (user.displayName && user.email && user.photoURL && isLoggedIn) {
 			return true;
 		}
@@ -39,7 +40,7 @@ export const sendUserToFirestore = async (user: User, provider: string) => {
 	//     - if not we create that document
 	//       - we set that document to our global user
 
-	if (provider === "google.com") {
+	if (provider === "google.com" || provider === 'discord.com') {
 		const userId = user.uid;
 		const userDocRef = doc(firestore, "users", userId);
 		const userDocSnap = await getDoc(userDocRef);
@@ -77,3 +78,12 @@ export const getParsedDataFromUser = (user: User) => {
 		provider,
 	};
 };
+
+
+export const getProviderFromFirebaseUser = (user:User) => {
+	if (user.providerData[0]?.providerId === 'google.com') {
+		return "google.com";
+	} else { 
+		return "discord.com";
+	}
+}

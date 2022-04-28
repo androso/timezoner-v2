@@ -12,7 +12,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import toast from "react-hot-toast";
-import { getDiscordUser, isValidUser } from "../lib/utils/client-helpers";
+import { getDiscordUser, isValidUser, sendUserToFirestore } from "../lib/utils/client-helpers";
 import {
 	DiscordAuthCredentials,
 	DISCORD_API_ENDPOINTS,
@@ -77,15 +77,17 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 				try {
 					var { user } = await signInWithCustomToken(auth, firebase_token);
 					const discordUser = await (await getDiscordUser(access_token)).data;
-
 					const discordAvatarURL = `${DISCORD_API_ENDPOINTS.CDN}/avatars/${discordUser.id}/${discordUser.avatar}.png?size=${desiredDiscordAvatarSize}`;
+					const emailIsVerified = discordUser.verified;
 
 					const profileUpdated = updateProfile(user, {
 						displayName: discordUser.username,
-						photoURL: discordAvatarURL,
+						photoURL: discordAvatarURL
 					});
 
 					await updateEmail(user, discordUser.email);
+					await sendUserToFirestore(user, "discord.com");
+					// Should we send to database here?
 					router.push("/dashboard");
 					return user;
 				} catch (error: unknown) {
