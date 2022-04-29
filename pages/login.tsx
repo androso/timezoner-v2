@@ -12,7 +12,11 @@ import {
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import toast from "react-hot-toast";
-import { getDiscordUser, isValidUser, sendUserToFirestore } from "../lib/utils/client-helpers";
+import {
+	getDiscordUser,
+	isValidUser,
+	sendUserToFirestore,
+} from "../lib/utils/client-helpers";
 import {
 	DiscordAuthCredentials,
 	DISCORD_API_ENDPOINTS,
@@ -29,6 +33,7 @@ export default function loginPage() {
 	const [invalidEmail, setInvalidEmail] = useState(false);
 
 	useEffect(() => {
+		
 		// if it's loggedIn and is a valid user
 		if (!loading && !isLoggedIn && router.query.provider && !invalidEmail) {
 			customSignIn(router.query, router).then((userCredentials) => {
@@ -43,26 +48,22 @@ export default function loginPage() {
 			user?.providerData[0]?.providerId === "google.com"
 		) {
 			// TODO: prevent user from login with google after login in with discord (rn firebase doesn't throw an error);
-			// const validateGoogleLogin = async () => {
-			// 	const results = await getRedirectResult(auth);
-			// 	if (results) {
-			// 		setvalidUser(true);
-			// 		router.push("/dashboard");
-			// 	}
-			// }
-			// validateGoogleLogin();
+
 			router.push("/dashboard");
 		} else if (isLoggedIn && isValidUser(user, isLoggedIn)) {
 			// Logged in with Discord
+			console.log("comes from discord");
 			router.push("/dashboard");
 		}
-	}, [isLoggedIn, loading, error, invalidEmail]);
-
+		
+	}, [isLoggedIn, loading, invalidEmail]);
+	
 	if (!loading && !isValidUser(user, isLoggedIn)) {
 		return <LoginForm />;
 	} else {
 		return <LoadingSpinner />;
 	}
+	
 }
 
 async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
@@ -82,7 +83,7 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 
 					const profileUpdated = updateProfile(user, {
 						displayName: discordUser.username,
-						photoURL: discordAvatarURL
+						photoURL: discordAvatarURL,
 					});
 
 					await updateEmail(user, discordUser.email);

@@ -43,6 +43,7 @@ export const useUserData = () => {
 			unsubscribe = onSnapshot(docRef, (doc) => {
 				const data = doc.data() as UserData;
 				if (data) {
+					console.log("user was found in database");
 					setUserData({
 						...data,
 						avatar_url: getHighQualityAvatar(data.avatar_url, data.provider),

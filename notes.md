@@ -18,7 +18,14 @@ TODO:
  X Make Dashboard frontend
   X Fix responsiveness in less than 369px
  X Connect to firestore emulator
+ - We should start writing tests
+  - The backend shouldn't allow me to login with another provider that uses an email already in the database
  - First time i get discord user in the backend, send to firestore, then pull from it in the frontend
  - Use References data types instead of writing the ids of users/events in a string field
  - We shouldn't request from the discord api, instead it should be from our own database
  - See the documentation from next js to handle typography
+
+
+
+- With discord we could store the user info from the backend and then
+in the client, fetch the user profile from our database

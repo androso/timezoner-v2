@@ -49,7 +49,7 @@ export default function Dashboard() {
 
 	useEffect(() => {
 		if (isValidUser(userData.user, true)) {
-			console.log('valid user, info should be displayed next render', userData)
+			// console.log('valid user, info should be displayed next render', userData)
 		}
 	}, [userData])
 
