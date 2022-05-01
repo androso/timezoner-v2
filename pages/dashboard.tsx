@@ -18,19 +18,9 @@ import Container from "../components/Layouts/Container";
 
 export default function Dashboard() {
 	const userData = useContext(UserContext);
-
 	const [username, setusername] = useState<null | string>(null);
 	const [avatarURL, setAvatarURL] = useState<null | string>(null);
 	const [authProvider, setAuthProvider] = useState<null | string>(null);
-
-	const logOut = async () => {
-		try {
-			const result = await signOut(auth);
-			console.log("succesfully signed out!");
-		} catch (error) {
-			console.error(error);
-		}
-	};
 
 	useEffect(() => {
 		if (userData.user != null && isValidUser(userData.user, true)) {

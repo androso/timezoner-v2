@@ -37,11 +37,12 @@ export default function loginPage() {
 		// if it's loggedIn and is a valid user
 		if (!loading && !isLoggedIn && router.query.provider && !invalidEmail) {
 			customSignIn(router.query, router).then((userCredentials) => {
-				if (!isValidUser(userCredentials, true)) {
-					setInvalidEmail(true);
+				if (isValidUser(userCredentials, true)) {
+					router.push("/dashboard")
 				} else {
-					setvalidUser(true);
+					setInvalidEmail(true);
 				}
+				
 			});
 		} else if (
 			isLoggedIn &&
@@ -52,11 +53,11 @@ export default function loginPage() {
 			router.push("/dashboard");
 		} else if (isLoggedIn && isValidUser(user, isLoggedIn)) {
 			// Logged in with Discord
-			console.log("comes from discord");
+			// console.log("comes from discord");
 			router.push("/dashboard");
 		}
 		
-	}, [isLoggedIn, loading, invalidEmail]);
+	}, [isLoggedIn, loading, invalidEmail, validUser]);
 	
 	if (!loading && !isValidUser(user, isLoggedIn)) {
 		return <LoginForm />;
@@ -88,8 +89,7 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 
 					await updateEmail(user, discordUser.email);
 					await sendUserToFirestore(user, "discord.com");
-					// Should we send to database here?
-					router.push("/dashboard");
+
 					return user;
 				} catch (error: unknown) {
 					if (error instanceof Error) {

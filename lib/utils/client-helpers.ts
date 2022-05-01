@@ -10,13 +10,18 @@ export const isValidUser = (
 	user: User | null | undefined,
 	isLoggedIn: boolean
 ) => {
-	if (user) {
-		// console.log("validating user", user, "isloggedin", isLoggedIn);
-		if (user.displayName && user.email && user.photoURL && isLoggedIn) {
-			return true;
-		}
+	// console.log("validating user", user);
+	if (
+		user != null &&
+		user.displayName &&
+		user.email &&
+		user.photoURL &&
+		isLoggedIn
+	) {
+		return true;
+	} else {
+		return false;
 	}
-	return false;
 };
 
 export const getDiscordUser = async (accessToken: string) => {
@@ -40,15 +45,15 @@ export const sendUserToFirestore = async (user: User, provider: string) => {
 	//     - if not we create that document
 	//       - we set that document to our global user
 
-	if (provider === "google.com" || provider === 'discord.com') {
+	if (provider === "google.com" || provider === "discord.com") {
 		const userId = user.uid;
 		const userDocRef = doc(firestore, "users", userId);
 		const userDocSnap = await getDoc(userDocRef);
 		if (userDocSnap.exists()) {
-			console.log("we're not writing to database in this case");
+			// console.log("we're not writing to database in this case");
 			return;
 		} else {
-			console.log("we're writing to database");
+			// console.log("we're writing to database");
 			return await setDoc(doc(firestore, "users", userId), {
 				username: user.displayName,
 				email: user.email,
@@ -79,11 +84,10 @@ export const getParsedDataFromUser = (user: User) => {
 	};
 };
 
-
-export const getProviderFromFirebaseUser = (user:User) => {
-	if (user.providerData[0]?.providerId === 'google.com') {
+export const getProviderFromFirebaseUser = (user: User) => {
+	if (user.providerData[0]?.providerId === "google.com") {
 		return "google.com";
-	} else { 
+	} else {
 		return "discord.com";
 	}
-}
+};

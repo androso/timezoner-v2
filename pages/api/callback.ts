@@ -45,7 +45,7 @@ export default async function handler(
 			};
 			const adminApp = createFirebaseAdminApp(appConfig);
 			const discordUser = await (await getDiscordUser(access_token)).data;
-			console.log("discord user", discordUser)
+			// console.log("discord user", discordUser)
 			if (adminApp) {
 				const customToken = await getAuth().createCustomToken(discordUser.id);
 				const discordAuthCredentials = new url.URLSearchParams({
