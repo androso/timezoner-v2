@@ -1,15 +1,5 @@
 TODO:
- - Memory Leak:
-   - The first time a user logs in with discord and we write to database, 
-     user is redirected to /dashboard but immediately kicked back to /login
-       - I think this is bc authentication flow is badly written. 
-   - When the user has already logged in, they get redirected to /dashboard,
-      but there's a memory leak inside of LoginPage component in /login
-      - 
-   - Observations:
-      - firebaseUser gets filled before userData, thus giving loading === false but logged in === false too
-      - Why does it redirect if firebase has my user in auth?
-      - isvalidUser is returning false when it should return true
+ - Implement Cypress testing
 
 AUTHENTICATION FLOW WITH DISCORD
  - Discord
