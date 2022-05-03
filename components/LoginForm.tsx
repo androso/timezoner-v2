@@ -56,13 +56,13 @@ function OauthProviders({}) {
 
 	return (
 		<div className="flex flex-col items-center mt-8 mx-auto">
-			<LoginButton onClick={signInWithDiscord}>
+			<LoginButton onClick={signInWithDiscord} id="discord">
 				<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
 					<DiscordSVG className="h-5" />
 				</span>
 				<span className=" font-semibold">DISCORD</span>
 			</LoginButton>
-			<LoginButton onClick={signInWithGoogle}>
+			<LoginButton onClick={signInWithGoogle} id="google">
 				<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
 					<GoogleSVG className="h-5" />
 				</span>
@@ -72,10 +72,12 @@ function OauthProviders({}) {
 	);
 }
 
-function LoginButton({ children, onClick }: any) {
+function LoginButton({ children, onClick, id }: any) {
 	return (
 		<button
+			id={id}
 			onClick={onClick}
+			type="button"
 			className="gradient-transition cursor-pointer min-w-[180px] sm:min-w-[182px] py-4 lg:py-3 px-8 lg:px-7 flex items-center bg-gradient-to-t from-btnGradientBott to-btnGradientTop rounded-md mb-2 last:mb-0 drop-shadow-md"
 		>
 			{children}
