@@ -26,7 +26,7 @@ export function createFirebaseApp(config: object) {
 	}
 }
 
-
+//! delete connect...Emulator when going to production, these are connecting to firebase emulators
 export const firebaseApp = createFirebaseApp(firebaseConfig);   
 export const googleAuthProvider = new GoogleAuthProvider();
 export const auth = getAuth(firebaseApp);
