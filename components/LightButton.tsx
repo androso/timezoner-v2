@@ -1,9 +1,9 @@
 import React from 'react'
 
 
-export default function LightButton({innerText, className}: {innerText: string, className?: string}) {
+export default function LightButton({innerText, className, clickFunc}: {innerText: string, className?: string, clickFunc?: () => void}) {
   return (
-    <button className={`light-btn-transition relative bg-gradient-to-t from-lightBtnBottColor to-lightBtnTopColor text-darkText font-semibold rounded-md px-6 py-3 ${className} `}>
+    <button onClick={() => {if (clickFunc) clickFunc();}} className={`light-btn-transition relative bg-gradient-to-t from-lightBtnBottColor to-lightBtnTopColor text-darkText font-semibold rounded-md px-6 py-3 ${className} `}>
         {innerText.toUpperCase()}
     </button>
   )

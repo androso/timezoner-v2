@@ -54,7 +54,7 @@ export default async function handler(
 					firebase_token: customToken,
 					provider: "discord",
 				});
-				//TODO: 
+				
 				res.redirect(`${loginURL}?${discordAuthCredentials}`);
 			}
 		} catch (error: unknown) {

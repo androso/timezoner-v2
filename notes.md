@@ -1,17 +1,6 @@
 TODO:
  - Implement Cypress testing
 
-AUTHENTICATION FLOW WITH DISCORD
- - Discord
-   - Gets to discord auth page
-     - Grants permission
-       - 
-     - Doesn't grant permission
- - Google
-
-
-
-
 
 
 
