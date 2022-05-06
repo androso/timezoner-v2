@@ -2,7 +2,7 @@ import React from "react";
 
 export default function CreateEventForm() {
 	return (
-		<form className="py-6 px-6 bg-gradient-to-b from-softBlackTransparent to-softBlackTransparent mx-auto rounded-md">
+		<form className="py-6 px-6 bg-gradient-to-b from-softBlackTransparent to-softBlackTransparent mx-auto rounded-md max-w-lg">
 			<h2 className=" font-semibold text-2xl mb-1">Create Event</h2>
 			<p className="font-medium text-shadowWhite mb-3">
 				You’ll be able to invite your friends later
@@ -45,7 +45,7 @@ function EventFormFields() {
 				></textarea>
 			</div>
 			<div>
-				<label htmlFor="event_timezone" className="block">
+				<label htmlFor="event_timezone" className="block text-lg">
 					Timezone
 				</label>
 				<select
@@ -57,7 +57,7 @@ function EventFormFields() {
 				</select>
 			</div>
 			<div>
-				<label htmlFor="event_date" className="block">
+				<label htmlFor="event_date" className="block text-lg font-medium">
 					Date
 				</label>
 				<select className=" bg-deepBlack" name="event_date" id="event_date">
@@ -68,7 +68,7 @@ function EventFormFields() {
 			</div>
 			<div className="flex">
 				<div>
-					<label className="block" htmlFor="date_from">
+					<label className="block text-lg font-medium" htmlFor="date_from">
 						From
 					</label>
 					<select className=" bg-deepBlack">
@@ -76,7 +76,7 @@ function EventFormFields() {
 					</select>
 				</div>
 				<div>
-					<label className="block" htmlFor="date_to">
+					<label className="block text-lg font-medium" htmlFor="date_to">
 						To
 					</label>
 					<select className=" bg-deepBlack">
