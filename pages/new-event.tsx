@@ -23,7 +23,7 @@ export default function NewEvent() {
 
 function SimpleHeader() {
 	return (
-		<div className="h-32">
+		<div className="h-16">
 			<Container className="relative">
 				<LogoutButton />
 			</Container>
