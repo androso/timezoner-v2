@@ -11,9 +11,12 @@ import {
 	deleteUser,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
-import axios from "axios";
 import toast from "react-hot-toast";
-import { getDiscordUser, isValidUser } from "../lib/utils/client-helpers";
+import {
+	getDiscordUser,
+	isValidUser,
+	sendUserToFirestore,
+} from "../lib/utils/client-helpers";
 import {
 	DiscordAuthCredentials,
 	DISCORD_API_ENDPOINTS,
@@ -30,40 +33,38 @@ export default function loginPage() {
 	const [invalidEmail, setInvalidEmail] = useState(false);
 
 	useEffect(() => {
+		
 		// if it's loggedIn and is a valid user
 		if (!loading && !isLoggedIn && router.query.provider && !invalidEmail) {
 			customSignIn(router.query, router).then((userCredentials) => {
-				if (!isValidUser(userCredentials, true)) {
-					setInvalidEmail(true);
+				if (isValidUser(userCredentials, true)) {
+					router.push("/dashboard")
 				} else {
-					setvalidUser(true);
+					setInvalidEmail(true);
 				}
+				
 			});
 		} else if (
 			isLoggedIn &&
 			user?.providerData[0]?.providerId === "google.com"
 		) {
 			// TODO: prevent user from login with google after login in with discord (rn firebase doesn't throw an error);
-			// const validateGoogleLogin = async () => {
-			// 	const results = await getRedirectResult(auth);
-			// 	if (results) {
-			// 		setvalidUser(true);
-			// 		router.push("/dashboard");
-			// 	}
-			// }
-			// validateGoogleLogin();
+
 			router.push("/dashboard");
 		} else if (isLoggedIn && isValidUser(user, isLoggedIn)) {
 			// Logged in with Discord
+			// console.log("comes from discord");
 			router.push("/dashboard");
 		}
-	}, [isLoggedIn, loading, error, invalidEmail]);
-
+		
+	}, [isLoggedIn, loading, invalidEmail, validUser]);
+	
 	if (!loading && !isValidUser(user, isLoggedIn)) {
 		return <LoginForm />;
 	} else {
 		return <LoadingSpinner />;
 	}
+	
 }
 
 async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
@@ -78,8 +79,8 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 				try {
 					var { user } = await signInWithCustomToken(auth, firebase_token);
 					const discordUser = await (await getDiscordUser(access_token)).data;
-
 					const discordAvatarURL = `${DISCORD_API_ENDPOINTS.CDN}/avatars/${discordUser.id}/${discordUser.avatar}.png?size=${desiredDiscordAvatarSize}`;
+					const emailIsVerified = discordUser.verified;
 
 					const profileUpdated = updateProfile(user, {
 						displayName: discordUser.username,
@@ -87,7 +88,8 @@ async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {
 					});
 
 					await updateEmail(user, discordUser.email);
-					router.push("/dashboard");
+					await sendUserToFirestore(user, "discord.com");
+
 					return user;
 				} catch (error: unknown) {
 					if (error instanceof Error) {

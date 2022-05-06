@@ -77,7 +77,11 @@
 :root {
 	--lightBtnTopColor: hsl(184, 27%, 83%);
 	--lightBtnBottColor: hsl(184, 26%, 61%);
-	--lightBtnGradientBg: linear-gradient(to top, var(--lightBtnBottColor), var(--lightBtnTopColor));
+	--lightBtnGradientBg: linear-gradient(
+		to top,
+		var(--lightBtnBottColor),
+		var(--lightBtnTopColor)
+	);
 	--lightBtnHoverBg: hsl(184, 30%, 76%);
 	--lightBtnActiveBg: hsl(184, 30%, 70%);
 }
@@ -86,7 +90,11 @@
 	box-sizing: border-box;
 }
 html {
-	background-image: linear-gradient(to top, hsl(192, 15%, 18%), hsl(205, 13%, 37%));
+	background-image: linear-gradient(
+		to top,
+		hsl(192, 15%, 18%),
+		hsl(205, 13%, 37%)
+	);
 }
 
 /* -------- LOGIN BUTTONS -------- */
@@ -147,13 +155,16 @@ html {
 	background-color: hsl(187, 8%, 19%);
 }
 
-/* -------- LOADING ANIMATION -------- */
 @layer components {
+	/* -------- LOADING ANIMATION -------- */
 	.loading-dot {
 		@apply absolute w-5 h-5 rounded-full bg-slate-200;
 	}
+	/* -------- BASIC STYLING FOR BUTTONS -------- */
+	.basic-input-field {
+		@apply bg-deepBlack py-3 px-3 rounded-md border-solid border-[#4e4e4e] border-[1px] placeholder:font-medium outline-none focus:border-[#4374d6];
+	}
 }
-
 
 /* -------- LIGHT-COLOR BUTTONS -------- */
 

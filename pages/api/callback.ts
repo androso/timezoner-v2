@@ -2,12 +2,15 @@
 
 import { NextApiRequest, NextApiResponse } from "next";
 import url from "url";
-import axios from "axios";
 import { getAuth } from "firebase-admin/auth";
 import { cert } from "firebase-admin/app";
-import { createFirebaseAdminApp, exchangeAccessCodeForCredentials } from "../../lib/utils/node-helpers";
-import { DISCORD_API_ENDPOINTS, ExchangeCodeRequestParamsDiscord } from "../../lib/utils/types";
+import {
+	createFirebaseAdminApp,
+	exchangeAccessCodeForCredentials,
+} from "../../lib/utils/node-helpers";
 import { getDiscordUser } from "../../lib/utils/client-helpers";
+
+//TODO: we should refresh the tokens from discord so that user never gets kicked out
 
 const serviceAccount = require("../../timezoner-v2-firebase-adminsdk-c0w9x-955156a9ec.json");
 const loginURL = `${process.env.NEXT_PUBLIC_DOMAIN}/login`;
@@ -32,15 +35,17 @@ export default async function handler(
 			};
 
 			const response = await exchangeAccessCodeForCredentials(queryParams);
-			const { access_token, refresh_token }: {access_token:string, refresh_token:string} = response.data;
+			const {
+				access_token,
+				refresh_token,
+			}: { access_token: string; refresh_token: string } = response.data;
 
 			const appConfig = {
 				credential: cert(serviceAccount),
 			};
 			const adminApp = createFirebaseAdminApp(appConfig);
-
 			const discordUser = await (await getDiscordUser(access_token)).data;
-
+			// console.log("discord user", discordUser)
 			if (adminApp) {
 				const customToken = await getAuth().createCustomToken(discordUser.id);
 				const discordAuthCredentials = new url.URLSearchParams({
@@ -49,7 +54,7 @@ export default async function handler(
 					firebase_token: customToken,
 					provider: "discord",
 				});
-
+				
 				res.redirect(`${loginURL}?${discordAuthCredentials}`);
 			}
 		} catch (error: unknown) {

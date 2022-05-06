@@ -1,8 +1,14 @@
 import React from "react";
 import { DiscordSVG, GoogleSVG } from "../components/icons";
-import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
-import { auth, googleAuthProvider } from "../lib/firebase";
+import {
+	signInWithPopup,
+	signInWithRedirect,
+	getRedirectResult,
+} from "firebase/auth";
+import { auth, googleAuthProvider, firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
+
+import { sendUserToFirestore } from "../lib/utils/client-helpers";
 const DISCORD_AUTH_URL = process.env.NEXT_PUBLIC_DISCORD_AUTH_URL as string;
 
 //TODO: REFACTOR THIS THING
@@ -32,14 +38,17 @@ export default function LoginForm() {
 
 function OauthProviders({}) {
 	const router = useRouter();
+
 	async function signInWithDiscord() {
-    console.log("should be loading discord")
+		console.log("should be loading discord");
 		router.push(DISCORD_AUTH_URL);
 	}
+
 	async function signInWithGoogle() {
 		try {
-			const result = await signInWithRedirect(auth, googleAuthProvider);
-			// getRedirectResult(auth);
+			console.log("signing in with google");
+			const {user} = await signInWithPopup(auth, googleAuthProvider);
+			await sendUserToFirestore(user, 'google.com');
 		} catch (error) {
 			console.error(error);
 		}
@@ -47,13 +56,13 @@ function OauthProviders({}) {
 
 	return (
 		<div className="flex flex-col items-center mt-8 mx-auto">
-			<LoginButton onClick={signInWithDiscord}>
+			<LoginButton onClick={signInWithDiscord} id="discord">
 				<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
 					<DiscordSVG className="h-5" />
 				</span>
 				<span className=" font-semibold">DISCORD</span>
 			</LoginButton>
-			<LoginButton onClick={signInWithGoogle}>
+			<LoginButton onClick={signInWithGoogle} id="google">
 				<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
 					<GoogleSVG className="h-5" />
 				</span>
@@ -63,10 +72,12 @@ function OauthProviders({}) {
 	);
 }
 
-function LoginButton({ children, onClick }: any) {
+function LoginButton({ children, onClick, id }: any) {
 	return (
 		<button
+			id={id}
 			onClick={onClick}
+			type="button"
 			className="gradient-transition cursor-pointer min-w-[180px] sm:min-w-[182px] py-4 lg:py-3 px-8 lg:px-7 flex items-center bg-gradient-to-t from-btnGradientBott to-btnGradientTop rounded-md mb-2 last:mb-0 drop-shadow-md"
 		>
 			{children}
