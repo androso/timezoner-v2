@@ -16,6 +16,7 @@ export default function LogoutButton({}) {
 	};
 	return (
 		<button
+			type="button"
 			className="logout-transition absolute top-5 right-0 bg-gradient-to-t from-logoutBtnBottomColor to-logoutBtnTopColor py-2 px-5 rounded-2xl text-sm font-bold"
 			onClick={logOut}
 		>
