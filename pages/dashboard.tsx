@@ -32,8 +32,6 @@ export default function Dashboard() {
 			setAuthProvider(provider);
 		}
 	}, [userData]);
-	
-
 
 	return (
 		<div>
@@ -44,7 +42,7 @@ export default function Dashboard() {
 					photoURL={avatarURL}
 				/>
 				<Container className="pt-4 sm:pt-6">
-					<LightButton innerText="Create Event" className="mr-5" clickFunc={() => router.push('/new_event')}/>
+					<LightButton innerText="Create Event" className="mr-5" clickFunc={() => router.push('/new-event')}/>
 					<LightButton innerText="Join Event" />
 					<UpcomingEvents />
 				</Container>

@@ -21,6 +21,7 @@ module.exports = {
 				btnGradientTop: "hsl(192, 8%, 32%);",
 				btnGradientBott: "hsl(192, 8%, 28%);",
 				whiteText1: "#EFF2FA",
+				shadowWhite: "hsla(220, 11%, 90%, 1);",
 				purpleGradientStart: "#DFA4D9",
 				purpleGradientMid: "#BBABE7",
 				purpleGradientEnd: "#ABB8FF",
@@ -33,7 +34,10 @@ module.exports = {
 				lightBtnBottColor: "hsl(184, 26%, 61%);",
 				lightBtnTopColor: "hsl(184, 27%, 83%);",
 				darkText: "hsl(210, 6%, 27%);",
-				secondaryTextColor: "hsl(0, 0%, 80%)"
+				secondaryTextColor: "hsl(0, 0%, 80%)",
+				softBlack: "hsl(0, 0%, 20%);",
+				softBlackTransparent: "hsl(0, 0%, 20%, .8);",
+				deepBlack: "hsla(0, 0%, 10%, 1);"
 			},
 			fontFamily: {
 				sans: ["Inter", "Poppins", "Roboto"],
