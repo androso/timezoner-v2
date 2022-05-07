@@ -3,8 +3,8 @@ import {
 	getApp,
 } from "firebase/app";
 
-import { connectAuthEmulator, getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore, connectFirestoreEmulator} from "firebase/firestore";
+import {  getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 
@@ -30,7 +30,7 @@ export function createFirebaseApp(config: object) {
 export const firebaseApp = createFirebaseApp(firebaseConfig);   
 export const googleAuthProvider = new GoogleAuthProvider();
 export const auth = getAuth(firebaseApp);
-connectAuthEmulator(auth, 'http://localhost:9099');
+// connectAuthEmulator(auth, 'http://localhost:9099');
 export const storage = getStorage(firebaseApp);
 export const firestore = getFirestore(firebaseApp);
-connectFirestoreEmulator(firestore, 'localhost', 8080);
+// connectFirestoreEmulator(firestore, 'localhost', 8080);

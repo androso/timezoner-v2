@@ -1,8 +1,8 @@
 TODO:
- - Implement Cypress testing
-
-
-
+ - Make your own searchable dropdown selector
+     - Right now we can provide react-select with the timezones as options, but it's tooooo slow and buggy,
+       and if we use a native select tag, it works fine, but doesn't have a search option
+     - https://github.com/JedWatson/react-select/issues/3128 to see how to improve the select flow
 
 
  <!-- X Refactor callback.ts, abstract requests into their own files/functions

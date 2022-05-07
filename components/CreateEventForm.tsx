@@ -1,4 +1,8 @@
+import moment from "moment-timezone";
+
 import React from "react";
+
+import { TimezonesSelect } from ".";
 
 export default function CreateEventForm() {
 	return (
@@ -48,13 +52,19 @@ function EventFormFields() {
 				<label htmlFor="event_timezone" className="block text-lg">
 					Timezone
 				</label>
-				<select
+
+				<TimezonesSelect />
+				{/* <option value="">Select Timezone</option> */}
+				{/* <select
 					className=" bg-deepBlack"
 					name="event_timezone"
 					id="event_timezone"
 				>
-					<option value="">Select Timezone</option>
-				</select>
+					{allTimezonesNames.map((timezone) => {
+						return <option value={timezone}>{timezone}</option>	
+					})}
+					
+				</select> */}
 			</div>
 			<div>
 				<label htmlFor="event_date" className="block text-lg font-medium">

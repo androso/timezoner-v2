@@ -8,3 +8,4 @@ export { default as UpcomingEvents } from "./UpcomingEvents";
 export { default as LogoutButton } from "./LogoutButton";
 export { default as CreateEventForm } from "./CreateEventForm";
 export { default as HomeBreadcrumbs } from "./HomeBreadcrumbs";
+export { default as TimezonesSelect} from "./TimezonesSelect";

@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useContext } from "react";
 import { UserContext } from "../lib/context";
-import { auth, firestore } from "../lib/firebase";
-import { signOut } from "firebase/auth";
 import {
 	ProtectedRoute,
 	Header,
