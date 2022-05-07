@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import Select, { createFilter } from "react-select";
+import Select from "react-select";
 import escapeRegExp from "lodash/escaperegexp";
 
 import { timeZonesNames } from "@vvo/tzdb";
@@ -9,8 +9,16 @@ const MAX_DISPLAYED_OPTIONS = 200;
 
 const timezonesOptions = timeZonesNames.map((tz) => ({
 	value: tz,
-	label: tz,
+	label: tz.replace(/_/g, ' '),
 }));
+
+
+const customStyles = {
+	container: (provided: any, state: any) => ({
+		...provided,
+		color: "#333",
+	}),
+};
 
 export default function TimezonesSelect() {
 	const [inputValue, setInputValue] = useState("");
@@ -41,11 +49,13 @@ export default function TimezonesSelect() {
 	const slicedOptions = useMemo(() => {
 		return filteredOptions.slice(0, MAX_DISPLAYED_OPTIONS);
 	}, [filteredOptions]);
+
 	return (
 		<Select
 			options={slicedOptions}
 			onInputChange={(value) => setInputValue(value)}
 			filterOption={() => true}
+			styles={customStyles}
 		/>
 	);
 }
