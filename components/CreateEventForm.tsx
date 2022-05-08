@@ -1,8 +1,8 @@
-import moment from "moment-timezone";
+// import dynamic from "next/dynamic";
 
-import React from "react";
-
-import { TimezonesSelect } from ".";
+// const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
+// 	ssr: false,
+// });
 
 export default function CreateEventForm() {
 	return (
@@ -53,7 +53,7 @@ function EventFormFields() {
 					Timezone
 				</label>
 
-				<TimezonesSelect />
+				{/* <DynamicTimezonesSelect /> */}
 				{/* <option value="">Select Timezone</option> */}
 				{/* <select
 					className=" bg-deepBlack"

@@ -1,20 +1,32 @@
 import "../styles/globals.css";
-import { PageWrapper } from "../components/Layouts";
 import { useUserData } from "../lib/hooks";
 import { UserContext } from "../lib/context";
-import { useMemo } from "react";
-import { Toaster } from 'react-hot-toast';
+import dynamic from "next/dynamic";
+
+const DynamicToaster = dynamic(
+	() => import("react-hot-toast").then((mod) => mod.Toaster),
+	{
+		ssr: false,
+	}
+);
+
+const DynamicPageWrapper = dynamic(
+	() => import("../components/Layouts").then((mod) => mod.PageWrapper),
+	{
+		ssr: false,
+	}
+);
 
 function MyApp({ Component, pageProps }) {
 	const userData = useUserData();
 	// console.log("userData at _app.js", userData);
-	
+
 	return (
 		<UserContext.Provider value={userData}>
-			<PageWrapper>
+			<DynamicPageWrapper>
 				<Component {...pageProps} />
-			</PageWrapper>
-			<Toaster />
+			</DynamicPageWrapper>
+			<DynamicToaster />
 		</UserContext.Provider>
 	);
 }

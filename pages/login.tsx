@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { UserContext } from "../lib/context";
 import { useRouter } from "next/router";
 import { NextRouter } from "next/router";
-import { LoginForm, LoadingSpinner } from "../components";
 import { ParsedUrlQuery } from "querystring";
 import {
 	signInWithCustomToken,
@@ -11,16 +10,22 @@ import {
 	deleteUser,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
-import toast from "react-hot-toast";
 import {
 	getDiscordUser,
 	isValidUser,
 	sendUserToFirestore,
 } from "../lib/utils/client-helpers";
-import {
-	DiscordAuthCredentials,
-	DISCORD_API_ENDPOINTS,
-} from "../lib/utils/types";
+import { DISCORD_API_ENDPOINTS } from "../lib/utils/types";
+import dynamic from "next/dynamic";
+import toast from "react-hot-toast";
+
+const LoginForm = dynamic(() => import("../components/LoginForm"), {
+	ssr: false,
+});
+
+const LoadingSpinner = dynamic(() => import("../components/LoadingSpinner"), {
+	ssr: false,
+});
 
 const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
 
@@ -33,16 +38,14 @@ export default function loginPage() {
 	const [invalidEmail, setInvalidEmail] = useState(false);
 
 	useEffect(() => {
-		
 		// if it's loggedIn and is a valid user
 		if (!loading && !isLoggedIn && router.query.provider && !invalidEmail) {
 			customSignIn(router.query, router).then((userCredentials) => {
 				if (isValidUser(userCredentials, true)) {
-					router.push("/dashboard")
+					router.push("/dashboard");
 				} else {
 					setInvalidEmail(true);
 				}
-				
 			});
 		} else if (
 			isLoggedIn &&
@@ -56,15 +59,13 @@ export default function loginPage() {
 			// console.log("comes from discord");
 			router.push("/dashboard");
 		}
-		
 	}, [isLoggedIn, loading, invalidEmail, validUser]);
-	
+
 	if (!loading && !isValidUser(user, isLoggedIn)) {
 		return <LoginForm />;
 	} else {
 		return <LoadingSpinner />;
 	}
-	
 }
 
 async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {

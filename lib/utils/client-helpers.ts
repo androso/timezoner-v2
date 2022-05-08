@@ -40,11 +40,6 @@ export const capitalizeFirstLetter = (string: string | null) => {
 };
 
 export const sendUserToFirestore = async (user: User, provider: string) => {
-	//     - if document exist
-	//       - we use that
-	//     - if not we create that document
-	//       - we set that document to our global user
-
 	if (provider === "google.com" || provider === "discord.com") {
 		const userId = user.uid;
 		const userDocRef = doc(firestore, "users", userId);

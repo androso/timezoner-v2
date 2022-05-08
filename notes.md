@@ -1,8 +1,12 @@
 TODO:
- - Make your own searchable dropdown selector
-     - Right now we can provide react-select with the timezones as options, but it's tooooo slow and buggy,
-       and if we use a native select tag, it works fine, but doesn't have a search option
-     - https://github.com/JedWatson/react-select/issues/3128 to see how to improve the select flow
+
+- Reduce the share js bundle size
+
+- Make your own searchable dropdown selector
+  - Right now we can provide react-select with the timezones as options, but it's tooooo slow and buggy,
+    and if we use a native select tag, it works fine, but doesn't have a search option
+  - https://github.com/JedWatson/react-select/issues/3128 to see how to improve the select flow
+
 
 
  <!-- X Refactor callback.ts, abstract requests into their own files/functions
@@ -16,8 +20,6 @@ TODO:
  - We shouldn't request from the discord api, instead it should be from our own database
  - See the documentation from next js to handle typography -->
 
-
-
 <!-- Problem: if i sign in with discord and then with google, it lets me do it.
 Side effects:
  1. The provider info is filled with the google info.
@@ -29,9 +31,9 @@ Side effects:
   - Getting user info from database would take longer than just using info provided by the api
    - Maybe forcing to use info stored in db if the api didn't provide anything (worst-case scenario?)
 
-working on right now: "getting user data from db only 
+working on right now: "getting user data from db only
 when there's no data from the api" -->
 
-<!-- 
+<!--
 - With discord we could store the user info from the backend and then
 in the client, fetch the user profile from our database -->

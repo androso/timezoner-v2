@@ -1,5 +1,5 @@
 import React from 'react'
-
+import dynamic from 'next/dynamic';
 
 export default function LightButton({innerText, className, clickFunc}: {innerText: string, className?: string, clickFunc?: () => void}) {
   return (
@@ -8,3 +8,5 @@ export default function LightButton({innerText, className, clickFunc}: {innerTex
     </button>
   )
 }
+
+
