@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-import React from "react";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
