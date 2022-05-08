@@ -3,6 +3,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { UserData } from "./utils/types";
+import { getHighQualityAvatar } from "./utils/client-helpers";
 
 // Custom hook to read  auth record and user profile doc
 export const useUserData = () => {
@@ -48,11 +49,3 @@ export const useUserData = () => {
 };
 
 const defaultGoogleAvatarSize = 96;
-
-function getHighQualityAvatar(avatar_url: string, provider: string) {
-	if (provider === "google.com") {
-		return avatar_url.replace(`s${defaultGoogleAvatarSize}-c`, "s256-c");
-	} else {
-		return avatar_url;
-	}
-}

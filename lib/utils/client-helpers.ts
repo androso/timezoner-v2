@@ -2,7 +2,7 @@ import axios from "axios";
 import { User } from "firebase/auth";
 import { DISCORD_API_ENDPOINTS } from "./types";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { firestore, googleAuthProvider } from "../firebase";
+import { firestore} from "../firebase";
 
 const defaultGoogleAvatarSize = 96;
 
@@ -10,7 +10,6 @@ export const isValidUser = (
 	user: User | null | undefined,
 	isLoggedIn: boolean
 ) => {
-	// console.log("validating user", user);
 	if (
 		user != null &&
 		user.displayName &&
@@ -86,3 +85,11 @@ export const getProviderFromFirebaseUser = (user: User) => {
 		return "discord.com";
 	}
 };
+
+export function getHighQualityAvatar(avatar_url: string, provider: string) {
+	if (provider === "google.com") {
+		return avatar_url.replace(`s${defaultGoogleAvatarSize}-c`, "s256-c");
+	} else {
+		return avatar_url;
+	}
+}
