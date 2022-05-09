@@ -27,8 +27,10 @@ export type DiscordAuthCredentials = {
 };
 
 export type UserData = {
-	username: string,
-	email: string,
-	provider: string,
-	avatar_url: string,
-}
+	username: string;
+	email: string;
+	provider: string;
+	avatar_url: string;
+};
+
+export type dateRange = [Date | null, Date | null];

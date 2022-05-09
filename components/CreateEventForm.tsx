@@ -1,4 +1,9 @@
 import dynamic from "next/dynamic";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+import { useState } from "react";
+import { dateRange } from "../lib/utils/types";
 
 const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	ssr: false,
@@ -18,6 +23,16 @@ export default function CreateEventForm() {
 }
 
 function EventFormFields() {
+	const [startDate, setstartDate] = useState<null | Date>(new Date());
+	const [endDate, setEndDate] = useState<null | Date>(null);
+	const updateDateRange = (dates: dateRange) => {
+		if (dates != null) {
+			const [start, end] = dates;
+			setstartDate(start);
+			setEndDate(end);
+		}
+	};
+
 	return (
 		<>
 			<div className="mb-4">
@@ -52,29 +67,20 @@ function EventFormFields() {
 				<label htmlFor="event_timezone" className="block text-lg">
 					Timezone
 				</label>
-
 				<DynamicTimezonesSelect />
-				{/* <option value="">Select Timezone</option> */}
-				{/* <select
-					className=" bg-deepBlack"
-					name="event_timezone"
-					id="event_timezone"
-				>
-					{allTimezonesNames.map((timezone) => {
-						return <option value={timezone}>{timezone}</option>	
-					})}
-					
-				</select> */}
 			</div>
 			<div>
 				<label htmlFor="event_date" className="block text-lg font-medium">
 					Date
 				</label>
-				<select className=" bg-deepBlack" name="event_date" id="event_date">
-					<option className="bg-deepBlack" value="">
-						Select a date
-					</option>
-				</select>
+				<DatePicker
+					selected={startDate}
+					onChange={updateDateRange}
+					{...{ startDate, endDate }}
+					selectsRange
+					className="basic-input-field"
+					wrapperClassName="datepicker"
+				/>
 			</div>
 			<div className="flex">
 				<div>

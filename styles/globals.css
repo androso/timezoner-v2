@@ -194,3 +194,28 @@ html {
 .light-btn-transition:active::before {
 	background-color: var(--lightBtnActiveBg);
 }
+
+.react-datepicker__month-container {
+	background-color: #323334 !important;
+}
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker-year-header {
+	color: #fafafa !important;
+}
+.react-datepicker__day:hover,
+.react-datepicker__month-text:hover,
+.react-datepicker__quarter-text:hover,
+.react-datepicker__year-text:hover {
+	background-color: #1a1a1a !important;
+}
+.react-datepicker__day-name,
+.react-datepicker__day,
+.react-datepicker__time-name {
+	color: #fafafa !important;
+}
+
+.react-datepicker__header {
+	background-color: hsl(204, 1%, 34%) !important;
+	color: #fafafa !important;
+}

@@ -1,6 +1,7 @@
 import "../styles/globals.css";
 import { useUserData } from "../lib/hooks";
 import { UserContext } from "../lib/context";
+import "../styles/datepicker.css";
 import dynamic from "next/dynamic";
 
 const DynamicToaster = dynamic(
