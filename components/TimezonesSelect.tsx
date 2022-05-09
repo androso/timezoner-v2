@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import Select from "react-select";
 import escapeRegExp from "lodash/escaperegexp";
 import { timeZonesNames } from "@vvo/tzdb";
+
 const MAX_DISPLAYED_OPTIONS = 500;
 
 const timezonesOptions = timeZonesNames.map((tz) => ({
@@ -10,9 +11,30 @@ const timezonesOptions = timeZonesNames.map((tz) => ({
 }));
 
 const customStyles = {
-	container: (provided: any, state: any) => ({
+	singleValue: (provided: any, state: any) => ({
 		...provided,
-		color: "#333",
+		color: "#fafafa",
+	}),
+	input: (provided: any, state: any) => ({
+		...provided,
+		color: "#fafafa",
+	}),
+	control: (provided: any, state: any) => ({
+		...provided,
+		background: "#1a1a1a",
+		border: "none",
+	}),
+	menu: (provided: any, state: any) => ({
+		...provided,
+		background: "#393d3f",
+	}),
+	placeholder: (provided: any, state: any) => ({
+		...provided,
+		color: "#C1BDBD",
+	}),
+	option: (provided: any, state: any) => ({
+		...provided,
+		background: state.isFocused ? "#393d3f" : "#1a1a1a",
 	}),
 };
 
@@ -52,6 +74,7 @@ export default function TimezonesSelect() {
 			onInputChange={(value) => setInputValue(value)}
 			filterOption={() => true}
 			styles={customStyles}
+			placeholder={"Select Timezone..."}
 		/>
 	);
 }
