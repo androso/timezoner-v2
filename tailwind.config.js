@@ -34,7 +34,7 @@ module.exports = {
 				logoutBtnTopColor:"hsl(0, 0%, 32%);",
 				lightBtnBottColor: "hsl(184, 26%, 61%);",
 				lightBtnTopColor: "hsl(184, 27%, 83%);",
-				darkText: "hsl(210, 6%, 27%);",
+				darkText: "hsl(210, 6%, 21%);",
 				secondaryTextColor: "hsl(0, 0%, 80%)",
 				softBlack: "hsl(0, 0%, 20%);",
 				softBlackTransparent: "hsl(0, 0%, 20%, .8);",

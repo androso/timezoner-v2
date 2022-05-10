@@ -2,6 +2,9 @@ import React, { useState, useMemo } from "react";
 import Select from "react-select";
 import escapeRegExp from "lodash/escaperegexp";
 import { timeZonesNames } from "@vvo/tzdb";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 
 const MAX_DISPLAYED_OPTIONS = 500;
 
@@ -9,6 +12,10 @@ const timezonesOptions = timeZonesNames.map((tz) => ({
 	value: tz,
 	label: tz.replace(/_/g, " "),
 }));
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+const userTimezoneDefault = dayjs.tz.guess();
 
 const customStyles = {
 	singleValue: (provided: any, state: any) => ({
@@ -27,6 +34,7 @@ const customStyles = {
 	menu: (provided: any, state: any) => ({
 		...provided,
 		background: "#393d3f",
+		zIndex: 2,
 	}),
 	placeholder: (provided: any, state: any) => ({
 		...provided,
@@ -75,6 +83,10 @@ export default function TimezonesSelect() {
 			filterOption={() => true}
 			styles={customStyles}
 			placeholder={"Select Timezone..."}
+			defaultValue={{
+				label: userTimezoneDefault.replace(/_/g, " "),
+				value: userTimezoneDefault,
+			}}
 		/>
 	);
 }

@@ -33,7 +33,7 @@ export default function CreateEventForm() {
 function EventFormFields() {
 	const [startDate, setstartDate] = useState<null | Date>(null);
 	const [endDate, setEndDate] = useState<null | Date>(null);
-	const [startHour, setStartHour] = useState<null | Date>(new Date());
+	const [startHour, setStartHour] = useState<null | Date>();
 	const [endHour, setEndHour] = useState<null | Date>(null);
 
 	const updateDateRange = (dates: dateRange) => {
@@ -122,6 +122,7 @@ function EventFormFields() {
 						timeCaption="Time"
 						dateFormat="h:mm aa"
 						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 mr-4"
+						placeholderText="Start"
 					/>
 				</div>
 				<div>
@@ -136,14 +137,15 @@ function EventFormFields() {
 						timeIntervals={30}
 						timeCaption="Time"
 						dateFormat="h:mm aa"
-						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2"
+						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 z-10"
+						placeholderText="End"
 					/>
 				</div>
 			</div>
 			<div className="w-full text-center">
-				<LightButton 
-					innerText="CREATE EVENT" 
-					className="mx-auto" 
+				<LightButton
+					innerText="CREATE EVENT"
+					className="mx-auto"
 					btnType="submit"
 				/>
 			</div>
