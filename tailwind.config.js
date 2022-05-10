@@ -22,6 +22,7 @@ module.exports = {
 				btnGradientBott: "hsl(192, 8%, 28%);",
 				whiteText1: "#EFF2FA",
 				shadowWhite: "hsla(220, 11%, 90%, 1);",
+				shadowWhite2: "#9E9E9E",
 				purpleGradientStart: "#DFA4D9",
 				purpleGradientMid: "#BBABE7",
 				purpleGradientEnd: "#ABB8FF",

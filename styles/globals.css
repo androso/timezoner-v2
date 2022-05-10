@@ -195,9 +195,12 @@ html {
 	background-color: var(--lightBtnActiveBg);
 }
 
+/* -------- DATE RANGE PICKER -------- */
+
 .react-datepicker__month-container {
 	background-color: #323334 !important;
 }
+
 .react-datepicker__current-month,
 .react-datepicker-time__header,
 .react-datepicker-year-header {
@@ -218,4 +221,17 @@ html {
 .react-datepicker__header {
 	background-color: hsl(204, 1%, 34%) !important;
 	color: #fafafa !important;
+}
+
+/* -------- HOUR PICKER -------- */
+.react-datepicker__time-container .react-datepicker__time {
+	background: #323334 !important;
+	color: #fafafa;
+}
+.react-datepicker__time-container
+	.react-datepicker__time
+	.react-datepicker__time-box
+	ul.react-datepicker__time-list
+	li.react-datepicker__time-list-item:hover {
+	background-color: #1a1a1a !important;
 }

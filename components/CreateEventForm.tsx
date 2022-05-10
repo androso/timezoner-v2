@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import { useState } from "react";
@@ -7,6 +6,14 @@ import { dateRange } from "../lib/utils/types";
 
 const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	ssr: false,
+	loading: () => (
+		<select className="basic-input-field w-full h-[38px]"></select>
+	),
+});
+
+const DatePicker = dynamic(() => import("react-datepicker"), {
+	ssr: false,
+	loading: () => <input type="text" className="basic-input-field"></input>,
 });
 
 export default function CreateEventForm() {
@@ -23,8 +30,11 @@ export default function CreateEventForm() {
 }
 
 function EventFormFields() {
-	const [startDate, setstartDate] = useState<null | Date>(new Date());
+	const [startDate, setstartDate] = useState<null | Date>(null);
 	const [endDate, setEndDate] = useState<null | Date>(null);
+	const [startHour, setStartHour] = useState<null | Date>(new Date());
+	const [endHour, setEndHour] = useState<null | Date>(null);
+
 	const updateDateRange = (dates: dateRange) => {
 		if (dates != null) {
 			const [start, end] = dates;
@@ -33,6 +43,18 @@ function EventFormFields() {
 		}
 	};
 
+	const updateStartHour = (date: unknown) => {
+		if (date instanceof Date) {
+			setStartHour(date);
+		}
+	};
+
+	const updateEndHour = (date: unknown) => {
+		if (date instanceof Date) {
+			console.log(date);
+			setEndHour(date);
+		}
+	};
 	return (
 		<>
 			<div className="mb-4">
@@ -40,7 +62,7 @@ function EventFormFields() {
 					Title
 				</label>
 				<input
-					className="w-full basic-input-field "
+					className="w-full basic-input-field placeholder:text-shadowWhite2"
 					type="text"
 					name="event_title"
 					id="event_title"
@@ -56,7 +78,7 @@ function EventFormFields() {
 					Description
 				</label>
 				<textarea
-					className="w-full bg-deepBlack basic-input-field"
+					className="w-full bg-deepBlack basic-input-field placeholder:text-shadowWhite2"
 					name="event_description"
 					id="event_description"
 					rows={2}
@@ -78,8 +100,10 @@ function EventFormFields() {
 					onChange={updateDateRange}
 					{...{ startDate, endDate }}
 					selectsRange
-					className="basic-input-field"
+					className="basic-input-field w-full placeholder:text-shadowWhite2"
 					wrapperClassName="datepicker"
+					dateFormat="MMMM d"
+					placeholderText="Select Date..."
 				/>
 			</div>
 			<div className="flex">
@@ -87,17 +111,31 @@ function EventFormFields() {
 					<label className="block text-lg font-medium" htmlFor="date_from">
 						From
 					</label>
-					<select className=" bg-deepBlack">
-						<option value="">Start</option>
-					</select>
+					<DatePicker
+						selected={startHour}
+						onChange={updateStartHour}
+						showTimeSelect
+						showTimeSelectOnly
+						timeIntervals={30}
+						timeCaption="Time"
+						dateFormat="h:mm aa"
+						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2"
+					/>
 				</div>
 				<div>
 					<label className="block text-lg font-medium" htmlFor="date_to">
 						To
 					</label>
-					<select className=" bg-deepBlack">
-						<option value="">End</option>
-					</select>
+					<DatePicker
+						selected={endHour}
+						onChange={updateEndHour}
+						showTimeSelect
+						showTimeSelectOnly
+						timeIntervals={30}
+						timeCaption="Time"
+						dateFormat="h:mm aa"
+						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2"
+					/>
 				</div>
 			</div>
 		</>

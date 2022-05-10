@@ -30,7 +30,7 @@ const customStyles = {
 	}),
 	placeholder: (provided: any, state: any) => ({
 		...provided,
-		color: "#C1BDBD",
+		color: "#9E9E9E",
 	}),
 	option: (provided: any, state: any) => ({
 		...provided,
