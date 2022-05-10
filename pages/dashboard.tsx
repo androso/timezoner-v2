@@ -1,20 +1,32 @@
 //TODO: WHY IS THIS THING SO SLOW?
-import React, { useState, useEffect } from "react";
-import { useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../lib/context";
-import { auth, firestore } from "../lib/firebase";
-import { signOut } from "firebase/auth";
+import dynamic from "next/dynamic";
+
 import {
-	ProtectedRoute,
-	Header,
-	LightButton,
-	UpcomingEvents,
-} from "../components";
-import { isValidUser, getParsedDataFromUser } from "../lib/utils/client-helpers";
+	isValidUser,
+	getParsedDataFromUser,
+} from "../lib/utils/client-helpers";
 import { User } from "firebase/auth";
-import Container from "../components/Layouts/Container";
 import { useRouter } from "next/router";
 
+const Container = dynamic(() => import("../components/Layouts/Container"), {
+	ssr: false,
+});
+
+const Header = dynamic(() => import("../components/Header"), { ssr: false });
+
+const ProtectedRoute = dynamic(() => import("../components/ProtectedRoute"), {
+	ssr: false,
+});
+
+const LightButton = dynamic(() => import("../components/LightButton"), {
+	ssr: false,
+});
+
+const UpcomingEvents = dynamic(() => import("../components/UpcomingEvents"), {
+	ssr: false,
+});
 
 export default function Dashboard() {
 	const userData = useContext(UserContext);
@@ -42,7 +54,11 @@ export default function Dashboard() {
 					photoURL={avatarURL}
 				/>
 				<Container className="pt-4 sm:pt-6">
-					<LightButton innerText="Create Event" className="mr-5" clickFunc={() => router.push('/new-event')}/>
+					<LightButton
+						innerText="Create Event"
+						className="mr-5"
+						clickFunc={() => router.push("/new-event")}
+					/>
 					<LightButton innerText="Join Event" />
 					<UpcomingEvents />
 				</Container>
@@ -50,4 +66,3 @@ export default function Dashboard() {
 		</div>
 	);
 }
-

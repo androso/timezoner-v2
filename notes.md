@@ -1,8 +1,5 @@
 TODO:
- - Implement Cypress testing
-
-
-
+  - Find a way to reduce even more the bundle size of firebase
 
 
  <!-- X Refactor callback.ts, abstract requests into their own files/functions
@@ -16,8 +13,6 @@ TODO:
  - We shouldn't request from the discord api, instead it should be from our own database
  - See the documentation from next js to handle typography -->
 
-
-
 <!-- Problem: if i sign in with discord and then with google, it lets me do it.
 Side effects:
  1. The provider info is filled with the google info.
@@ -29,9 +24,9 @@ Side effects:
   - Getting user info from database would take longer than just using info provided by the api
    - Maybe forcing to use info stored in db if the api didn't provide anything (worst-case scenario?)
 
-working on right now: "getting user data from db only 
+working on right now: "getting user data from db only
 when there's no data from the api" -->
 
-<!-- 
+<!--
 - With discord we could store the user info from the backend and then
 in the client, fetch the user profile from our database -->

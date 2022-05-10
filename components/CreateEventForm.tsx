@@ -1,4 +1,21 @@
-import React from "react";
+import dynamic from "next/dynamic";
+import "react-datepicker/dist/react-datepicker.css";
+
+import { useState } from "react";
+import { dateRange } from "../lib/utils/types";
+import LightButton from "./LightButton";
+
+const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
+	ssr: false,
+	loading: () => (
+		<select className="basic-input-field w-full h-[38px]"></select>
+	),
+});
+
+const DatePicker = dynamic(() => import("react-datepicker"), {
+	ssr: false,
+	loading: () => <input type="text" className="basic-input-field"></input>,
+});
 
 export default function CreateEventForm() {
 	return (
@@ -14,6 +31,31 @@ export default function CreateEventForm() {
 }
 
 function EventFormFields() {
+	const [startDate, setstartDate] = useState<null | Date>(null);
+	const [endDate, setEndDate] = useState<null | Date>(null);
+	const [startHour, setStartHour] = useState<null | Date>();
+	const [endHour, setEndHour] = useState<null | Date>(null);
+
+	const updateDateRange = (dates: dateRange) => {
+		if (dates != null) {
+			const [start, end] = dates;
+			setstartDate(start);
+			setEndDate(end);
+		}
+	};
+
+	const updateStartHour = (date: unknown) => {
+		if (date instanceof Date) {
+			setStartHour(date);
+		}
+	};
+
+	const updateEndHour = (date: unknown) => {
+		if (date instanceof Date) {
+			console.log(date);
+			setEndHour(date);
+		}
+	};
 	return (
 		<>
 			<div className="mb-4">
@@ -21,15 +63,16 @@ function EventFormFields() {
 					Title
 				</label>
 				<input
-					className="w-full basic-input-field "
+					className="w-full basic-input-field placeholder:text-shadowWhite2"
 					type="text"
 					name="event_title"
 					id="event_title"
 					placeholder="Event Title"
 					autoComplete="off"
+					required
 				/>
 			</div>
-			<div>
+			<div className="mb-2">
 				<label
 					className="block font-medium text-lg"
 					htmlFor="event_description"
@@ -37,52 +80,74 @@ function EventFormFields() {
 					Description
 				</label>
 				<textarea
-					className="w-full bg-deepBlack basic-input-field"
+					className="w-full bg-deepBlack basic-input-field placeholder:text-shadowWhite2"
 					name="event_description"
 					id="event_description"
 					rows={2}
 					placeholder="Add a description..."
 				></textarea>
 			</div>
-			<div>
+			<div className="mb-2">
 				<label htmlFor="event_timezone" className="block text-lg">
 					Timezone
 				</label>
-				<select
-					className=" bg-deepBlack"
-					name="event_timezone"
-					id="event_timezone"
-				>
-					<option value="">Select Timezone</option>
-				</select>
+				<DynamicTimezonesSelect />
 			</div>
-			<div>
+			<div className="mb-2">
 				<label htmlFor="event_date" className="block text-lg font-medium">
 					Date
 				</label>
-				<select className=" bg-deepBlack" name="event_date" id="event_date">
-					<option className="bg-deepBlack" value="">
-						Select a date
-					</option>
-				</select>
+				<DatePicker
+					selected={startDate}
+					onChange={updateDateRange}
+					{...{ startDate, endDate }}
+					selectsRange
+					className="basic-input-field w-full placeholder:text-shadowWhite2"
+					wrapperClassName="datepicker"
+					dateFormat="MMMM d"
+					placeholderText="Select Date..."
+				/>
 			</div>
-			<div className="flex">
+			<div className="flex mb-6">
 				<div>
 					<label className="block text-lg font-medium" htmlFor="date_from">
 						From
 					</label>
-					<select className=" bg-deepBlack">
-						<option value="">Start</option>
-					</select>
+					<DatePicker
+						selected={startHour}
+						onChange={updateStartHour}
+						showTimeSelect
+						showTimeSelectOnly
+						timeIntervals={30}
+						timeCaption="Time"
+						dateFormat="h:mm aa"
+						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 mr-4"
+						placeholderText="Start"
+					/>
 				</div>
 				<div>
 					<label className="block text-lg font-medium" htmlFor="date_to">
 						To
 					</label>
-					<select className=" bg-deepBlack">
-						<option value="">End</option>
-					</select>
+					<DatePicker
+						selected={endHour}
+						onChange={updateEndHour}
+						showTimeSelect
+						showTimeSelectOnly
+						timeIntervals={30}
+						timeCaption="Time"
+						dateFormat="h:mm aa"
+						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 z-10"
+						placeholderText="End"
+					/>
 				</div>
+			</div>
+			<div className="w-full text-center">
+				<LightButton
+					innerText="CREATE EVENT"
+					className="mx-auto"
+					btnType="submit"
+				/>
 			</div>
 		</>
 	);

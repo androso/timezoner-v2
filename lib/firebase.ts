@@ -1,12 +1,12 @@
+import { initializeApp, getApp } from "firebase/app";
+
 import {
-	initializeApp,
-	getApp,
-} from "firebase/app";
-
-import { connectAuthEmulator, getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore, connectFirestoreEmulator} from "firebase/firestore";
+	connectAuthEmulator,
+	getAuth,
+	GoogleAuthProvider,
+} from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-
 
 export const firebaseConfig = {
 	apiKey: "AIzaSyA-ZOPrYdDGK_AvrjS0Qe6j7VINSMGr2qc",
@@ -27,10 +27,10 @@ export function createFirebaseApp(config: object) {
 }
 
 //! delete connect...Emulator when going to production, these are connecting to firebase emulators
-export const firebaseApp = createFirebaseApp(firebaseConfig);   
+export const firebaseApp = createFirebaseApp(firebaseConfig);
 export const googleAuthProvider = new GoogleAuthProvider();
 export const auth = getAuth(firebaseApp);
-connectAuthEmulator(auth, 'http://localhost:9099');
+connectAuthEmulator(auth, "http://localhost:9099");
 export const storage = getStorage(firebaseApp);
 export const firestore = getFirestore(firebaseApp);
-connectFirestoreEmulator(firestore, 'localhost', 8080);
+connectFirestoreEmulator(firestore, "localhost", 8080);

@@ -1,6 +1,7 @@
 import { createContext } from "react";
 import { User } from "firebase/auth";
 import { UserData } from "./utils/types";
+
 export interface userContextType { 
     user: User | null | undefined,
     error: Error | undefined,
