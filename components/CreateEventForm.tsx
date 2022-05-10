@@ -3,6 +3,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { useState } from "react";
 import { dateRange } from "../lib/utils/types";
+import LightButton from "./LightButton";
 
 const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	ssr: false,
@@ -68,9 +69,10 @@ function EventFormFields() {
 					id="event_title"
 					placeholder="Event Title"
 					autoComplete="off"
+					required
 				/>
 			</div>
-			<div>
+			<div className="mb-2">
 				<label
 					className="block font-medium text-lg"
 					htmlFor="event_description"
@@ -85,13 +87,13 @@ function EventFormFields() {
 					placeholder="Add a description..."
 				></textarea>
 			</div>
-			<div>
+			<div className="mb-2">
 				<label htmlFor="event_timezone" className="block text-lg">
 					Timezone
 				</label>
 				<DynamicTimezonesSelect />
 			</div>
-			<div>
+			<div className="mb-2">
 				<label htmlFor="event_date" className="block text-lg font-medium">
 					Date
 				</label>
@@ -106,7 +108,7 @@ function EventFormFields() {
 					placeholderText="Select Date..."
 				/>
 			</div>
-			<div className="flex">
+			<div className="flex mb-6">
 				<div>
 					<label className="block text-lg font-medium" htmlFor="date_from">
 						From
@@ -119,7 +121,7 @@ function EventFormFields() {
 						timeIntervals={30}
 						timeCaption="Time"
 						dateFormat="h:mm aa"
-						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2"
+						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 mr-4"
 					/>
 				</div>
 				<div>
@@ -137,6 +139,13 @@ function EventFormFields() {
 						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2"
 					/>
 				</div>
+			</div>
+			<div className="w-full text-center">
+				<LightButton 
+					innerText="CREATE EVENT" 
+					className="mx-auto" 
+					btnType="submit"
+				/>
 			</div>
 		</>
 	);
