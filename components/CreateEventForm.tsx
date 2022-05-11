@@ -31,7 +31,8 @@ const DatePicker = dynamic(() => import("react-datepicker"), {
 
 export default function CreateEventForm() {
 	const { register, handleSubmit, control } = useForm<EventFormValues>();
-	const submitForm = (data: any) => console.log(data);
+	const submitForm: SubmitHandler<EventFormValues> = (data) =>
+		console.log(data);
 
 	return (
 		<form
@@ -110,7 +111,65 @@ function EventFormFields({
 				<label htmlFor="event_date" className="block text-lg font-medium">
 					Date
 				</label>
-				<DatePicker
+
+				{/* <Controller
+					name="date"
+					control={control}
+					render={({ field }) => (
+						<DatePicker
+							selected={field.value?.[0]}
+							startDate={field.value?.[0]}
+							endDate={field.value?.[1]}
+							selectsRange
+							className="basic-input-field w-full placeholder:text-shadowWhite2"
+							wrapperClassName="datepicker"
+							dateFormat="MMMM d"
+							placeholderText="Select Date..."
+							required
+							{...field}
+							onChange={(dates:dateRange) => {
+								
+							}}
+						/>
+					)}
+				/> */}
+				<Controller
+					name="dateRange"
+					control={control}
+					defaultValue={[null, null]}
+					render={({ field }) => {
+						const [startingDate, endingDate] = field.value;
+						const { ref } = field;
+						//TODO find a reason to why Datepicker doens't accept the field object with field.value inside when doing {...field} in Datepicker props
+						const fieldObjectWithoutValue = {
+							name: field.name,
+							ref,
+							onChange: field.onChange,
+							onBlur: field.onBlur,
+						};
+						return (
+							<DatePicker
+								{...fieldObjectWithoutValue}
+								selected={startingDate}
+								onChange={(dates: dateRange) => {
+									field.onChange(dates);
+								}}
+								selectsRange
+								startDate={startingDate}
+								endDate={endingDate}
+								className="basic-input-field w-full placeholder:text-shadowWhite2"
+								onBlur={field.onBlur}
+								name={field.name}
+								wrapperClassName="datepicker"
+								dateFormat="MMMM d"
+								placeholderText="Select Date..."
+								required
+							/>
+						);
+					}}
+				/>
+
+				{/* <DatePicker
 					selected={startDate}
 					onChange={updateDateRange}
 					{...{ startDate, endDate }}
@@ -120,7 +179,7 @@ function EventFormFields({
 					dateFormat="MMMM d"
 					placeholderText="Select Date..."
 					required
-				/>
+				/> */}
 			</div>
 			<div className="flex mb-6">
 				<div>
@@ -131,6 +190,7 @@ function EventFormFields({
 						updateFunc={updateStartHour}
 						required
 						control={control}
+						name="startHour"
 					/>
 				</div>
 				<div>
@@ -141,6 +201,7 @@ function EventFormFields({
 						updateFunc={updateEndHour}
 						required
 						control={control}
+						name="endHour"
 					/>
 				</div>
 			</div>
@@ -202,12 +263,24 @@ function HourPicker({
 	label,
 	placeholder,
 	required,
+	control,
+	name,
 }: HourPickerProps) {
 	return (
 		<>
 			<label className="block text-lg font-medium" htmlFor="date_from">
 				{label}
 			</label>
+
+			{/* //!WORKING HERE*/}
+			{/* <Controller
+				name={name}
+				control={control}
+				defaultValue={undefined}
+				render={({ field  }) => (
+					
+				)}
+			/> */}
 			<DatePicker
 				selected={hourSelected}
 				onChange={updateFunc}
