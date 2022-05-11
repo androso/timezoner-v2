@@ -1,4 +1,5 @@
 import { Credential } from "firebase-admin/app";
+import { Control, UseFormRegister } from "react-hook-form";
 
 export type adminAppConfig = {
 	credential: Credential;
@@ -43,13 +44,19 @@ export type EventFormValues = {
 	hourRange: [Date, Date];
 };
 
-export type inputProps = {
+export type baseFormFieldProps = {
 	label: string;
 	placeholder: string;
 	required?: boolean;
+}
+
+export type inputProps = baseFormFieldProps & {
+	name: "eventTitle" | "description";
+	register: UseFormRegister<EventFormValues>;
 };
 
-export type HourPickerProps = inputProps & {
+export type HourPickerProps = baseFormFieldProps & {
 	hourSelected: Date | null;
 	updateFunc: (date: unknown) => void;
+	control: Control<EventFormValues, any>;
 };

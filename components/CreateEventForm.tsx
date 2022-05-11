@@ -1,8 +1,21 @@
 import dynamic from "next/dynamic";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
-import { dateRange, HourPickerProps, inputProps } from "../lib/utils/types";
+import {
+	dateRange,
+	HourPickerProps,
+	inputProps,
+	EventFormValues,
+} from "../lib/utils/types";
 import LightButton from "./LightButton";
+import {
+	useForm,
+	Controller,
+	SubmitHandler,
+	UseFormRegister,
+	Control,
+} from "react-hook-form";
+
 const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	ssr: false,
 	loading: () => (
@@ -17,19 +30,31 @@ const DatePicker = dynamic(() => import("react-datepicker"), {
 });
 
 export default function CreateEventForm() {
+	const { register, handleSubmit, control } = useForm<EventFormValues>();
+	const submitForm = (data: any) => console.log(data);
+
 	return (
-		<form className="py-6 px-6 bg-gradient-to-b from-softBlackTransparent to-softBlackTransparent mx-auto rounded-md max-w-lg">
+		<form
+			onSubmit={handleSubmit(submitForm)}
+			className="py-6 px-6 bg-gradient-to-b from-softBlackTransparent to-softBlackTransparent mx-auto rounded-md max-w-lg"
+		>
 			<h2 className=" font-semibold text-2xl mb-1">Create Event</h2>
 			<p className="font-medium text-shadowWhite mb-3">
 				You’ll be able to invite your friends later
 			</p>
 			<hr className="bg-[#666666] border-none h-[1px] rounded-sm mb-5" />
-			<EventFormFields />
+			<EventFormFields {...{ register, control }} />
 		</form>
 	);
 }
 
-function EventFormFields() {
+function EventFormFields({
+	register,
+	control,
+}: {
+	register: UseFormRegister<EventFormValues>;
+	control: Control<EventFormValues, any>;
+}) {
 	const [startDate, setstartDate] = useState<null | Date>(null);
 	const [endDate, setEndDate] = useState<null | Date>(null);
 	const [startHour, setStartHour] = useState<null | Date>(null);
@@ -58,13 +83,21 @@ function EventFormFields() {
 	return (
 		<>
 			<div className="mb-4">
-				<Input placeholder="Event Title" label="Title" required />
+				<Input
+					placeholder="Event Title"
+					label="Title"
+					required
+					register={register}
+					name="eventTitle"
+				/>
 			</div>
 			<div className="mb-2">
 				<TextArea
 					label="Description"
 					placeholder="Add a description..."
 					required
+					register={register}
+					name="description"
 				/>
 			</div>
 			<div className="mb-2">
@@ -97,6 +130,7 @@ function EventFormFields() {
 						hourSelected={startHour}
 						updateFunc={updateStartHour}
 						required
+						control={control}
 					/>
 				</div>
 				<div>
@@ -106,6 +140,7 @@ function EventFormFields() {
 						hourSelected={endHour}
 						updateFunc={updateEndHour}
 						required
+						control={control}
 					/>
 				</div>
 			</div>
@@ -120,7 +155,7 @@ function EventFormFields() {
 	);
 }
 
-function Input({ label, placeholder, required }: inputProps) {
+function Input({ label, placeholder, required, register, name }: inputProps) {
 	return (
 		<>
 			<label className="block font-medium text-lg" htmlFor="event_title">
@@ -129,17 +164,23 @@ function Input({ label, placeholder, required }: inputProps) {
 			<input
 				className="w-full basic-input-field placeholder:text-shadowWhite2"
 				type="text"
-				name="event_title"
 				id="event_title"
 				placeholder={placeholder}
 				autoComplete="off"
 				required={required ? true : false}
+				{...register(name, { required })}
 			/>
 		</>
 	);
 }
 
-function TextArea({ label, placeholder, required }: inputProps) {
+function TextArea({
+	label,
+	placeholder,
+	required,
+	register,
+	name,
+}: inputProps) {
 	return (
 		<>
 			<label className="block font-medium text-lg" htmlFor="event_description">
@@ -147,10 +188,10 @@ function TextArea({ label, placeholder, required }: inputProps) {
 			</label>
 			<textarea
 				className="w-full bg-deepBlack basic-input-field placeholder:text-shadowWhite2"
-				name="event_description"
 				id="event_description"
 				rows={2}
 				{...{ required, placeholder }}
+				{...register(name, { required })}
 			></textarea>
 		</>
 	);
