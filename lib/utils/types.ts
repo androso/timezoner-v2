@@ -34,3 +34,22 @@ export type UserData = {
 };
 
 export type dateRange = [Date | null, Date | null];
+
+export type EventFormValues = {
+	eventTitle: string;
+	description: string;
+	timezone: string;
+	date: Date | [Date, Date];
+	hourRange: [Date, Date];
+};
+
+export type inputProps = {
+	label: string;
+	placeholder: string;
+	required?: boolean;
+};
+
+export type HourPickerProps = inputProps & {
+	hourSelected: Date | null;
+	updateFunc: (date: unknown) => void;
+};

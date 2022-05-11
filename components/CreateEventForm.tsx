@@ -1,20 +1,19 @@
 import dynamic from "next/dynamic";
 import "react-datepicker/dist/react-datepicker.css";
-
 import { useState } from "react";
-import { dateRange } from "../lib/utils/types";
+import { dateRange, HourPickerProps, inputProps } from "../lib/utils/types";
 import LightButton from "./LightButton";
-
 const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	ssr: false,
 	loading: () => (
 		<select className="basic-input-field w-full h-[38px]"></select>
 	),
 });
-
 const DatePicker = dynamic(() => import("react-datepicker"), {
 	ssr: false,
-	loading: () => <input type="text" className="basic-input-field"></input>,
+	loading: () => (
+		<input type="text" className="basic-input-field w-full"></input>
+	),
 });
 
 export default function CreateEventForm() {
@@ -33,7 +32,7 @@ export default function CreateEventForm() {
 function EventFormFields() {
 	const [startDate, setstartDate] = useState<null | Date>(null);
 	const [endDate, setEndDate] = useState<null | Date>(null);
-	const [startHour, setStartHour] = useState<null | Date>();
+	const [startHour, setStartHour] = useState<null | Date>(null);
 	const [endHour, setEndHour] = useState<null | Date>(null);
 
 	const updateDateRange = (dates: dateRange) => {
@@ -59,33 +58,14 @@ function EventFormFields() {
 	return (
 		<>
 			<div className="mb-4">
-				<label className="block font-medium text-lg" htmlFor="event_title">
-					Title
-				</label>
-				<input
-					className="w-full basic-input-field placeholder:text-shadowWhite2"
-					type="text"
-					name="event_title"
-					id="event_title"
-					placeholder="Event Title"
-					autoComplete="off"
-					required
-				/>
+				<Input placeholder="Event Title" label="Title" required />
 			</div>
 			<div className="mb-2">
-				<label
-					className="block font-medium text-lg"
-					htmlFor="event_description"
-				>
-					Description
-				</label>
-				<textarea
-					className="w-full bg-deepBlack basic-input-field placeholder:text-shadowWhite2"
-					name="event_description"
-					id="event_description"
-					rows={2}
+				<TextArea
+					label="Description"
 					placeholder="Add a description..."
-				></textarea>
+					required
+				/>
 			</div>
 			<div className="mb-2">
 				<label htmlFor="event_timezone" className="block text-lg">
@@ -106,39 +86,26 @@ function EventFormFields() {
 					wrapperClassName="datepicker"
 					dateFormat="MMMM d"
 					placeholderText="Select Date..."
+					required
 				/>
 			</div>
 			<div className="flex mb-6">
 				<div>
-					<label className="block text-lg font-medium" htmlFor="date_from">
-						From
-					</label>
-					<DatePicker
-						selected={startHour}
-						onChange={updateStartHour}
-						showTimeSelect
-						showTimeSelectOnly
-						timeIntervals={30}
-						timeCaption="Time"
-						dateFormat="h:mm aa"
-						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 mr-4"
-						placeholderText="Start"
+					<HourPicker
+						label="From"
+						placeholder="Start"
+						hourSelected={startHour}
+						updateFunc={updateStartHour}
+						required
 					/>
 				</div>
 				<div>
-					<label className="block text-lg font-medium" htmlFor="date_to">
-						To
-					</label>
-					<DatePicker
-						selected={endHour}
-						onChange={updateEndHour}
-						showTimeSelect
-						showTimeSelectOnly
-						timeIntervals={30}
-						timeCaption="Time"
-						dateFormat="h:mm aa"
-						className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 z-10"
-						placeholderText="End"
+					<HourPicker
+						label="To"
+						placeholder="End"
+						hourSelected={endHour}
+						updateFunc={updateEndHour}
+						required
 					/>
 				</div>
 			</div>
@@ -149,6 +116,69 @@ function EventFormFields() {
 					btnType="submit"
 				/>
 			</div>
+		</>
+	);
+}
+
+function Input({ label, placeholder, required }: inputProps) {
+	return (
+		<>
+			<label className="block font-medium text-lg" htmlFor="event_title">
+				{label}
+			</label>
+			<input
+				className="w-full basic-input-field placeholder:text-shadowWhite2"
+				type="text"
+				name="event_title"
+				id="event_title"
+				placeholder={placeholder}
+				autoComplete="off"
+				required={required ? true : false}
+			/>
+		</>
+	);
+}
+
+function TextArea({ label, placeholder, required }: inputProps) {
+	return (
+		<>
+			<label className="block font-medium text-lg" htmlFor="event_description">
+				{label}
+			</label>
+			<textarea
+				className="w-full bg-deepBlack basic-input-field placeholder:text-shadowWhite2"
+				name="event_description"
+				id="event_description"
+				rows={2}
+				{...{ required, placeholder }}
+			></textarea>
+		</>
+	);
+}
+function HourPicker({
+	hourSelected,
+	updateFunc,
+	label,
+	placeholder,
+	required,
+}: HourPickerProps) {
+	return (
+		<>
+			<label className="block text-lg font-medium" htmlFor="date_from">
+				{label}
+			</label>
+			<DatePicker
+				selected={hourSelected}
+				onChange={updateFunc}
+				showTimeSelect
+				showTimeSelectOnly
+				timeIntervals={30}
+				timeCaption="Time"
+				dateFormat="h:mm aa"
+				className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 mr-4"
+				placeholderText={placeholder}
+				{...{ required }}
+			/>
 		</>
 	);
 }
