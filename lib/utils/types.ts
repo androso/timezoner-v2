@@ -52,7 +52,7 @@ export type baseFormFieldProps = {
 	label: string;
 	placeholder: string;
 	required?: boolean;
-}
+};
 
 export type inputProps = baseFormFieldProps & {
 	name: "eventTitle" | "description";
@@ -60,8 +60,7 @@ export type inputProps = baseFormFieldProps & {
 };
 
 export type HourPickerProps = baseFormFieldProps & {
-	hourSelected: Date | null;
-	updateFunc: (date: unknown) => void;
+	
 	control: Control<EventFormValues, any>;
 	name: "startHour" | "endHour";
 };

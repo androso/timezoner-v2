@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import "react-datepicker/dist/react-datepicker.css";
-import { useState } from "react";
+import React, { useState } from "react";
 import {
 	dateRange,
 	HourPickerProps,
@@ -15,6 +15,7 @@ import {
 	UseFormRegister,
 	Control,
 } from "react-hook-form";
+import ReactDatePicker from "react-datepicker";
 
 const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	ssr: false,
@@ -112,27 +113,6 @@ function EventFormFields({
 					Date
 				</label>
 
-				{/* <Controller
-					name="date"
-					control={control}
-					render={({ field }) => (
-						<DatePicker
-							selected={field.value?.[0]}
-							startDate={field.value?.[0]}
-							endDate={field.value?.[1]}
-							selectsRange
-							className="basic-input-field w-full placeholder:text-shadowWhite2"
-							wrapperClassName="datepicker"
-							dateFormat="MMMM d"
-							placeholderText="Select Date..."
-							required
-							{...field}
-							onChange={(dates:dateRange) => {
-								
-							}}
-						/>
-					)}
-				/> */}
 				<Controller
 					name="dateRange"
 					control={control}
@@ -168,26 +148,12 @@ function EventFormFields({
 						);
 					}}
 				/>
-
-				{/* <DatePicker
-					selected={startDate}
-					onChange={updateDateRange}
-					{...{ startDate, endDate }}
-					selectsRange
-					className="basic-input-field w-full placeholder:text-shadowWhite2"
-					wrapperClassName="datepicker"
-					dateFormat="MMMM d"
-					placeholderText="Select Date..."
-					required
-				/> */}
 			</div>
 			<div className="flex mb-6">
 				<div>
 					<HourPicker
 						label="From"
 						placeholder="Start"
-						hourSelected={startHour}
-						updateFunc={updateStartHour}
 						required
 						control={control}
 						name="startHour"
@@ -197,8 +163,6 @@ function EventFormFields({
 					<HourPicker
 						label="To"
 						placeholder="End"
-						hourSelected={endHour}
-						updateFunc={updateEndHour}
 						required
 						control={control}
 						name="endHour"
@@ -258,8 +222,6 @@ function TextArea({
 	);
 }
 function HourPicker({
-	hourSelected,
-	updateFunc,
 	label,
 	placeholder,
 	required,
@@ -273,25 +235,26 @@ function HourPicker({
 			</label>
 
 			{/* //!WORKING HERE*/}
-			{/* <Controller
+			<Controller
 				name={name}
 				control={control}
 				defaultValue={undefined}
-				render={({ field  }) => (
-					
-				)}
-			/> */}
-			<DatePicker
-				selected={hourSelected}
-				onChange={updateFunc}
-				showTimeSelect
-				showTimeSelectOnly
-				timeIntervals={30}
-				timeCaption="Time"
-				dateFormat="h:mm aa"
-				className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 mr-4"
-				placeholderText={placeholder}
-				{...{ required }}
+				render={({ field: { name, onBlur, value, onChange, ref } }) => {
+					return (
+						<ReactDatePicker
+							{...{ name, onBlur, onChange, ref }}
+							selected={value}
+							showTimeSelect
+							showTimeSelectOnly
+							timeIntervals={30}
+							timeCaption="Time"
+							dateFormat="h:mm aa"
+							className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 mr-4"
+							placeholderText={placeholder}
+							{...{ required }}
+						/>
+					);
+				}}
 			/>
 		</>
 	);
