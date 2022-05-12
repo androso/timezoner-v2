@@ -170,7 +170,7 @@ html {
 
 .light-btn-transition {
 	background-image: var(--lightBtnGradientBg);
-	z-index: 1;
+	z-index: 0;
 }
 
 .light-btn-transition::before {

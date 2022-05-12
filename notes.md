@@ -1,5 +1,5 @@
 TODO:
-  - Find a way to reduce even more the bundle size of firebase
+  - Fix z-index of react-datepicker, react-select and LightButton
 
 
  <!-- X Refactor callback.ts, abstract requests into their own files/functions
