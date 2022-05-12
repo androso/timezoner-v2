@@ -107,7 +107,9 @@ function EventFormFields({
 				<label htmlFor="event_timezone" className="block text-lg">
 					Timezone
 				</label>
-				<DynamicTimezonesSelect />
+				<DynamicTimezonesSelect
+					control={control}
+				/>
 			</div>
 			<div className="mb-2">
 				<label htmlFor="event_date" className="block text-lg font-medium">

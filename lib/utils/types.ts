@@ -42,7 +42,6 @@ export type EventFormValues = {
 	timezone: string;
 	date: [Date, Date] | null;
 	dateRange: dateRange;
-	// hourRange: [Date, Date];
 	startHour: Date;
 	endHour: Date;
 	independent: dateRange;

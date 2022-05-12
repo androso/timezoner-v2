@@ -1,5 +1,5 @@
 TODO:
-  - Fix z-index of react-datepicker, react-select and LightButton
+  - Add react-select to react-hook-forms via Controller or useController
 
 
  <!-- X Refactor callback.ts, abstract requests into their own files/functions

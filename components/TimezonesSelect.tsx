@@ -5,6 +5,8 @@ import { timeZonesNames } from "@vvo/tzdb";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { EventFormValues } from "../lib/utils/types";
+import { Control, Controller } from "react-hook-form";
 
 const MAX_DISPLAYED_OPTIONS = 500;
 
@@ -46,7 +48,7 @@ const customStyles = {
 	}),
 };
 
-export default function TimezonesSelect() {
+export default function TimezonesSelect({control}: {control: Control<EventFormValues, any>}) {
 	const [inputValue, setInputValue] = useState("");
 	const filteredOptions = useMemo(() => {
 		if (!inputValue) {
@@ -76,6 +78,7 @@ export default function TimezonesSelect() {
 		return filteredOptions.slice(0, MAX_DISPLAYED_OPTIONS);
 	}, [filteredOptions]);
 
+	
 	return (
 		<Select
 			options={slicedOptions}
