@@ -12,7 +12,7 @@ import { getDiscordUser } from "../../lib/utils/client-helpers";
 
 //TODO: we should refresh the tokens from discord so that user never gets kicked out
 
-const serviceAccount = require("../../timezoner-v2-firebase-adminsdk-c0w9x-955156a9ec.json");
+const serviceAccount = require("../../timezoner-v2-firebase-adminsdk.json");
 const loginURL = `${process.env.NEXT_PUBLIC_DOMAIN}/login`;
 
 export default async function handler(

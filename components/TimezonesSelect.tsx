@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import Select from "react-select";
-import escapeRegExp from 'lodash.escaperegexp';
+import escapeRegExp from "lodash.escaperegexp";
 import { timeZonesNames } from "@vvo/tzdb";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -18,6 +18,11 @@ const timezonesOptions = timeZonesNames.map((tz) => ({
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const userTimezoneDefault = dayjs.tz.guess();
+console.log("user timezone:", userTimezoneDefault);
+const defaultValue = {
+	label: userTimezoneDefault.replace(/_/g, " "),
+	value: userTimezoneDefault,
+};
 
 const customStyles = {
 	singleValue: (provided: any, state: any) => ({
@@ -48,8 +53,13 @@ const customStyles = {
 	}),
 };
 
-export default function TimezonesSelect({control}: {control: Control<EventFormValues, any>}) {
+export default function TimezonesSelect({
+	control,
+}: {
+	control: Control<EventFormValues, any>;
+}) {
 	const [inputValue, setInputValue] = useState("");
+
 	const filteredOptions = useMemo(() => {
 		if (!inputValue) {
 			return timezonesOptions;
@@ -78,18 +88,47 @@ export default function TimezonesSelect({control}: {control: Control<EventFormVa
 		return filteredOptions.slice(0, MAX_DISPLAYED_OPTIONS);
 	}, [filteredOptions]);
 
-	
+	const options = [
+		{ value: "America/El_Salvador", label: "America/El Salvador" },
+		{ value: "2", label: "Ball" },
+		{ value: "3", label: "Cat" },
+	];
+	const default_value = defaultValue.value;
+
 	return (
-		<Select
-			options={slicedOptions}
-			onInputChange={(value) => setInputValue(value)}
-			filterOption={() => true}
-			styles={customStyles}
-			placeholder={"Select Timezone..."}
-			defaultValue={{
-				label: userTimezoneDefault.replace(/_/g, " "),
-				value: userTimezoneDefault,
-			}}
-		/>
+		<>
+			<Controller
+				name="timezone"
+				control={control}
+				defaultValue={default_value}
+				render={({ field }) => {
+					return (
+						<Select
+							{...field}
+							options={timezonesOptions}
+							value={timezonesOptions.find((c) => c.value === field.value)}
+							onChange={(val) => {
+								if (val != null) {
+									field.onChange(val.value);
+								}
+							}}
+							styles={customStyles}
+							className="mb-4"
+						/>
+					);
+				}}
+			/>
+			<Select
+				options={slicedOptions}
+				onInputChange={(value) => setInputValue(value)}
+				filterOption={() => true}
+				styles={customStyles}
+				placeholder={"Select Timezone..."}
+				defaultValue={{
+					label: userTimezoneDefault.replace(/_/g, " "),
+					value: userTimezoneDefault,
+				}}
+			/>
+		</>
 	);
 }

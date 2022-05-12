@@ -58,31 +58,6 @@ function EventFormFields({
 	register: UseFormRegister<EventFormValues>;
 	control: Control<EventFormValues, any>;
 }) {
-	const [startDate, setstartDate] = useState<null | Date>(null);
-	const [endDate, setEndDate] = useState<null | Date>(null);
-	const [startHour, setStartHour] = useState<null | Date>(null);
-	const [endHour, setEndHour] = useState<null | Date>(null);
-
-	const updateDateRange = (dates: dateRange) => {
-		if (dates != null) {
-			const [start, end] = dates;
-			setstartDate(start);
-			setEndDate(end);
-		}
-	};
-
-	const updateStartHour = (date: unknown) => {
-		if (date instanceof Date) {
-			setStartHour(date);
-		}
-	};
-
-	const updateEndHour = (date: unknown) => {
-		if (date instanceof Date) {
-			console.log(date);
-			setEndHour(date);
-		}
-	};
 	return (
 		<>
 			<div className="mb-4">
