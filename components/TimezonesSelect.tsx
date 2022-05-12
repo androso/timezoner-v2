@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import Select from "react-select";
-import escapeRegExp from "lodash/escaperegexp";
+import escapeRegExp from 'lodash.escaperegexp';
 import { timeZonesNames } from "@vvo/tzdb";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";

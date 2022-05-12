@@ -229,9 +229,10 @@ function HourPicker({
 	control,
 	name,
 }: HourPickerProps) {
-	const ControllerProps: UseControllerProps<HourPickerProps> = {
+	const ControllerProps = {
 		control,
 		name,
+		defaultValue: undefined,
 	};
 	const {
 		field: { onBlur, onChange, value, ref },
@@ -242,29 +243,18 @@ function HourPicker({
 			<label className="block text-lg font-medium" htmlFor="date_from">
 				{label}
 			</label>
-			<DatePicker {...{ name, onBlur, onChange, ref }} />
-			{/* //!WORKING HERE*/}
-			{/* <Controller
-				name={name}
-				control={control}
-				defaultValue={undefined}
-				render={({ field: { name, onBlur, value, onChange, ref } }) => {
-					return (
-						<ReactDatePicker
-							{...{ name, onBlur, onChange, ref }}
-							selected={value}
-							showTimeSelect
-							showTimeSelectOnly
-							timeIntervals={30}
-							timeCaption="Time"
-							dateFormat="h:mm aa"
-							className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 mr-4"
-							placeholderText={placeholder}
-							{...{ required }}
-						/>
-					);
-				}}
-			/> */}
+			<DatePicker
+				{...{ name, onBlur, onChange, ref, required }}
+				selected={value}
+				showTimeSelect
+				showTimeSelectOnly
+				timeIntervals={30}
+				timeCaption="Time"
+				dateFormat="h:mm aa"
+				className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 mr-4"
+				placeholderText={placeholder}
+
+			/>
 		</>
 	);
 }
