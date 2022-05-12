@@ -14,8 +14,9 @@ import {
 	SubmitHandler,
 	UseFormRegister,
 	Control,
+	useController,
+	UseControllerProps,
 } from "react-hook-form";
-import ReactDatePicker from "react-datepicker";
 
 const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	ssr: false,
@@ -228,14 +229,22 @@ function HourPicker({
 	control,
 	name,
 }: HourPickerProps) {
+	const ControllerProps: UseControllerProps<HourPickerProps> = {
+		control,
+		name,
+	};
+	const {
+		field: { onBlur, onChange, value, ref },
+	} = useController(ControllerProps);
+
 	return (
 		<>
 			<label className="block text-lg font-medium" htmlFor="date_from">
 				{label}
 			</label>
-
+			<DatePicker {...{ name, onBlur, onChange, ref }} />
 			{/* //!WORKING HERE*/}
-			<Controller
+			{/* <Controller
 				name={name}
 				control={control}
 				defaultValue={undefined}
@@ -255,7 +264,7 @@ function HourPicker({
 						/>
 					);
 				}}
-			/>
+			/> */}
 		</>
 	);
 }
