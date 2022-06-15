@@ -18,7 +18,7 @@ const timezonesOptions = timeZonesNames.map((tz) => ({
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const userTimezoneDefault = dayjs.tz.guess();
-console.log("user timezone:", userTimezoneDefault);
+// console.log("user timezone:", userTimezoneDefault);
 const defaultValue = {
 	label: userTimezoneDefault.replace(/_/g, " "),
 	value: userTimezoneDefault,
