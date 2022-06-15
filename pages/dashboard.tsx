@@ -32,27 +32,21 @@ export default function Dashboard() {
 	const userData = useContext(UserContext);
 	const [username, setusername] = useState<null | string>(null);
 	const [avatarURL, setAvatarURL] = useState<null | string>(null);
-	const [authProvider, setAuthProvider] = useState<null | string>(null);
 	const router = useRouter();
 
 	useEffect(() => {
 		if (userData.user != null && isValidUser(userData.user, true)) {
 			const user = userData.user as User;
-			const { username, photoURL, provider } = getParsedDataFromUser(user);
+			const { username, photoURL } = getParsedDataFromUser(user);
 			setusername(username);
 			setAvatarURL(photoURL);
-			setAuthProvider(provider);
 		}
 	}, [userData]);
 
 	return (
 		<div>
 			<ProtectedRoute options={{ pathAfterFailure: "/login" }}>
-				<Header
-					{...{ authProvider, username }}
-					screenName="PROFILE"
-					photoURL={avatarURL}
-				/>
+				<Header username={username} screenName="PROFILE" photoURL={avatarURL} />
 				<Container className="pt-4 sm:pt-6">
 					<LightButton
 						innerText="Create Event"
