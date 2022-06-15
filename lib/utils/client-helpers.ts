@@ -58,24 +58,27 @@ export const sendUserToFirestore = async (user: User, provider: string) => {
 	}
 };
 
-export const getParsedDataFromUser = (user: User) => {
-	const username = user.displayName?.split(" ")[0] || "";
-	const provider = user?.providerData[0]?.providerId || "discord";
+export const getParsedDataFromUser = (user: User | null | undefined) => {
+	if (user) {
+		const username = user.displayName?.split(" ")[0] || "";
+		const provider = user?.providerData[0]?.providerId || "discord";
 
-	let photoURL = "";
-	if (provider === "discord") {
-		photoURL = user.photoURL || "";
-	} else {
-		//google
-		// get a bigger image
-		photoURL =
-			user.photoURL?.replace(`s${defaultGoogleAvatarSize}-c`, "s256-c") || "";
+		let photoURL = "";
+		if (provider === "discord") {
+			photoURL = user.photoURL || "";
+		} else {
+			//google
+			// get a bigger image
+			photoURL =
+				user.photoURL?.replace(`s${defaultGoogleAvatarSize}-c`, "s256-c") || "";
+		}
+		return {
+			username,
+			photoURL,
+			provider,
+		};
 	}
-	return {
-		username,
-		photoURL,
-		provider,
-	};
+	return null; 
 };
 
 export const getProviderFromFirebaseUser = (user: User) => {

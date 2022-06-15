@@ -1,9 +1,7 @@
-//TODO: WHY IS THIS THING SO SLOW?
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { UserContext } from "../lib/context";
 import dynamic from "next/dynamic";
 import { getParsedDataFromUser } from "../lib/utils/client-helpers";
-import { User } from "firebase/auth";
 import { BtnLinkProps, BtnProps } from "../components/LightButton";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
@@ -31,23 +29,17 @@ const UpcomingEvents = dynamic(() => import("../components/UpcomingEvents"), {
 });
 
 export default function Dashboard() {
-	const userData = useContext(UserContext);
-	const [username, setusername] = useState<null | string>(null);
-	const [avatarURL, setAvatarURL] = useState<null | string>(null);
-
-	useEffect(() => {
-		if (userData.user != null) {
-			const user = userData.user as User;
-			const { username, photoURL } = getParsedDataFromUser(user);
-			setusername(username);
-			setAvatarURL(photoURL);
-		}
-	}, [userData]);
+	const { user } = useContext(UserContext);
+	const parsedUserData = getParsedDataFromUser(user);
 
 	return (
 		<div>
 			<ProtectedRoute>
-				<Header username={username} screenName="PROFILE" photoURL={avatarURL} />
+				<Header
+					username={parsedUserData?.username ?? undefined}
+					screenName="PROFILE"
+					photoURL={parsedUserData?.photoURL ?? undefined}
+				/>
 				<Container className="pt-4 sm:pt-6">
 					<LightButtonLink
 						redirectTo="/new-event"
