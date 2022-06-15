@@ -1,5 +1,8 @@
 TODO:
-  - Add react-select to react-hook-forms via Controller or useController
+  - Replace React-select and React-datepicker w lightweight options
+  - When using discord login, there's a small flash of the login form
+  - We're not writing user information to the database
+  - 
 
 
  <!-- X Refactor callback.ts, abstract requests into their own files/functions
