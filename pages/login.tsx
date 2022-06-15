@@ -62,11 +62,11 @@ export default function loginPage() {
 		}
 	}, [isLoggedIn, loading, invalidEmail, validUser]);
 
-	if (!loading && !isValidUser(user, isLoggedIn)) {
-		return <LoginForm />;
-	} else {
+	if (loading) {
 		return <LoadingSpinner />;
 	}
+
+	return <LoginForm />;
 }
 
 async function customSignIn(queries: ParsedUrlQuery, router: NextRouter) {

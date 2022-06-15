@@ -3,7 +3,6 @@ import { useAuth } from "../lib/context";
 import dynamic from "next/dynamic";
 import {
 	getParsedDataFromUser,
-	requestUserDocument,
 } from "../lib/utils/client-helpers";
 import { BtnLinkProps, BtnProps } from "../components/LightButton";
 
@@ -50,9 +49,6 @@ export default function Dashboard() {
 				/>
 				<LightButton innerText="Join Event" />
 				<UpcomingEvents />
-				<button onClick={() => requestUserDocument(user?.uid ?? undefined)}>
-					Request
-				</button>
 			</Container>
 		</div>
 	);

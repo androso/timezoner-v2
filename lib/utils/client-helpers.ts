@@ -78,7 +78,7 @@ export const getParsedDataFromUser = (user: User | null | undefined) => {
 			provider,
 		};
 	}
-	return null; 
+	return null;
 };
 
 export const getProviderFromFirebaseUser = (user: User) => {
