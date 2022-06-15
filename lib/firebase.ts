@@ -1,10 +1,6 @@
 import { initializeApp, getApp } from "firebase/app";
 
-import {
-	connectAuthEmulator,
-	getAuth,
-	GoogleAuthProvider,
-} from "firebase/auth";
+import { connectAuthEmulator, getAuth, GoogleAuthProvider } from "firebase/auth";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
