@@ -1,9 +1,7 @@
 import "../styles/globals.css";
-import { useUserData } from "../lib/hooks";
-import { UserContext } from "../lib/context";
 import "../styles/datepicker.css";
+import { AuthProvider, UserContext } from "../lib/context";
 import dynamic from "next/dynamic";
-
 const DynamicToaster = dynamic(
 	() => import("react-hot-toast").then((mod) => mod.Toaster),
 	{
@@ -18,17 +16,22 @@ const DynamicPageWrapper = dynamic(
 	}
 );
 
-function MyApp({ Component, pageProps }) {
-	const userData = useUserData();
-	// console.log("userData at _app.js", userData);
+const DyanmicAuthProvider = dynamic(
+	() => import("../lib/context").then((mod) => mod.AuthProvider),
+	{
+		ssr: false,
+	}
+);
 
+function MyApp({ Component, pageProps }) {
 	return (
-		<UserContext.Provider value={userData}>
-			<DynamicPageWrapper>
+		<DynamicPageWrapper>
+			<AuthProvider>
 				<Component {...pageProps} />
-			</DynamicPageWrapper>
-			<DynamicToaster />
-		</UserContext.Provider>
+
+				<DynamicToaster />
+			</AuthProvider>
+		</DynamicPageWrapper>
 	);
 }
 

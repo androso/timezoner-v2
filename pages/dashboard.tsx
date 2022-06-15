@@ -1,7 +1,10 @@
 import React, { useContext } from "react";
-import { UserContext } from "../lib/context";
+import { useAuth } from "../lib/context";
 import dynamic from "next/dynamic";
-import { getParsedDataFromUser } from "../lib/utils/client-helpers";
+import {
+	getParsedDataFromUser,
+	requestUserDocument,
+} from "../lib/utils/client-helpers";
 import { BtnLinkProps, BtnProps } from "../components/LightButton";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
@@ -29,27 +32,28 @@ const UpcomingEvents = dynamic(() => import("../components/UpcomingEvents"), {
 });
 
 export default function Dashboard() {
-	const { user } = useContext(UserContext);
+	const { user } = useAuth();
 	const parsedUserData = getParsedDataFromUser(user);
 
 	return (
 		<div>
-			<ProtectedRoute>
-				<Header
-					username={parsedUserData?.username ?? undefined}
-					screenName="PROFILE"
-					photoURL={parsedUserData?.photoURL ?? undefined}
+			<Header
+				username={parsedUserData?.username ?? undefined}
+				screenName="PROFILE"
+				photoURL={parsedUserData?.photoURL ?? undefined}
+			/>
+			<Container className="pt-4 sm:pt-6">
+				<LightButtonLink
+					redirectTo="/new-event"
+					innerText="Create Event"
+					css="mr-5"
 				/>
-				<Container className="pt-4 sm:pt-6">
-					<LightButtonLink
-						redirectTo="/new-event"
-						innerText="Create Event"
-						css="mr-5"
-					/>
-					<LightButton innerText="Join Event" />
-					<UpcomingEvents />
-				</Container>
-			</ProtectedRoute>
+				<LightButton innerText="Join Event" />
+				<UpcomingEvents />
+				<button onClick={() => requestUserDocument(user?.uid ?? undefined)}>
+					Request
+				</button>
+			</Container>
 		</div>
 	);
 }

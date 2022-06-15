@@ -9,34 +9,14 @@ import { getHighQualityAvatar } from "./utils/client-helpers";
 export const useUserData = () => {
 	// Right now we're using this hook just to get info from firebase, we should update it with the discord and google logic too
 	const [user, loading, error] = useAuthState(auth);
-	const [, setUsername] = useState<null | string>(null);
-	const [, setAvatarURL] = useState<null | string>(null);
-	const [userData, setUserData] = useState<UserData | null>(null);
-	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-	useEffect(() => {
-		// turn off realtime subscription when user is no longer logged in
-		let unsubscribe;
-		if (user != null && !loading) {
-			setIsLoggedIn(true);
-			const docRef = doc(firestore, "users", user.uid);
-			unsubscribe = onSnapshot(docRef, (doc) => {
-				const data = doc.data() as UserData;
-				if (data) {
-					setUserData({
-						...data,
-						avatar_url: getHighQualityAvatar(data.avatar_url, data.provider),
-					});
-				}
-			});
-		} else if (!loading) {
-			setIsLoggedIn(false);
-			setUsername(null);
-			setAvatarURL(null);
-		}
-
-		return unsubscribe;
-	}, [user, loading]);
-
-	return { user, error, loading, isLoggedIn, userData };
+	if (loading) {
+		console.log("loading");
+	} else if (error) {
+		console.log("we have an error right now");
+	} else if (user) {
+		console.log("we know have an user");
+	} else {
+		console.log("exception", { error, loading, user });
+	}
+	return { user, error, loading };
 };

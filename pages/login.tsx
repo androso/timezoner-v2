@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { UserContext } from "../lib/context";
+import { useAuth, UserContext } from "../lib/context";
 import { useRouter } from "next/router";
 import { NextRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
@@ -32,7 +32,8 @@ const DISCORD_API_ENDPOINT = process.env.NEXT_PUBLIC_DISCORD_API_ENDPOINT;
 const desiredDiscordAvatarSize = "256";
 
 export default function loginPage() {
-	const { user, isLoggedIn, loading, error } = useContext(UserContext);
+	const { user, loading, error } = useAuth();
+	const isLoggedIn = user != null && !loading;
 	const router = useRouter();
 	const [validUser, setvalidUser] = useState(false);
 	const [invalidEmail, setInvalidEmail] = useState(false);
