@@ -7,7 +7,7 @@ import {
 	inputProps,
 	EventFormValues,
 } from "../lib/utils/types";
-import LightButton from "./LightButton";
+import { LightButton } from "./LightButton";
 import {
 	useForm,
 	Controller,
@@ -82,9 +82,7 @@ function EventFormFields({
 				<label htmlFor="event_timezone" className="block text-lg">
 					Timezone
 				</label>
-				<DynamicTimezonesSelect
-					control={control}
-				/>
+				<DynamicTimezonesSelect control={control} />
 			</div>
 			<div className="mb-2">
 				<label htmlFor="event_date" className="block text-lg font-medium">
@@ -150,7 +148,7 @@ function EventFormFields({
 			<div className="w-full text-center">
 				<LightButton
 					innerText="CREATE EVENT"
-					className="mx-auto"
+					css="mx-auto"
 					btnType="submit"
 				/>
 			</div>
@@ -230,7 +228,6 @@ function HourPicker({
 				dateFormat="h:mm aa"
 				className="basic-input-field max-w-[120px] placeholder:text-shadowWhite2 mr-4"
 				placeholderText={placeholder}
-
 			/>
 		</>
 	);

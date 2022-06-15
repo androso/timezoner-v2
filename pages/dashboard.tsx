@@ -2,13 +2,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../lib/context";
 import dynamic from "next/dynamic";
-
-import {
-	isValidUser,
-	getParsedDataFromUser,
-} from "../lib/utils/client-helpers";
+import { getParsedDataFromUser } from "../lib/utils/client-helpers";
 import { User } from "firebase/auth";
-import { useRouter } from "next/router";
+import { BtnLinkProps, BtnProps } from "../components/LightButton";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -20,10 +16,16 @@ const ProtectedRoute = dynamic(() => import("../components/ProtectedRoute"), {
 	ssr: false,
 });
 
-const LightButton = dynamic(() => import("../components/LightButton"), {
-	ssr: false,
-});
-
+const LightButtonLink = dynamic<BtnLinkProps>(
+	() => import("../components/LightButton").then((md) => md.LightButtonLink),
+	{
+		ssr: false,
+	}
+);
+const LightButton = dynamic<BtnProps>(
+	() => import("../components/LightButton").then((md) => md.LightButton),
+	{ ssr: false }
+);
 const UpcomingEvents = dynamic(() => import("../components/UpcomingEvents"), {
 	ssr: false,
 });
@@ -32,10 +34,9 @@ export default function Dashboard() {
 	const userData = useContext(UserContext);
 	const [username, setusername] = useState<null | string>(null);
 	const [avatarURL, setAvatarURL] = useState<null | string>(null);
-	const router = useRouter();
 
 	useEffect(() => {
-		if (userData.user != null && isValidUser(userData.user, true)) {
+		if (userData.user != null) {
 			const user = userData.user as User;
 			const { username, photoURL } = getParsedDataFromUser(user);
 			setusername(username);
@@ -45,13 +46,13 @@ export default function Dashboard() {
 
 	return (
 		<div>
-			<ProtectedRoute options={{ pathAfterFailure: "/login" }}>
+			<ProtectedRoute>
 				<Header username={username} screenName="PROFILE" photoURL={avatarURL} />
 				<Container className="pt-4 sm:pt-6">
-					<LightButton
+					<LightButtonLink
+						redirectTo="/new-event"
 						innerText="Create Event"
-						className="mr-5"
-						clickFunc={() => router.push("/new-event")}
+						css="mr-5"
 					/>
 					<LightButton innerText="Join Event" />
 					<UpcomingEvents />
