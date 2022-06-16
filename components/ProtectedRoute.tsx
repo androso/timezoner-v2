@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
-import LoadingSpinner from "./LoadingSpinner";
-import { useAuth, UserContext } from "../lib/context";
+import React from "react";
+import { useAuth } from "../lib/context";
 import { LoginForm } from "../components";
-import { useRouter } from "next/router";
 
 type props = {
 	children: any;
@@ -16,7 +14,7 @@ export default function ProtectedRoute({
 	options = { pathAfterFailure: "/login" },
 }: props) {
 	// const { user, loading } = useContext(UserContext);
-	const { user, loading } = useAuth();
+	const { user } = useAuth();
 	if (user) {
 		return children;
 	} else {
