@@ -1,26 +1,13 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
-import { useRouter } from "next/router";
-import { useAuth } from "../lib/context";
+import { LightButtonLink } from "../components/LightButton";
 import styles from "../styles/Home.module.css";
-
-const DynamicLoadingSpinner = dynamic(
-	() => import("../components/LoadingSpinner"),
-	{
-		ssr: false,
-	}
-);
+import UnprotectedRoute from "../components/UnprotectedRoute";
 
 export default function Home() {
-	const { user, loading } = useAuth();
-	const router = useRouter();
-	if (loading) {
-		return <DynamicLoadingSpinner />;
-	} else if (user) {
-		router.push("/dashboard", undefined, { shallow: true });
-	} else {
-		return (
+	return (
+		<UnprotectedRoute>
 			<div className={styles.container}>
 				<Head>
 					<title>Create Next App</title>
@@ -32,6 +19,11 @@ export default function Home() {
 					<h1 className="text-3xl font-bold underline">
 						Hello there from timezoner
 					</h1>
+					<LightButtonLink
+						css="mt-4"
+						innerText="Go to the app"
+						redirectTo="/login"
+					/>
 				</main>
 
 				<footer className={styles.footer}>
@@ -52,6 +44,6 @@ export default function Home() {
 					</a>
 				</footer>
 			</div>
-		);
-	}
+		</UnprotectedRoute>
+	);
 }
