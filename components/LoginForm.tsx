@@ -1,11 +1,7 @@
 import React from "react";
 import { DiscordSVG, GoogleSVG } from "../components/icons";
-import {
-	signInWithPopup,
-	signInWithRedirect,
-	getRedirectResult,
-} from "firebase/auth";
-import { auth, googleAuthProvider, firestore } from "../lib/firebase";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleAuthProvider } from "../lib/firebase";
 import { useRouter } from "next/router";
 
 import { sendUserToFirestore } from "../lib/utils/client-helpers";
@@ -47,8 +43,8 @@ function OauthProviders({}) {
 	async function signInWithGoogle() {
 		try {
 			console.log("signing in with google");
-			const {user} = await signInWithPopup(auth, googleAuthProvider);
-			await sendUserToFirestore(user, 'google.com');
+			const { user } = await signInWithPopup(auth, googleAuthProvider);
+			await sendUserToFirestore(user, "google.com");
 		} catch (error) {
 			console.error(error);
 		}

@@ -1,8 +1,14 @@
 TODO:
+  - Refactor Login.tsx
+  - Get familiar with the code
+  - Examine useData hook //HERE !important
+  - Make a client function
+  - Change axios for fetch
   - Replace React-select and React-datepicker w lightweight options
   - When using discord login, there's a small flash of the login form
   - We're not writing user information to the database
-  - 
+
+Components 
 
 
  <!-- X Refactor callback.ts, abstract requests into their own files/functions

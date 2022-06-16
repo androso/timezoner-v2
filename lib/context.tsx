@@ -1,8 +1,9 @@
 import { createContext, useContext } from "react";
 import { User } from "firebase/auth";
 import { LoadingSpinner, LoginForm } from "../components";
-import { auth } from "./firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "./firebase";
+
 
 export interface userContextType {
 	user: User | null | undefined;
@@ -25,7 +26,6 @@ export const useAuth = () => {
 	return context;
 };
 
-//! THE PROBLEM IS HAPPENING HERE
 export const AuthProvider = ({ children }: { children: any }) => {
 	const [user, loading, error] = useAuthState(auth);
 
