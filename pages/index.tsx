@@ -1,15 +1,22 @@
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { LoadingSpinner } from "../components";
 import { useAuth } from "../lib/context";
 import styles from "../styles/Home.module.css";
+
+const DynamicLoadingSpinner = dynamic(
+	() => import("../components/LoadingSpinner"),
+	{
+		ssr: false,
+	}
+);
 
 export default function Home() {
 	const { user, loading } = useAuth();
 	const router = useRouter();
 	if (loading) {
-		return <LoadingSpinner />;
+		return <DynamicLoadingSpinner />;
 	} else if (user) {
 		router.push("/dashboard", undefined, { shallow: true });
 	} else {
