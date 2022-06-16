@@ -1,6 +1,9 @@
+import dynamic from "next/dynamic";
 import React from "react";
 import { useAuth } from "../lib/context";
-import { LoginForm } from "../components";
+const DynamicLoginForm = dynamic(() => import("../components/LoginForm"), {
+	ssr: false,
+});
 
 type props = {
 	children: any;
@@ -18,6 +21,6 @@ export default function ProtectedRoute({
 	if (user) {
 		return children;
 	} else {
-		return <LoginForm />;
+		return <DynamicLoginForm />;
 	}
 }
