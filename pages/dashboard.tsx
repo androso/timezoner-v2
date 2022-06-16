@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useAuth } from "../lib/context";
 import dynamic from "next/dynamic";
 import { getParsedDataFromUser } from "../lib/utils/client-helpers";
@@ -34,20 +34,22 @@ export default function Dashboard() {
 
 	return (
 		<div>
-			<Header
-				username={parsedUserData?.username ?? undefined}
-				screenName="PROFILE"
-				photoURL={parsedUserData?.photoURL ?? undefined}
-			/>
-			<Container className="pt-4 sm:pt-6">
-				<LightButtonLink
-					redirectTo="/new-event"
-					innerText="Create Event"
-					css="mr-5"
+			<ProtectedRoute>
+				<Header
+					username={parsedUserData?.username ?? undefined}
+					screenName="PROFILE"
+					photoURL={parsedUserData?.photoURL ?? undefined}
 				/>
-				<LightButton innerText="Join Event" />
-				<UpcomingEvents />
-			</Container>
+				<Container className="pt-4 sm:pt-6">
+					<LightButtonLink
+						redirectTo="/new-event"
+						innerText="Create Event"
+						css="mr-5"
+					/>
+					<LightButton innerText="Join Event" />
+					<UpcomingEvents />
+				</Container>
+			</ProtectedRoute>
 		</div>
 	);
 }

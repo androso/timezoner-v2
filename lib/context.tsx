@@ -4,9 +4,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
 import dynamic from "next/dynamic";
 
-const DynamicLoginForm = dynamic(() => import("../components/LoginForm"), {
-	ssr: false,
-});
 const DynamicLoadingSpinner = dynamic(
 	() => import("../components/LoadingSpinner"),
 	{
@@ -56,11 +53,8 @@ export const AuthProvider = ({ children }: { children: any }) => {
 				<pre>{error.message}</pre>
 			</div>
 		);
-	} else if (user) {
-		return (
-			<UserContext.Provider value={userData}>{children}</UserContext.Provider>
-		);
-	} else {
-		return <DynamicLoginForm />;
 	}
+	return (
+		<UserContext.Provider value={userData}>{children}</UserContext.Provider>
+	);
 };
