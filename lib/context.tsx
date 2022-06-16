@@ -1,10 +1,18 @@
 import { createContext, useContext } from "react";
 import { User } from "firebase/auth";
-import { LoadingSpinner, LoginForm } from "../components";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
+import dynamic from "next/dynamic";
 
-
+const DynamicLoginForm = dynamic(() => import("../components/LoginForm"), {
+	ssr: false,
+});
+const DynamicLoadingSpinner = dynamic(
+	() => import("../components/LoadingSpinner"),
+	{
+		ssr: false,
+	}
+);
 export interface userContextType {
 	user: User | null | undefined;
 	error: Error | undefined;
@@ -38,7 +46,7 @@ export const AuthProvider = ({ children }: { children: any }) => {
 	//TODO: Login, logout functions
 
 	if (loading) {
-		return <LoadingSpinner />;
+		return <DynamicLoadingSpinner />;
 	} else if (error) {
 		// TODO: we should return a react error boundary with a fallback here
 		// maybe show the toaster that says "you already have an ac	count with discord"
@@ -53,6 +61,6 @@ export const AuthProvider = ({ children }: { children: any }) => {
 			<UserContext.Provider value={userData}>{children}</UserContext.Provider>
 		);
 	} else {
-		return <LoginForm />;
+		return <DynamicLoginForm />;
 	}
 };

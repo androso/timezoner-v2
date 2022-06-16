@@ -2,12 +2,19 @@ import "../styles/globals.css";
 import "../styles/datepicker.css";
 import { AuthProvider } from "../lib/context";
 import dynamic from "next/dynamic";
-import { Toaster } from "react-hot-toast";
 import type { AppProps } from "next/app";
-import { PageWrapperProps } from "../components/Layouts/PageWrapper";
+import type { PageWrapperProps } from "../components/Layouts/PageWrapper";
+import type { ToasterProps } from "react-hot-toast";
+
+const DynamicToaster = dynamic<ToasterProps>(
+	() => import("react-hot-toast").then((md) => md.Toaster),
+	{
+		ssr: false,
+	}
+);
 
 const DynamicPageWrapper = dynamic<PageWrapperProps>(
-	() => import("../components/Layouts").then((mod) => mod.PageWrapper),
+	() => import("../components/Layouts/PageWrapper"),
 	{
 		ssr: false,
 	}
@@ -18,7 +25,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<DynamicPageWrapper>
 			<AuthProvider>
 				<Component {...pageProps} />
-				<Toaster />
+				<DynamicToaster />
 			</AuthProvider>
 		</DynamicPageWrapper>
 	);
