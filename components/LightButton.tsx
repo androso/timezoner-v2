@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+
 export type BtnProps = {
 	innerText: string;
 	css?: string;

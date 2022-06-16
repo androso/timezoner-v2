@@ -1,10 +1,8 @@
 import React, { useContext } from "react";
 import { useAuth } from "../lib/context";
 import dynamic from "next/dynamic";
-import {
-	getParsedDataFromUser,
-} from "../lib/utils/client-helpers";
-import { BtnLinkProps, BtnProps } from "../components/LightButton";
+import { getParsedDataFromUser } from "../lib/utils/client-helpers";
+import type { BtnLinkProps, BtnProps } from "../components/LightButton";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
