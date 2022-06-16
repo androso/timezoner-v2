@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import React from "react";
 import { useAuth } from "../lib/context";
+
 const DynamicLoginForm = dynamic(() => import("../components/LoginForm"), {
 	ssr: false,
 });
@@ -12,15 +13,15 @@ type props = {
 	};
 };
 
+// if we don't have a user we render login form
 export default function ProtectedRoute({
 	children,
 	options = { pathAfterFailure: "/login" },
 }: props) {
-	// const { user, loading } = useContext(UserContext);
-	const { user } = useAuth();
-	if (user) {
+	const { user, loading } = useAuth();
+	if (user && !loading) {
 		return children;
-	} else {
+	} else if (user == null && !loading) {
 		return <DynamicLoginForm />;
 	}
 }
