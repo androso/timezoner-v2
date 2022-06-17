@@ -16,20 +16,10 @@ export interface userContextType {
 	loading: boolean;
 }
 
-export const UserContext = createContext<userContextType>({
-	user: null,
-	error: new Error("default values"),
-	loading: true,
-});
+export const UserContext = createContext<userContextType | undefined>(
+	undefined
+);
 UserContext.displayName = "UserContext";
-
-export const useAuth = () => {
-	const context = useContext(UserContext);
-	if (context === undefined) {
-		throw new Error(`useAuth must be used within a AuthProvider`);
-	}
-	return context;
-};
 
 export const AuthProvider = ({ children }: { children: any }) => {
 	const [user, loading, error] = useAuthState(auth);
@@ -57,4 +47,12 @@ export const AuthProvider = ({ children }: { children: any }) => {
 	return (
 		<UserContext.Provider value={userData}>{children}</UserContext.Provider>
 	);
+};
+
+export const useAuth = () => {
+	const context = useContext(UserContext);
+	if (context === undefined) {
+		throw new Error(`useAuth must be used within a AuthProvider`);
+	}
+	return context;
 };

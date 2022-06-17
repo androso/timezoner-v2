@@ -3,12 +3,28 @@ import { DiscordSVG, GoogleSVG } from "../components/icons";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleAuthProvider } from "../lib/firebase";
 import { useRouter } from "next/router";
-
 import { sendUserToFirestore } from "../lib/utils/client-helpers";
 const DISCORD_AUTH_URL = process.env.NEXT_PUBLIC_DISCORD_AUTH_URL as string;
 
 //TODO: REFACTOR THIS THING
 export default function LoginForm() {
+	const router = useRouter();
+
+	const signInWithDiscord = async () => {
+		console.log("should be loading discord");
+		router.push(DISCORD_AUTH_URL);
+	};
+
+	const signInWithGoogle = async () => {
+		try {
+			console.log("signing in with google");
+			const { user } = await signInWithPopup(auth, googleAuthProvider);
+			await sendUserToFirestore(user, "google.com");
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	return (
 		<div className="h-full flex flex-col items-center mx-auto w-[84%]">
 			<h1 className="title mt-40 text-4xl text-center font-bold font-sans max-w-[370px] lg:text-5xl lg:max-w-[480px] lg:mt-32">
@@ -26,44 +42,21 @@ export default function LoginForm() {
 				<p className="indications font-medium text-lg max-w-[225px] mx-auto">
 					Log in to create and join events from friends
 				</p>
-				<OauthProviders />
+				<div className="flex flex-col items-center mt-8 mx-auto">
+					<LoginButton onClick={signInWithDiscord} id="discord">
+						<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
+							<DiscordSVG className="h-5" />
+						</span>
+						<span className=" font-semibold">DISCORD</span>
+					</LoginButton>
+					<LoginButton onClick={signInWithGoogle} id="google">
+						<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
+							<GoogleSVG className="h-5" />
+						</span>
+						<span className="font-semibold">GOOGLE</span>
+					</LoginButton>
+				</div>
 			</div>
-		</div>
-	);
-}
-
-function OauthProviders({}) {
-	const router = useRouter();
-
-	async function signInWithDiscord() {
-		console.log("should be loading discord");
-		router.push(DISCORD_AUTH_URL);
-	}
-
-	async function signInWithGoogle() {
-		try {
-			console.log("signing in with google");
-			const { user } = await signInWithPopup(auth, googleAuthProvider);
-			await sendUserToFirestore(user, "google.com");
-		} catch (error) {
-			console.error(error);
-		}
-	}
-
-	return (
-		<div className="flex flex-col items-center mt-8 mx-auto">
-			<LoginButton onClick={signInWithDiscord} id="discord">
-				<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
-					<DiscordSVG className="h-5" />
-				</span>
-				<span className=" font-semibold">DISCORD</span>
-			</LoginButton>
-			<LoginButton onClick={signInWithGoogle} id="google">
-				<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
-					<GoogleSVG className="h-5" />
-				</span>
-				<span className="font-semibold">GOOGLE</span>
-			</LoginButton>
 		</div>
 	);
 }
