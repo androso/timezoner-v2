@@ -1,12 +1,12 @@
 TODO:
-  - Refactor Login.tsx1
-  - Get familiar with the code
-  - Examine useData hook //HERE !important
+  - Move the login (google + discord and leave some space for email and password) and logout to AuthProvider @ context.tsx
+  - Refactor Login.tsx
   - Make a client function
   - Change axios for fetch
   - Replace React-select and React-datepicker w lightweight options
   - When using discord login, there's a small flash of the login form
   - We're not writing user information to the database
+  - How can we handle if a user logs in with google first and then with discord or viceversa?
 
 Components 
 

@@ -1,20 +1,11 @@
 import React from "react";
-import { DiscordSVG, GoogleSVG } from "../components/icons";
+import { GoogleSVG } from "../components/icons";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleAuthProvider } from "../lib/firebase";
-import { useRouter } from "next/router";
 import { sendUserToFirestore } from "../lib/utils/client-helpers";
-const DISCORD_AUTH_URL = process.env.NEXT_PUBLIC_DISCORD_AUTH_URL as string;
 
 //TODO: REFACTOR THIS THING
 export default function LoginForm() {
-	const router = useRouter();
-
-	const signInWithDiscord = async () => {
-		console.log("should be loading discord");
-		router.push(DISCORD_AUTH_URL);
-	};
-
 	const signInWithGoogle = async () => {
 		try {
 			console.log("signing in with google");
@@ -43,12 +34,6 @@ export default function LoginForm() {
 					Log in to create and join events from friends
 				</p>
 				<div className="flex flex-col items-center mt-8 mx-auto">
-					<LoginButton onClick={signInWithDiscord} id="discord">
-						<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
-							<DiscordSVG className="h-5" />
-						</span>
-						<span className=" font-semibold">DISCORD</span>
-					</LoginButton>
 					<LoginButton onClick={signInWithGoogle} id="google">
 						<span className="min-w-[35px] min-h-full flex items-center justify-center mr-2">
 							<GoogleSVG className="h-5" />
