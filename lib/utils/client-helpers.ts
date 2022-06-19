@@ -23,13 +23,13 @@ export const isValidUser = (
 	}
 };
 
-export const getDiscordUser = async (accessToken: string) => {
-	return axios.get(DISCORD_API_ENDPOINTS.USER, {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
-};
+// export const getDiscordUser = async (accessToken: string) => {
+// 	return axios.get(DISCORD_API_ENDPOINTS.USER, {
+// 		headers: {
+// 			Authorization: `Bearer ${accessToken}`,
+// 		},
+// 	});
+// };
 
 export const capitalizeFirstLetter = (string: string | null) => {
 	if (typeof string === "string") {

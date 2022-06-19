@@ -1,14 +1,11 @@
-import React from "react";
 import { GoogleSVG } from "../components/icons";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleAuthProvider } from "../lib/firebase";
 import { sendUserToFirestore } from "../lib/utils/client-helpers";
 
-//TODO: REFACTOR THIS THING
 export default function LoginForm() {
 	const signInWithGoogle = async () => {
 		try {
-			console.log("signing in with google");
 			const { user } = await signInWithPopup(auth, googleAuthProvider);
 			await sendUserToFirestore(user, "google.com");
 		} catch (error) {
