@@ -1,6 +1,4 @@
-import axios from "axios";
 import { User } from "firebase/auth";
-import { DISCORD_API_ENDPOINTS } from "./types";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
 
