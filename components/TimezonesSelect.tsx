@@ -18,7 +18,7 @@ const timezonesOptions = timeZonesNames.map((tz) => ({
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const userTimezoneDefault = dayjs.tz.guess();
-// console.log("user timezone:", userTimezoneDefault);
+
 const defaultValue = {
 	label: userTimezoneDefault.replace(/_/g, " "),
 	value: userTimezoneDefault,
@@ -97,6 +97,7 @@ export default function TimezonesSelect({
 
 	return (
 		<>
+			{/* DEFAULT SELECT FROM REACT-SELECT */}
 			<Controller
 				name="timezone"
 				control={control}
@@ -118,6 +119,8 @@ export default function TimezonesSelect({
 					);
 				}}
 			/>
+
+			{/* CUSTOM SELECT, "smoother" */}
 			<Select
 				options={slicedOptions}
 				onInputChange={(value) => setInputValue(value)}

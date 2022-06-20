@@ -1,15 +1,10 @@
 TODO:
-  - Move the login (google + discord and leave some space for email and password) and logout to AuthProvider @ context.tsx
-  - Refactor Login.tsx
-  - Make a client function
-  - Change axios for fetch
-  - Replace React-select and React-datepicker w lightweight options
-  - When using discord login, there's a small flash of the login form
-  - We're not writing user information to the database
-  - How can we handle if a user logs in with google first and then with discord or viceversa?
+- Add error boundary
+- Replace React-select and React-datepicker w lightweight options
+- Move the login (google + discord and leave some space for email and password) and logout to AuthProvider @ context.tsx2
+- Change axios for fetch (only if you need it right now)
 
-Components 
-
+Components
 
  <!-- X Refactor callback.ts, abstract requests into their own files/functions
  X Make Dashboard frontend

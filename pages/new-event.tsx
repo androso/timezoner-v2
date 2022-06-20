@@ -20,17 +20,15 @@ const HomeBreadcrumbs = dynamic(() => import("../components/HomeBreadcrumbs"), {
 	ssr: false,
 });
 
-//TODO: add protectedRoute here
-
 export default function NewEvent() {
 	return (
-		<>
+		<ProtectedRoute>
 			<SimpleHeader />
 			<Container className="">
 				<HomeBreadcrumbs currentPage="Form" />
 				<CreateEventForm />
 			</Container>
-		</>
+		</ProtectedRoute>
 	);
 }
 
@@ -43,3 +41,5 @@ function SimpleHeader() {
 		</div>
 	);
 }
+
+

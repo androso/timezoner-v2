@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import "react-datepicker/dist/react-datepicker.css";
-import React, { useState } from "react";
+import React from "react";
 import {
 	dateRange,
 	HourPickerProps,
@@ -15,7 +15,6 @@ import {
 	UseFormRegister,
 	Control,
 	useController,
-	UseControllerProps,
 } from "react-hook-form";
 
 const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
