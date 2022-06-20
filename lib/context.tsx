@@ -30,13 +30,10 @@ export const AuthProvider = ({ children }: { children: any }) => {
 		error,
 	};
 
-	//TODO: Login, logout functions
-
 	if (loading) {
 		return <DynamicLoadingSpinner />;
 	} else if (error) {
 		// TODO: we should return a react error boundary with a fallback here
-		// maybe show the toaster that says "you already have an ac	count with discord"
 		return (
 			<div role="alert">
 				<p>Uh oh... There's a problem. Try refreshing the app.</p>
