@@ -19,9 +19,7 @@ import {
 
 const DynamicTimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	ssr: false,
-	loading: () => (
-		<select className="basic-input-field w-full h-[38px]"></select>
-	),
+	loading: () => <div className="basic-input-field w-full h-[50px]"></div>,
 });
 const DatePicker = dynamic(() => import("react-datepicker"), {
 	ssr: false,
@@ -78,10 +76,7 @@ function EventFormFields({
 				/>
 			</div>
 			<div className="mb-2">
-				<label htmlFor="event_timezone" className="block text-lg">
-					Timezone
-				</label>
-				<DynamicTimezonesSelect control={control} />
+				<DynamicTimezonesSelect />
 			</div>
 			<div className="mb-2">
 				<label htmlFor="event_date" className="block text-lg font-medium">
@@ -145,11 +140,7 @@ function EventFormFields({
 				</div>
 			</div>
 			<div className="w-full text-center">
-				<LightButton
-					innerText="CREATE EVENT"
-					css="mx-auto"
-					btnType="submit"
-				/>
+				<LightButton innerText="CREATE EVENT" css="mx-auto" btnType="submit" />
 			</div>
 		</>
 	);
