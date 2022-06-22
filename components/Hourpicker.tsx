@@ -2,7 +2,7 @@ import ReactDatePicker from "react-datepicker";
 import { useController } from "react-hook-form";
 import { HourPickerProps } from "../lib/utils/types";
 
-export default function HourPicker({
+export default function Hourpicker({
 	label,
 	placeholder,
 	required,

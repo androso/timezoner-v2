@@ -1,6 +1,6 @@
 import "../styles/globals.css";
-import "../styles/datepicker.css";
 import { AuthProvider } from "../lib/context";
+
 import dynamic from "next/dynamic";
 import type { AppProps } from "next/app";
 import type { PageWrapperProps } from "../components/Layouts/PageWrapper";

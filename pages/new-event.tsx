@@ -1,14 +1,10 @@
 import dynamic from "next/dynamic";
-
+import CreateEventForm	 from "../components/CreateEventForm";
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
 });
 
 const ProtectedRoute = dynamic(() => import("../components/ProtectedRoute"), {
-	ssr: false,
-});
-
-const CreateEventForm = dynamic(() => import("../components/CreateEventForm"), {
 	ssr: false,
 });
 
@@ -41,5 +37,3 @@ function SimpleHeader() {
 		</div>
 	);
 }
-
-

@@ -4,11 +4,10 @@ import React from "react";
 import type { dateRange, EventFormValues } from "../lib/utils/types";
 import { LightButton } from "./LightButton";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import Downshift from "downshift";
 import { defaultTimezone, timezonesLabels } from "../lib/timezonesData";
 import { matchSorter } from "match-sorter";
 import Input from "./Input";
-import Hourpicker from "./Hourpicker";
+import Downshift from "downshift";
 
 const DatePicker = dynamic(() => import("react-datepicker"), {
 	ssr: false,
@@ -17,6 +16,17 @@ const DatePicker = dynamic(() => import("react-datepicker"), {
 			type="text"
 			className="basic-input-field w-full placeholder:text-shadowWhite2"
 			placeholder="Select Date..."
+		></input>
+	),
+});
+
+const Hourpicker = dynamic(() => import("./Hourpicker"), {
+	ssr: false,
+	loading: () => (
+		<input
+			type="text"
+			className="basic-input-field placeholder:text-shadowWhite2 w-[120px]"
+			placeholder="Hour"
 		></input>
 	),
 });
