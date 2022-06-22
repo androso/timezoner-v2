@@ -21,7 +21,31 @@ export default function Input({
 				autoComplete="off"
 				required={required ? true : false}
 				{...register(name, { required })}
-                
+			/>
+		</>
+	);
+}
+export function LoadingInput({
+	label,
+	placeholder,
+	required,
+}: {
+	label: string;
+	placeholder: string;
+	required: boolean;
+}) {
+	return (
+		<>
+			<label className="block font-medium text-lg" htmlFor="event_title">
+				{label}
+			</label>
+			<input
+				className="w-full basic-input-field placeholder:text-shadowWhite2"
+				type="text"
+				id="event_title"
+				placeholder={placeholder}
+				autoComplete="off"
+				required={required ? true : false}
 			/>
 		</>
 	);
