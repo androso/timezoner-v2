@@ -10,10 +10,13 @@ export default function TimezonesSelect({
 }: {
 	register: UseFormRegister<EventFormValues>;
 }) {
+	// set required to true later
+	const select = register("timezone", { required: true });
 	return (
 		<Downshift
 			itemToString={(item) => (item ? item : "")}
 			initialSelectedItem={defaultTimezone.label}
+			onSelect={(tz) => select.onChange}
 		>
 			{({
 				getInputProps,
@@ -40,7 +43,8 @@ export default function TimezonesSelect({
 						<input
 							{...getInputProps()}
 							className="basic-input-field grow rounded-r-none rounded-br-none border-r-0"
-							{...register("timezone", { required: true })}
+							onBlur={select.onBlur}
+							ref={select.ref}
 						/>
 						<button
 							aria-label={"toggle menu"}

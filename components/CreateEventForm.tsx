@@ -4,7 +4,7 @@ import type { dateRange, EventFormValues } from "../lib/utils/types";
 import { LightButton } from "./LightButton";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import Input, { LoadingInput } from "./Input";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { useAuth } from "../lib/context";
 
 const DatePicker = dynamic(() => import("react-datepicker"), {
@@ -33,9 +33,19 @@ const TimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 });
 
 //TODO: don't allow user to add a endHour earlier than startHour
+//TODO: Store form data in local storage
+//TODO: Add validation
 export default function CreateEventForm() {
-	const { register, handleSubmit, control } = useForm<EventFormValues>();
+	const { register, handleSubmit, control, watch } = useForm<EventFormValues>();
 	const { user } = useAuth();
+
+	useEffect(() => {
+		const subscription = watch((value, { name, type }) => {
+			// code to send to local storage ?
+		});
+		return () => subscription.unsubscribe();
+	}, [watch]);
+
 	const submitForm: SubmitHandler<EventFormValues> = (data) => {
 		const { dateRange, startHour, endHour, description, eventTitle, timezone } =
 			data;
@@ -53,7 +63,7 @@ export default function CreateEventForm() {
 			og_timezone: timezone,
 			organizer_id: user?.uid,
 		};
-		console.log(dataSentToFirestore);
+		console.log(data);
 	};
 
 	return (
