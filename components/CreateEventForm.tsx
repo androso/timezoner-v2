@@ -36,7 +36,13 @@ const TimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 //TODO: Store form data in local storage
 //TODO: Add validation
 export default function CreateEventForm() {
-	const { register, handleSubmit, control, watch } = useForm<EventFormValues>();
+	const {
+		register,
+		handleSubmit,
+		control,
+		watch,
+		formState: { errors },
+	} = useForm<EventFormValues>();
 	const { user } = useAuth();
 
 	useEffect(() => {
@@ -47,6 +53,7 @@ export default function CreateEventForm() {
 	}, [watch]);
 
 	const submitForm: SubmitHandler<EventFormValues> = (data) => {
+		console.log(errors);
 		const { dateRange, startHour, endHour, description, eventTitle, timezone } =
 			data;
 		const dataSentToFirestore = {
@@ -150,7 +157,7 @@ export default function CreateEventForm() {
 						placeholder="Start"
 						required
 						control={control}
-						name="startHour"
+						name="hour_range.start_hour"
 					/>
 				</div>
 				<div>
@@ -159,7 +166,7 @@ export default function CreateEventForm() {
 						placeholder="End"
 						required
 						control={control}
-						name="endHour"
+						name="hour_range.end_hour"
 					/>
 				</div>
 			</div>

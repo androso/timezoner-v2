@@ -39,11 +39,13 @@ export type EventFormValues = {
 	eventTitle: string;
 	description: string;
 	timezone: string;
-	date: [Date, Date] | null;
 	dateRange: dateRange;
 	startHour: Date;
 	endHour: Date;
-	independent: dateRange;
+	hour_range: {
+		start_hour: Date;
+		end_hour: Date;
+	};
 };
 
 export type baseFormFieldProps = {
@@ -59,5 +61,5 @@ export type inputProps = baseFormFieldProps & {
 
 export type HourPickerProps = baseFormFieldProps & {
 	control: Control<EventFormValues, any>;
-	name: "startHour" | "endHour";
+	name: "hour_range.start_hour" | "hour_range.end_hour";
 };

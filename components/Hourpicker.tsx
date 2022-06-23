@@ -12,9 +12,10 @@ export default function Hourpicker({
 	
 	const ControllerProps = {
 		control,
-		name,
+			name,
 		defaultValue: undefined,
 	};
+
 	const {
 		field: { onBlur, onChange, value, ref },
 	} = useController(ControllerProps);
