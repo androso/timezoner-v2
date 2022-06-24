@@ -35,6 +35,11 @@ export type UserData = {
 
 export type dateRange = [Date | null, Date | null];
 
+export type hourRange = {
+	start_hour: Date | null;
+	end_hour: Date | null;
+}
+
 export type EventFormValues = {
 	eventTitle: string;
 	description: string;

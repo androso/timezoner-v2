@@ -1,19 +1,42 @@
 import ReactDatePicker from "react-datepicker";
 import { useController } from "react-hook-form";
 import { HourPickerProps } from "../lib/utils/types";
-
+import { useFormContext } from "react-hook-form";
+import type { hourRange } from "../lib/utils/types";
 export default function Hourpicker({
 	label,
 	placeholder,
 	required,
-	control,
 	name,
 }: HourPickerProps) {
-	
+	const {
+		getValues,
+		formState: { errors },
+	} = useFormContext();
 	const ControllerProps = {
-		control,
-			name,
+		name,
 		defaultValue: undefined,
+		rules: {
+			required: true,
+			validate: (value: unknown) => {
+				// checking that the start hour is not later than the end hour
+				const { start_hour: startHour, end_hour: endHour } = getValues()
+					.hour_range as hourRange;
+				if (!startHour || !endHour) {
+					return true;
+				}
+
+				if (
+					startHour.getTime() > endHour.getTime() ||
+					(startHour.getHours() === endHour.getHours() &&
+						startHour.getMinutes() === endHour.getMinutes())
+				) {
+					return "Incorrect hour format";
+				}
+
+				return true;
+			},
+		},
 	};
 
 	const {

@@ -11,7 +11,6 @@ const ProtectedRoute = dynamic(() => import("../components/ProtectedRoute"), {
 
 const LogoutButton = dynamic(() => import("../components/LogoutButton"), {
 	ssr: false,
-
 });
 
 const HomeBreadcrumbs = dynamic(() => import("../components/HomeBreadcrumbs"), {
