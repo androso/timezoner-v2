@@ -13,6 +13,7 @@ import { Suspense } from "react";
 import { useAuth } from "../lib/context";
 import { addDoc, collection } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
+import { useRouter } from "next/router";
 
 const DatePicker = dynamic(() => import("react-datepicker"), {
 	ssr: false,
@@ -45,10 +46,9 @@ const TimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 export default function CreateEventForm() {
 	const formMethods = useForm<EventFormValues>({});
 	const { user } = useAuth();
-
+	const router = useRouter();
 	const submitForm: SubmitHandler<EventFormValues> = async (data) => {
-		const { dateRange, hour_range, description, eventTitle, timezone } =
-			data;
+		const { dateRange, hour_range, description, eventTitle, timezone } = data;
 		const dataSentToFirestore = {
 			date_range: {
 				start_date: dateRange[0],
@@ -60,7 +60,11 @@ export default function CreateEventForm() {
 			og_timezone: timezone,
 			organizer_id: user?.uid,
 		};
-		const eventDocRef = await addDoc(collection(firestore, "events"), dataSentToFirestore)
+		const eventDocRef = await addDoc(
+			collection(firestore, "events"),
+			dataSentToFirestore
+		);
+		router.push(`/events/${eventDocRef.id}`, undefined, { shallow: true });
 	};
 
 	return (
