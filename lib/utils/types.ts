@@ -68,3 +68,19 @@ export type HourPickerProps = baseFormFieldProps & {
 	control: Control<EventFormValues, any>;
 	name: "hour_range.start_hour" | "hour_range.end_hour";
 };
+
+
+export type EventDataFromFirestore = {
+	date_range: {
+		start_date: Date,
+		end_date: Date,
+	},
+	hour_range: {
+		start_hour: Date,
+		end_hour: Date
+	},
+	title: string,
+	description: string,
+	og_timezone: string,
+	organizer_id: string,
+}
