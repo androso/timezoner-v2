@@ -9,8 +9,10 @@ import {
 	FormProvider,
 } from "react-hook-form";
 import Input, { LoadingInput } from "./Input";
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { useAuth } from "../lib/context";
+import { addDoc, collection } from "firebase/firestore";
+import { firestore } from "../lib/firebase";
 
 const DatePicker = dynamic(() => import("react-datepicker"), {
 	ssr: false,
@@ -44,26 +46,21 @@ export default function CreateEventForm() {
 	const formMethods = useForm<EventFormValues>({});
 	const { user } = useAuth();
 
-	const submitForm: SubmitHandler<EventFormValues> = (data) => {
-		console.log(formMethods.formState.errors);
-		const { dateRange, startHour, endHour, description, eventTitle, timezone } =
+	const submitForm: SubmitHandler<EventFormValues> = async (data) => {
+		const { dateRange, hour_range, description, eventTitle, timezone } =
 			data;
 		const dataSentToFirestore = {
 			date_range: {
 				start_date: dateRange[0],
-				end_date: dateRange[1],
+				end_date: dateRange[1] ?? dateRange[0],
 			},
-			hour_range: {
-				start_hour: startHour,
-				end_hour: endHour,
-			},
+			hour_range,
 			title: eventTitle,
 			description: description,
 			og_timezone: timezone,
 			organizer_id: user?.uid,
 		};
-
-		// console.log(data);
+		const eventDocRef = await addDoc(collection(firestore, "events"), dataSentToFirestore)
 	};
 
 	return (

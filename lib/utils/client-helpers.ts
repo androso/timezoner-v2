@@ -56,6 +56,8 @@ export const sendUserToFirestore = async (user: User, provider: string) => {
 	}
 };
 
+
+
 export const getParsedDataFromUser = (user: User | null | undefined) => {
 	if (user) {
 		const username = user.displayName?.split(" ")[0] || "";
