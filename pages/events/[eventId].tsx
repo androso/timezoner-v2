@@ -2,14 +2,12 @@ import React from "react";
 import { useRouter } from "next/router";
 import { doc, getDoc } from "firebase/firestore";
 import { firestore } from "../../lib/firebase";
-import type { DocumentData } from "firebase/firestore";
-import { useAuth } from "../../lib/context";
 import ProtectedRoute from "../../components/ProtectedRoute";
-import { getParsedDataFromUser } from "../../lib/utils/client-helpers";
 import Header from "../../components/Header";
 import Container from "../../components/Layouts/Container";
 import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
 import { EventDataFromFirestore } from "../../lib/utils/types";
+import { useParsedUserData } from "../../lib/utils/hooks";
 
 //TODO: transform fetching to useAsync hook
 /* We're gonna need
@@ -17,8 +15,7 @@ import { EventDataFromFirestore } from "../../lib/utils/types";
    - User data (avatar)
 */
 export default function eventId() {
-	const { user } = useAuth();
-	const parsedUserData = getParsedDataFromUser(user);
+	const { parsedUser } = useParsedUserData();
 	const router = useRouter();
 	const { eventId } = router.query;
 	const [eventData, setEventData] = React.useState<EventDataFromFirestore>();
@@ -31,7 +28,7 @@ export default function eventId() {
 				if (docSnap.exists()) {
 					const data = docSnap.data() as EventDataFromFirestore;
 					setEventData(data);
-				};
+				}
 			}
 		};
 		fetchData();
@@ -46,7 +43,7 @@ export default function eventId() {
 			<Header
 				title={eventData?.title ?? undefined}
 				screenName="EVENT"
-				photoURL={parsedUserData?.photoURL ?? undefined}
+				photoURL={parsedUser?.photoURL ?? undefined}
 			/>
 			<Container className="pt-4 sm:pt-6">
 				<HomeBreadcrumbs currentPage="Event" />

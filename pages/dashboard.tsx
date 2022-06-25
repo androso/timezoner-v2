@@ -1,8 +1,7 @@
 import React from "react";
-import { useAuth } from "../lib/context";
 import dynamic from "next/dynamic";
-import { getParsedDataFromUser } from "../lib/utils/client-helpers";
 import type { BtnLinkProps, BtnProps } from "../components/LightButton";
+import { useParsedUserData } from "../lib/utils/hooks";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -29,16 +28,15 @@ const UpcomingEvents = dynamic(() => import("../components/UpcomingEvents"), {
 });
 
 export default function Dashboard() {
-	const { user } = useAuth();
-	const parsedUserData = getParsedDataFromUser(user);
+	const { parsedUser } = useParsedUserData();	
 
 	return (
 		<div>
 			<ProtectedRoute>
 				<Header
-					title={parsedUserData?.username ?? undefined}
+					title={parsedUser?.username ?? undefined}
 					screenName="PROFILE"
-					photoURL={parsedUserData?.photoURL ?? undefined}
+					photoURL={parsedUser?.photoURL ?? undefined}
 				/>
 				<Container className="pt-4 sm:pt-6">
 					<LightButtonLink
