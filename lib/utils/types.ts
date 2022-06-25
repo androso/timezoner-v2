@@ -41,7 +41,7 @@ export type hourRange = {
 }
 
 export type EventFormValues = {
-	eventTitle: string;
+	title: string;
 	description: string;
 	timezone: string;
 	dateRange: dateRange;
@@ -60,7 +60,7 @@ export type baseFormFieldProps = {
 };
 
 export type inputProps = baseFormFieldProps & {
-	name: "eventTitle" | "description";
+	name: "title" | "description";
 	register: UseFormRegister<EventFormValues>;
 };
 

@@ -48,14 +48,14 @@ export default function CreateEventForm() {
 	const { user } = useAuth();
 	const router = useRouter();
 	const submitForm: SubmitHandler<EventFormValues> = async (data) => {
-		const { dateRange, hour_range, description, eventTitle, timezone } = data;
+		const { dateRange, hour_range, description, title, timezone } = data;
 		const dataSentToFirestore = {
 			date_range: {
 				start_date: dateRange[0],
 				end_date: dateRange[1] ?? dateRange[0],
 			},
 			hour_range,
-			title: eventTitle,
+			title,
 			description: description,
 			og_timezone: timezone,
 			organizer_id: user?.uid,
@@ -64,6 +64,7 @@ export default function CreateEventForm() {
 			collection(firestore, "events"),
 			dataSentToFirestore
 		);
+		
 		router.push(`/events/${eventDocRef.id}`, undefined, { shallow: true });
 	};
 
@@ -85,7 +86,7 @@ export default function CreateEventForm() {
 						label="Title"
 						required
 						register={formMethods.register}
-						name="eventTitle"
+						name="title"
 					/>
 				</div>
 				<div className="mb-2">
