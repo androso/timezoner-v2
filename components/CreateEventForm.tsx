@@ -141,7 +141,7 @@ export default function CreateEventForm() {
 						}}
 					/>
 				</div>
-				<div className="mb-3">
+				<div className="mb-6">
 					<div className="flex ">
 						<div>
 							<Hourpicker

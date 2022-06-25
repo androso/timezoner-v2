@@ -10,7 +10,6 @@ export default function TimezonesSelect({
 }: {
 	register: UseFormRegister<EventFormValues>;
 }) {
-	// set required to true later
 	const select = register("timezone", { required: true });
 	return (
 		<Downshift
@@ -38,11 +37,11 @@ export default function TimezonesSelect({
 						/* 
 									// @ts-ignore */
 						{...getRootProps({}, { suppressRefError: true })}
-						className="flex"
+						className="flex w-full"
 					>
 						<input
 							{...getInputProps()}
-							className="basic-input-field grow rounded-r-none rounded-br-none border-r-0"
+							className="basic-input-field grow rounded-r-none rounded-br-none border-r-0 w-full"
 							onBlur={select.onBlur}
 							ref={select.ref}
 						/>
