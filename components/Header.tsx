@@ -6,14 +6,14 @@ import LogoutButton from "./LogoutButton";
 import avatarPlaceholder from "../public/placeholder-avatar.webp";
 
 type props = {
-	username: string | undefined;
+	title: string | undefined;
 	photoURL: string | undefined | StaticImageData;
 	screenName: string;
 };
 
 
 export default function Header({
-	username = "...",
+	title = "...",
 	photoURL = avatarPlaceholder,
 	screenName,
 }: props) {
@@ -38,7 +38,7 @@ export default function Header({
 							{screenName}
 						</p>
 						<h1 className="text-4xl font-bold break-words max-w-[100%] sm:text-6xl xl:text-8xl">
-							{capitalizeFirstLetter(username)}
+							{capitalizeFirstLetter(title)}
 						</h1>
 					</div>
 				</div>

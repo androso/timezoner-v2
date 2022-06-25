@@ -36,7 +36,7 @@ export default function Dashboard() {
 		<div>
 			<ProtectedRoute>
 				<Header
-					username={parsedUserData?.username ?? undefined}
+					title={parsedUserData?.username ?? undefined}
 					screenName="PROFILE"
 					photoURL={parsedUserData?.photoURL ?? undefined}
 				/>
