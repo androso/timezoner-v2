@@ -11,9 +11,10 @@ import {
 import Input, { LoadingInput } from "./Input";
 import { Suspense } from "react";
 import { useAuth } from "../lib/context";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
+import { useParsedUserData } from "../lib/utils/hooks";
 
 const DatePicker = dynamic(() => import("react-datepicker"), {
 	ssr: false,
@@ -39,33 +40,35 @@ const Hourpicker = dynamic(() => import("./Hourpicker"), {
 const TimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	suspense: true,
 });
-
-//TODO: don't allow user to add a endHour earlier than startHour
-//TODO: Store form data in local storage
-//TODO: Add validation
+//TODO WORKING ON: adding a reference of the user in firestore event
 export default function CreateEventForm() {
 	const formMethods = useForm<EventFormValues>({});
-	const { user } = useAuth();
+	const { parsedUser } = useParsedUserData();
 	const router = useRouter();
+
 	const submitForm: SubmitHandler<EventFormValues> = async (data) => {
 		const { dateRange, hour_range, description, title, timezone } = data;
-		const dataSentToFirestore = {
-			date_range: {
-				start_date: dateRange[0],
-				end_date: dateRange[1] ?? dateRange[0],
-			},
-			hour_range,
-			title,
-			description: description,
-			og_timezone: timezone,
-			organizer_id: user?.uid,
-		};
-		const eventDocRef = await addDoc(
-			collection(firestore, "events"),
-			dataSentToFirestore
-		);
-		
-		router.push(`/events/${eventDocRef.id}`, undefined, { shallow: true });
+
+		if (parsedUser) {
+			const dataSentToFirestore = {
+				date_range: {
+					start_date: dateRange[0],
+					end_date: dateRange[1] ?? dateRange[0],
+				},
+				hour_range,
+				title,
+				description: description,
+				og_timezone: timezone,
+				organizer_ref: doc(firestore, "users", parsedUser.id),
+			};
+
+			const eventDocRef = await addDoc(
+				collection(firestore, "events"),
+				dataSentToFirestore
+			);
+
+			router.push(`/events/${eventDocRef.id}`, undefined, { shallow: true });
+		}
 	};
 
 	return (

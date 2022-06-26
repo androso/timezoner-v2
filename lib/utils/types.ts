@@ -1,5 +1,6 @@
 import { Credential } from "firebase-admin/app";
 import { Control, UseFormRegister } from "react-hook-form";
+import { DocumentReference } from "firebase/firestore";
 export type adminAppConfig = {
 	credential: Credential;
 };
@@ -82,5 +83,5 @@ export type EventDataFromFirestore = {
 	title: string,
 	description: string,
 	og_timezone: string,
-	organizer_id: string,
+	organizer_ref: DocumentReference,
 }
