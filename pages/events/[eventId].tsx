@@ -8,6 +8,7 @@ import Container from "../../components/Layouts/Container";
 import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
 import { EventDataFromFirestore } from "../../lib/utils/types";
 import { useParsedUserData } from "../../lib/utils/hooks";
+import type { UserData } from "../../lib/utils/types";
 
 //TODO: transform fetching to useAsync hook
 /* We're gonna need
@@ -19,6 +20,7 @@ export default function eventId() {
 	const router = useRouter();
 	const { eventId } = router.query;
 	const [eventData, setEventData] = React.useState<EventDataFromFirestore>();
+	const [organizerData, setOrganizerData] = React.useState<UserData>();
 
 	React.useEffect(() => {
 		const fetchData = async () => {
@@ -27,6 +29,10 @@ export default function eventId() {
 				const docSnap = await getDoc(docRef);
 				if (docSnap.exists()) {
 					const data = docSnap.data() as EventDataFromFirestore;
+					const organizerSnap = await getDoc(data.organizer_ref);
+					if (organizerSnap.exists()) {
+						setOrganizerData(organizerSnap.data() as UserData);
+					}
 					setEventData(data);
 				}
 			}
@@ -34,9 +40,6 @@ export default function eventId() {
 		fetchData();
 	}, []);
 
-	React.useEffect(() => {
-		console.log(eventData);
-	}, [eventData]);
 
 	return (
 		<ProtectedRoute>
@@ -47,7 +50,8 @@ export default function eventId() {
 			/>
 			<Container className="pt-4 sm:pt-6">
 				<HomeBreadcrumbs currentPage="Event" />
-				<h1>Welcome to {"..."}'s Event</h1>
+				<h1 className="mb-5">Welcome to {organizerData?.username.split(" ")[0]}'s Event</h1>
+				<p>{eventData?.description ?? "..."}</p>
 			</Container>
 		</ProtectedRoute>
 	);

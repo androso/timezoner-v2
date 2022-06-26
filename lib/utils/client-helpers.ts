@@ -76,6 +76,7 @@ export const getParsedDataFromUser = (user: User | null | undefined) => {
 			username,
 			photoURL,
 			provider,
+			id: user.uid
 		};
 	}
 	return null;
