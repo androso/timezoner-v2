@@ -10,11 +10,10 @@ import {
 } from "react-hook-form";
 import Input, { LoadingInput } from "./Input";
 import { Suspense } from "react";
-import { useAuth } from "../lib/context";
 import { addDoc, collection, doc } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
-import { useParsedUserData } from "../lib/utils/hooks";
+import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
 
 const DatePicker = dynamic(() => import("react-datepicker"), {
 	ssr: false,
