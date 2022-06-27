@@ -7,7 +7,7 @@ import Header from "../../components/Header";
 import Container from "../../components/Layouts/Container";
 import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
 import { EventDataFromFirestore } from "../../lib/utils/types";
-import { useParsedUserData } from "../../lib/utils/hooks";
+import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import type { UserData } from "../../lib/utils/types";
 
 //TODO: transform fetching to useAsync hook
@@ -21,8 +21,12 @@ export default function eventId() {
 	const { eventId } = router.query;
 	const [eventData, setEventData] = React.useState<EventDataFromFirestore>();
 	const [organizerData, setOrganizerData] = React.useState<UserData>();
+	// const {eventData, status, error} = useEventData()
+	// eventData.organizerData will be available too.
 
 	React.useEffect(() => {
+		if (!parsedUser) return;
+
 		const fetchData = async () => {
 			if (typeof eventId == "string") {
 				const docRef = doc(firestore, "events", eventId);
@@ -38,8 +42,7 @@ export default function eventId() {
 			}
 		};
 		fetchData();
-	}, []);
-
+	}, [parsedUser]);
 
 	return (
 		<ProtectedRoute>
@@ -50,7 +53,9 @@ export default function eventId() {
 			/>
 			<Container className="pt-4 sm:pt-6">
 				<HomeBreadcrumbs currentPage="Event" />
-				<h1 className="mb-5">Welcome to {organizerData?.username.split(" ")[0]}'s Event</h1>
+				<h1 className="mb-5">
+					Welcome to {organizerData?.username.split(" ")[0]}'s Event
+				</h1>
 				<p>{eventData?.description ?? "..."}</p>
 			</Container>
 		</ProtectedRoute>

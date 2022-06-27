@@ -1,7 +1,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import type { BtnLinkProps, BtnProps } from "../components/LightButton";
-import { useParsedUserData } from "../lib/utils/hooks";
+import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -28,7 +28,7 @@ const UpcomingEvents = dynamic(() => import("../components/UpcomingEvents"), {
 });
 
 export default function Dashboard() {
-	const { parsedUser } = useParsedUserData();	
+	const { parsedUser } = useParsedUserData();
 
 	return (
 		<div>
