@@ -28,26 +28,25 @@ const UpcomingEvents = dynamic(() => import("../components/UpcomingEvents"), {
 });
 
 export default function Dashboard() {
+	//! use collection of events where the user is either the organizer of the event or a participant.
 	const { parsedUser } = useParsedUserData();
 
 	return (
-		<div>
-			<ProtectedRoute>
-				<Header
-					title={parsedUser?.username ?? undefined}
-					screenName="PROFILE"
-					photoURL={parsedUser?.photoURL ?? undefined}
+		<ProtectedRoute>
+			<Header
+				title={parsedUser?.username ?? undefined}
+				screenName="PROFILE"
+				photoURL={parsedUser?.avatar_url ?? undefined}
+			/>
+			<Container className="pt-4 sm:pt-6">
+				<LightButtonLink
+					redirectTo="/new-event"
+					innerText="Create Event"
+					css="mr-5"
 				/>
-				<Container className="pt-4 sm:pt-6">
-					<LightButtonLink
-						redirectTo="/new-event"
-						innerText="Create Event"
-						css="mr-5"
-					/>
-					<LightButton innerText="Join Event" />
-					<UpcomingEvents />
-				</Container>
-			</ProtectedRoute>
-		</div>
+				<LightButton innerText="Join Event" />
+				<UpcomingEvents />
+			</Container>
+		</ProtectedRoute>
 	);
 }
