@@ -1,6 +1,7 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import React from "react";
+import { useAuth } from "../../context";
 import { firestore } from "../../firebase";
 import { EventDataFromFirestore } from "../types";
 import useAsync from "./useAsync";
@@ -31,14 +32,16 @@ const useEventData = () => {
 	const { eventId } = router.query;
 	const { status, data, run, error, reset } = useAsync();
 	const eventData = data as EventDataFromFirestore;
+	const { user } = useAuth();
 
 	React.useEffect(() => {
-		if (!eventId) return;
+		if (!eventId || !user) return;
 
 		if (typeof eventId === "string") {
 			run(fetchEventData(eventId));
+			
 		}
-	}, [eventId]);
+	}, [eventId, user]);
 
 	return {
 		eventData,
