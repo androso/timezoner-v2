@@ -50,7 +50,7 @@ export const sendUserToFirestore = async (user: User, provider: string) => {
 			return await setDoc(doc(firestore, "users", userId), {
 				username: user.displayName,
 				email: user.email,
-				avatar_url: getHighQualityAvatar(user.photoURL, "google.com"),
+				avatar_url: getHighQualityAvatar(user.photoURL || '3', "google.com"),
 				provider,
 				id: userId,
 			});
