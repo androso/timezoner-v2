@@ -31,7 +31,7 @@ const useEventData = () => {
 	const router = useRouter();
 	const { eventId } = router.query;
 	const { status, data, run, error, reset } = useAsync();
-	const eventData = data as EventDataFromFirestore;
+	const eventData = data as EventDataFromFirestore | null;
 	const { user } = useAuth();
 
 	React.useEffect(() => {
