@@ -6,7 +6,6 @@ import styles from "../styles/Home.module.css";
 import UnprotectedRoute from "../components/UnprotectedRoute";
 
 export default function Home() {
-	//! use collection of events where the user is either the organizer of the event or a participant.
 	return (
 		<UnprotectedRoute>
 			<div className={styles.container}>

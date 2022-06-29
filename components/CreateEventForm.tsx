@@ -66,7 +66,7 @@ export default function CreateEventForm() {
 				dataSentToFirestore
 			);
 
-			router.push(`/events/${eventDocRef.id}`, undefined, { shallow: true });
+			router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });
 		}
 	};
 
