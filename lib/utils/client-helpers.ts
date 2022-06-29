@@ -1,6 +1,7 @@
 import { User } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
+import { UserData } from "./types";
 
 const defaultGoogleAvatarSize = 96;
 
@@ -51,32 +52,33 @@ export const sendUserToFirestore = async (user: User, provider: string) => {
 				email: user.email,
 				avatar_url: user.photoURL,
 				provider,
+				id: userId,
 			});
 		}
 	}
 };
 
-
-
-export const getParsedDataFromUser = (user: User | null | undefined) => {
+export const getParsedDataFromUser = (
+	user: User | null | undefined
+): UserData | null => {
 	if (user) {
 		const username = user.displayName?.split(" ")[0] || "";
 		const provider = user?.providerData[0]?.providerId || "discord";
 
-		let photoURL = "";
+		let avatar_url = "";
 		if (provider === "discord") {
-			photoURL = user.photoURL || "";
+			avatar_url = user.photoURL || "";
 		} else {
 			//google
 			// get a bigger image
-			photoURL =
-				user.photoURL?.replace(`s${defaultGoogleAvatarSize}-c`, "s256-c") || "";
+			avatar_url = getHighQualityAvatar(user.photoURL ?? "", "google.com");
 		}
 		return {
 			username,
-			photoURL,
+			avatar_url,
 			provider,
-			id: user.uid
+			id: user.uid,
+			email: user.email ?? "",
 		};
 	}
 	return null;

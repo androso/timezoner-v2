@@ -32,6 +32,7 @@ export type UserData = {
 	email: string;
 	provider: string;
 	avatar_url: string;
+	id: string;
 };
 
 export type dateRange = [Date | null, Date | null];
