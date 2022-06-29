@@ -38,7 +38,7 @@ export const capitalizeFirstLetter = (string: string | null) => {
 };
 
 export const sendUserToFirestore = async (user: User, provider: string) => {
-	if (provider === "google.com" || provider === "discord.com") {
+	if (provider === "google.com") {
 		const userId = user.uid;
 		const userDocRef = doc(firestore, "users", userId);
 		const userDocSnap = await getDoc(userDocRef);
@@ -50,7 +50,7 @@ export const sendUserToFirestore = async (user: User, provider: string) => {
 			return await setDoc(doc(firestore, "users", userId), {
 				username: user.displayName,
 				email: user.email,
-				avatar_url: user.photoURL,
+				avatar_url: getHighQualityAvatar(user.photoURL, "google.com"),
 				provider,
 				id: userId,
 			});
