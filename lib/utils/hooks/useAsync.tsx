@@ -2,11 +2,12 @@ import React from "react";
 import type { Reducer } from "react";
 
 enum AsyncActionType {
-	loading = "login",
+	loading = "loading",
 	resolved = "resolved",
 	rejected = "rejected",
+	reset = "idle",
 }
-type StatusTypes = "idle" | "loading" | "resolved" | "rejected";
+export type StatusTypes = "idle" | "loading" | "resolved" | "rejected";
 
 type AsyncReducerState = {
 	status: StatusTypes;
@@ -17,7 +18,8 @@ type AsyncReducerState = {
 type AsyncAction =
 	| { type: AsyncActionType.loading }
 	| { type: AsyncActionType.resolved; data: unknown }
-	| { type: AsyncActionType.rejected; error: Error };
+	| { type: AsyncActionType.rejected; error: Error }
+	| { type: AsyncActionType.reset; data: null; error: null };
 
 type InitialStateProps =
 	| {
@@ -40,6 +42,9 @@ const asyncReducer: Reducer<AsyncReducerState, AsyncAction> = (
 		}
 		case AsyncActionType.rejected: {
 			return { status: "rejected", data: null, error: action.error };
+		}
+		case AsyncActionType.reset: {
+			return { status: "idle", data: null, error: null };
 		}
 		default: {
 			throw new Error(`Unhandled action type`);
@@ -65,11 +70,15 @@ const useAsync = (initialState: InitialStateProps = {}) => {
 		);
 	}, []);
 
+	const reset = () =>
+		dispatch({ type: AsyncActionType.reset, data: null, error: null });
+
 	return {
 		error,
 		status,
 		data,
 		run,
+		reset
 	};
 };
 
