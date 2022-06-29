@@ -39,7 +39,7 @@ export type dateRange = [Date | null, Date | null];
 export type hourRange = {
 	start_hour: Date | null;
 	end_hour: Date | null;
-}
+};
 
 export type EventFormValues = {
 	title: string;
@@ -70,18 +70,18 @@ export type HourPickerProps = baseFormFieldProps & {
 	name: "hour_range.start_hour" | "hour_range.end_hour";
 };
 
-
 export type EventDataFromFirestore = {
 	date_range: {
-		start_date: Date,
-		end_date: Date,
-	},
+		start_date: Date;
+		end_date: Date;
+	};
 	hour_range: {
-		start_hour: Date,
-		end_hour: Date
-	},
-	title: string,
-	description: string,
-	og_timezone: string,
-	organizer_ref: DocumentReference,
-}
+		start_hour: Date;
+		end_hour: Date;
+	};
+	organizer_data: UserData;
+	title: string;
+	description: string;
+	og_timezone: string;
+	organizer_ref: DocumentReference;
+};
