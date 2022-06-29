@@ -7,7 +7,7 @@ const DynamicLoginForm = dynamic(() => import("../components/LoginForm"), {
 });
 
 type props = {
-	children: any;
+	children?: any;
 	options?: {
 		pathAfterFailure: string;
 	};
