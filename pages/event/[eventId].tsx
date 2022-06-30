@@ -4,27 +4,27 @@ import Header from "../../components/Header";
 import Container from "../../components/Layouts/Container";
 import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
 import useEventData from "../../lib/utils/hooks/useEventData";
+import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import { EventDataFromFirestore } from "../../lib/utils/types";
 
 export default function eventId() {
 	const { eventData, status, error } = useEventData();
+	const { parsedUser } = useParsedUserData();
+	//TODO: Show one component / screen if the user loggedIn is the organizer of this event
 
-	if (status === "resolved" || status === "loading" || status === "idle") {
-		return (
-			<ProtectedRoute>
-				<Header
-					title={eventData?.title ?? undefined}
-					screenName="EVENT"
-					photoURL={eventData?.organizer_data.avatar_url ?? undefined}
-				/>
-				<Container className="pt-4 sm:pt-6">
-					<HomeBreadcrumbs currentPage="Event" />
-					<h1 className="mb-5">
-						Welcome to {eventData?.organizer_data.username}'s Event
-					</h1>
-					<p>{eventData?.description ?? "..."}</p>
-				</Container>
-			</ProtectedRoute>
-		);
+	if (status === "loading" || status === "idle") {
+		return <LoadingOverview />;
+	}
+
+	if (status === "resolved") {
+		if (parsedUser && eventData) {
+			if (parsedUser?.id === eventData?.organizer_data.id) {
+				return <OrganizerOverview eventData={eventData} />;
+			} else {
+				return <ParticipantOverview eventData={eventData} />;
+			}
+		}
 	}
 
 	if (status === "rejected") {
@@ -37,4 +37,54 @@ export default function eventId() {
 			</ProtectedRoute>
 		);
 	}
+}
+
+function OrganizerOverview({
+	eventData,
+}: {
+	eventData: EventDataFromFirestore;
+}) {
+	return (
+		<>
+			<Header
+				title={eventData.title}
+				screenName="EVENT"
+				photoURL={eventData.organizer_data.avatar_url}
+			/>
+			<Container className="pt-4 sm:pt-6">
+				<HomeBreadcrumbs currentPage="Event" />
+			</Container>
+		</>
+	);
+}
+
+function ParticipantOverview({
+	eventData,
+}: {
+	eventData: EventDataFromFirestore;
+}) {
+	return (
+		<>
+			<Header
+				title={eventData.title}
+				screenName="EVENT"
+				photoURL={eventData.organizer_data.avatar_url}
+			/>
+			<Container className="pt-4 sm:pt-6">
+				<HomeBreadcrumbs currentPage="Event" />
+			</Container>
+		</>
+	);
+}
+
+function LoadingOverview() {
+	return (
+		<>
+			<Header title={undefined} screenName="EVENT" photoURL={undefined} />
+			<Container className="pt-4 sm:pt-6">
+				<HomeBreadcrumbs currentPage="Event" />
+				<LoadingSpinner css="h-60" />
+			</Container>
+		</>
+	);
 }
