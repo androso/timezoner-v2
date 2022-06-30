@@ -11,7 +11,6 @@ import { EventDataFromFirestore } from "../../lib/utils/types";
 export default function eventId() {
 	const { eventData, status, error } = useEventData();
 	const { parsedUser } = useParsedUserData();
-	//TODO: Show one component / screen if the user loggedIn is the organizer of this event
 
 	if (status === "loading" || status === "idle") {
 		return <LoadingOverview />;
@@ -51,8 +50,13 @@ function OrganizerOverview({
 				screenName="EVENT"
 				photoURL={eventData.organizer_data.avatar_url}
 			/>
-			<Container className="pt-4 sm:pt-6">
-				<HomeBreadcrumbs currentPage="Event" />
+			<Container className="pt-4 sm:pt-6 relative">
+				<HomeBreadcrumbs currentPage="Event Overview" />
+				<h2>Event availability</h2>
+				{/* // TODO: add settings icon here ! */}
+				<button className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md">
+					Settings
+				</button>
 			</Container>
 		</>
 	);
@@ -82,7 +86,7 @@ function LoadingOverview() {
 		<>
 			<Header title={undefined} screenName="EVENT" photoURL={undefined} />
 			<Container className="pt-4 sm:pt-6">
-				<HomeBreadcrumbs currentPage="Event" />
+				<HomeBreadcrumbs currentPage="..." />
 				<LoadingSpinner css="h-60" />
 			</Container>
 		</>
