@@ -16,7 +16,7 @@ export interface userContextType {
 	loading: boolean;
 }
 
-export const UserContext = createContext<userContextType | undefined>(
+const UserContext = createContext<userContextType | undefined>(
 	undefined
 );
 UserContext.displayName = "UserContext";
