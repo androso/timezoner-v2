@@ -1,16 +1,19 @@
 module.exports = {
 	mode: "jit",
-	content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+	content: [
+		"./pages/**/*.{js,ts,jsx,tsx}",
+		"./components/**/*.{js,ts,jsx,tsx}",
+	],
 	theme: {
 		extend: {
 			width: {
 				"avatar-sm-w": "9.375rem",
-				"container-sm": "22.75rem"
+				"container-sm": "22.75rem",
 			},
 			maxWidth: {
-				'tablet-max-w': '90%',
-				'mobile-max-w': '95%',
-				'desktop-max-w': '1300px'
+				"tablet-max-w": "90%",
+				"mobile-max-w": "95%",
+				"desktop-max-w": "1300px",
 			},
 			colors: {
 				lightBlue: "hsl(182, 100%, 88%)",
@@ -29,15 +32,15 @@ module.exports = {
 				darkLabel: "#414549",
 				headerBottom: "hsl(203, 13%, 25%);",
 				headerTop: "hsl(203, 13%, 40%);",
-				logoutBtnBottomColor:"hsl(0, 0%, 20%);",
-				logoutBtnTopColor:"hsl(0, 0%, 32%);",
+				darkBtnBottomColor: "hsl(0, 0%, 20%);",
+				darkBtnTopColor: "hsl(0, 0%, 32%);",
 				lightBtnBottColor: "hsl(184, 26%, 61%);",
 				lightBtnTopColor: "hsl(184, 27%, 83%);",
 				darkText: "hsl(210, 6%, 21%);",
 				secondaryTextColor: "hsl(0, 0%, 80%)",
 				softBlack: "hsl(0, 0%, 20%);",
 				softBlackTransparent: "hsl(0, 0%, 20%, .8);",
-				deepBlack: "hsla(0, 0%, 10%, 1);"
+				deepBlack: "hsla(0, 0%, 10%, 1);",
 			},
 			fontFamily: {
 				sans: ["Inter", "Poppins", "Roboto"],
