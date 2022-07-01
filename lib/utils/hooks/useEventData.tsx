@@ -6,7 +6,7 @@ import { useQuery } from "react-query";
 
 const fetchEventData = async (
 	eventId: string
-): Promise<EventDataFromFirestore | Error | undefined> => {
+): Promise<EventDataFromFirestore | undefined> => {
 	/*
 	 * fetchData should be returning
 	 * a single object with the eventData and organizerData, if succesful
@@ -23,6 +23,8 @@ const fetchEventData = async (
 				...eventData,
 				organizer_data: organizerData,
 			};
+		} else {
+			return Promise.reject(new Error("Document is corrupt :( no valid Organizer Data"))
 		}
 	} else {
 		return Promise.reject(new Error("Event not found :("));
@@ -32,7 +34,7 @@ const fetchEventData = async (
 const useEventData = () => {
 	const router = useRouter();
 	const { eventId } = router.query;
-	
+
 	const { status, data, error } = useQuery(
 		["eventData", eventId],
 		async () => {
