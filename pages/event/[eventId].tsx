@@ -31,12 +31,18 @@ export default function eventId() {
 		return (
 			<ProtectedRoute>
 				{error instanceof Error ? (
-					<pre>{error.message}</pre>
+					<Container css="pt-8">
+						<HomeBreadcrumbs currentPage="Event" />
+						<pre>{error.message}</pre>
+					</Container>
 				) : (
-					<p className="text-yellow-400">
-						Sorry, something went wrong with your request, try reloading the
-						page
-					</p>
+					<Container css="pt-8">
+						<HomeBreadcrumbs currentPage="Event" />
+						<p className="text-yellow-400">
+							Sorry, something went wrong with your request, try reloading the
+							page
+						</p>
+					</Container>
 				)}
 			</ProtectedRoute>
 		);
@@ -55,7 +61,7 @@ function OrganizerOverview({
 				screenName="EVENT"
 				photoURL={eventData.organizer_data.avatar_url}
 			/>
-			<Container className="pt-4 sm:pt-6 relative">
+			<Container css="pt-4 sm:pt-6 relative">
 				<HomeBreadcrumbs currentPage="Event Overview" />
 				<h2>Event availability</h2>
 				{/* // TODO: add settings icon here ! */}
@@ -84,7 +90,7 @@ function ParticipantOverview({
 				screenName="EVENT"
 				photoURL={eventData.organizer_data.avatar_url}
 			/>
-			<Container className="pt-4 sm:pt-6">
+			<Container css="pt-4 sm:pt-6">
 				<HomeBreadcrumbs currentPage="Event" />
 			</Container>
 		</>
@@ -95,9 +101,9 @@ function LoadingOverview() {
 	return (
 		<>
 			<Header title={undefined} screenName="EVENT" photoURL={undefined} />
-			<Container className="pt-4 sm:pt-6">
-				<HomeBreadcrumbs currentPage="..." />
-				<LoadingSpinner css="h-60" />
+			<Container css="pt-4 sm:pt-6">
+				<HomeBreadcrumbs currentPage="Event" />
+				<LoadingSpinner css="!h-60" />
 			</Container>
 		</>
 	);
