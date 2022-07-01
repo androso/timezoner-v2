@@ -30,10 +30,14 @@ export default function eventId() {
 	if (status === "error") {
 		return (
 			<ProtectedRoute>
-				<p className="text-yellow-400">
-					Sorry, something went wrong with your request, try reloading the page
-				</p>
-				<pre>{error ? JSON.stringify(error) : null}</pre>
+				{error instanceof Error ? (
+					<pre>{error.message}</pre>
+				) : (
+					<p className="text-yellow-400">
+						Sorry, something went wrong with your request, try reloading the
+						page
+					</p>
+				)}
 			</ProtectedRoute>
 		);
 	}
@@ -55,11 +59,14 @@ function OrganizerOverview({
 				<HomeBreadcrumbs currentPage="Event Overview" />
 				<h2>Event availability</h2>
 				{/* // TODO: add settings icon here ! */}
-				<button className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md" onClick={() => console.log("showing the form ! ")}>
+				<button
+					className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md"
+					onClick={() => console.log("showing the form ! ")}
+				>
 					Settings
 				</button>
 				{/* //TODO: ADD TABLE HERE */}
-				<EventAvailabalityTable/>
+				<EventAvailabalityTable />
 			</Container>
 		</>
 	);
