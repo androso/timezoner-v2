@@ -17,7 +17,7 @@ export default function eventId() {
 		return <LoadingOverview />;
 	}
 
-	if (status === "resolved") {
+	if (status === "success") {
 		if (parsedUser && eventData) {
 			if (parsedUser?.id === eventData?.organizer_data.id) {
 				return <OrganizerOverview eventData={eventData} />;
@@ -27,7 +27,7 @@ export default function eventId() {
 		}
 	}
 
-	if (status === "rejected") {
+	if (status === "error") {
 		return (
 			<ProtectedRoute>
 				<p className="text-yellow-400">

@@ -1,10 +1,8 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
-import React from "react";
-import { useAuth } from "../../context";
 import { firestore } from "../../firebase";
 import { EventDataFromFirestore } from "../types";
-import useAsync from "./useAsync";
+import { useQuery } from "react-query";
 
 const fetchEventData = async (eventId: string) => {
 	/*
@@ -12,6 +10,7 @@ const fetchEventData = async (eventId: string) => {
 	 * a single object with the eventData and organizerData, if succesful
 	 * an error if rejected
 	 */
+	//TODO: add error boundaries for edge-cases
 	const docRef = doc(firestore, "events", eventId);
 	const docSnap = await getDoc(docRef);
 	if (docSnap.exists()) {
@@ -30,18 +29,13 @@ const fetchEventData = async (eventId: string) => {
 const useEventData = () => {
 	const router = useRouter();
 	const { eventId } = router.query;
-	const { status, data, run, error, reset } = useAsync();
-	const eventData = data as EventDataFromFirestore | null;
-	const { user } = useAuth();
-
-	React.useEffect(() => {
-		if (!eventId || !user) return;
-
+	const { status, data, error } = useQuery(["eventData", eventId], async () => {
 		if (typeof eventId === "string") {
-			run(fetchEventData(eventId));
-			
+			const data = await fetchEventData(eventId);
+			return data;
 		}
-	}, [eventId, user]);
+	});
+	const eventData = data as EventDataFromFirestore | undefined;
 
 	return {
 		eventData,
