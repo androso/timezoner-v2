@@ -1,4 +1,5 @@
 TODO:
+- Start using react-query with firestore for keeping stale eventdata
 - Add error boundary
 - Replace React-select and React-datepicker w lightweight options
 - Move the login (google + discord and leave some space for email and password) and logout to AuthProvider @ context.tsx2

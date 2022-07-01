@@ -7,6 +7,7 @@ import useEventData from "../../lib/utils/hooks/useEventData";
 import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { EventDataFromFirestore } from "../../lib/utils/types";
+import EventAvailabalityTable from "../../components/EventAvailabalityTable";
 
 export default function eventId() {
 	const { eventData, status, error } = useEventData();
@@ -54,9 +55,11 @@ function OrganizerOverview({
 				<HomeBreadcrumbs currentPage="Event Overview" />
 				<h2>Event availability</h2>
 				{/* // TODO: add settings icon here ! */}
-				<button className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md">
+				<button className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md" onClick={() => console.log("showing the form ! ")}>
 					Settings
 				</button>
+				{/* //TODO: ADD TABLE HERE */}
+				<EventAvailabalityTable/>
 			</Container>
 		</>
 	);
