@@ -39,7 +39,7 @@ const Hourpicker = dynamic(() => import("./Hourpicker"), {
 const TimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	suspense: true,
 });
-//TODO WORKING ON: adding a reference of the user in firestore event
+
 export default function CreateEventForm() {
 	const formMethods = useForm<EventFormValues>({});
 	const { parsedUser } = useParsedUserData();

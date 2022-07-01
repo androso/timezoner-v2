@@ -27,7 +27,7 @@ export default function NewEvent() {
 				</Container>
 			</div>
 			<Container className="">
-				<HomeBreadcrumbs currentPage="Form" />
+				<HomeBreadcrumbs currentPage="Form" css="mb-14 "/>
 				<CreateEventForm />
 			</Container>
 		</ProtectedRoute>
