@@ -22,11 +22,11 @@ export default function NewEvent() {
 	return (
 		<ProtectedRoute>
 			<div className="h-16">
-				<Container className="relative">
+				<Container css="relative">
 					<LogoutButton />
 				</Container>
 			</div>
-			<Container className="">
+			<Container >
 				<HomeBreadcrumbs currentPage="Form" css="mb-14 "/>
 				<CreateEventForm />
 			</Container>
