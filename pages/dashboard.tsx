@@ -56,12 +56,13 @@ export default function Dashboard() {
 							allEvents &&
 							allEvents.map((event, index) => {
 								return (
-									<li key={event.id} className="mb-3">
+									<li key={event.id} className="mb-3 relative">
 										<EventThumbnail css="mb-2" eventData={event} />
 									</li>
 								);
 							})}
 					</ul>
+					
 				</div>
 			</Container>
 		</ProtectedRoute>

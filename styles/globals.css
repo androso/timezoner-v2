@@ -215,6 +215,32 @@ html {
 	background-color: hsl(187, 8%, 19%);
 }
 
+/* -------- EVENT BUTTONS GRADIENT TRANSITIONS -------- */
+
+/* .event-btn-transition {
+	background: linear-gradient(to top, hsl(0, 0%, 20%), hsl(0, 0%, 32%));
+	z-index: 0;
+} */
+.event-btn-transition::before {
+	position: absolute;
+	content: "";
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: linear-gradient(to top, hsl(200, 19%, 35%), hsl(200, 19%, 50%));
+	z-index: -1;
+	transition: opacity 0.3s linear, background 0.08s linear;
+	opacity: 0;
+}
+.event-btn-transition:hover::before {
+	opacity: 1;
+}
+
+.event-btn-transition:active::before {
+	background: linear-gradient(to top, hsl(200, 19%, 35%), hsl(200, 19%, 45%));
+}
+
 
 /* -------- DATE RANGE PICKER -------- */
 
