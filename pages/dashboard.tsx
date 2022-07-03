@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import type { BtnLinkProps, BtnProps } from "../components/LightButton";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
 import useAllUserEvents from "../lib/utils/hooks/useAllUserEvents";
+import EventThumbnail from "../components/EventThumbnail";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -53,7 +54,7 @@ export default function Dashboard() {
 					{allEventsStatus === "success" &&
 						allEvents &&
 						allEvents.map((event, index) => {
-							return <li key={index}>{event.title}</li>;
+							return <EventThumbnail eventData={event} key={index} />;
 						})}
 				</div>
 			</Container>
