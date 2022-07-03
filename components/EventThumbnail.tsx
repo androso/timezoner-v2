@@ -25,24 +25,24 @@ const getFormattedDate = (date: Date) => {
 };
 export default function EventThumbnail({
 	eventData,
+	css,
 }: {
 	eventData: EventData;
+	css?: string;
 }) {
 	const startDate = getFormattedDate(eventData.date_range.start_date);
 	const endDate = getFormattedDate(eventData.date_range.end_date);
 
 	return (
 		<Link href={`/event/${eventData.id}`}>
-			<a>
-				<div className="border-2 border-orange-400 flex">
-					<Image
-						src={eventData.organizer_data.avatar_url}
-						width="60"
-						height="60"
-					/>
-					<div>
-						<h6>{eventData.title}</h6>
-						<p>
+			<a className={`${css}`}>
+				<div className=" flex py-6 px-4 rounded-md bg-gradient-to-t from-eventGradientBott to-eventGradientTop">
+					<div className="mr-2 relative h-16 w-16">
+						<Image src={eventData.organizer_data.avatar_url} layout="fill" />
+					</div>
+					<div className="flex flex-col justify-center">
+						<h6 className="font-semibold text-xl">{eventData.title}</h6>
+						<p className="font-medium text-secondaryWhite">
 							{startDate} - {endDate}
 						</p>
 					</div>

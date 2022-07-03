@@ -49,13 +49,19 @@ export default function Dashboard() {
 				/>
 				<LightButton innerText="Join Event" css="mb-9" />
 				<div>
-					<h1>Upcoming Events</h1>
+					<h1 className="font-bold text-3xl mb-6">Upcoming Events</h1>
 					{/* //TODO: SORT THE EVENTS BASED ON FINISH DATE */}
-					{allEventsStatus === "success" &&
-						allEvents &&
-						allEvents.map((event, index) => {
-							return <EventThumbnail eventData={event} key={index} />;
-						})}
+					<ul>
+						{allEventsStatus === "success" &&
+							allEvents &&
+							allEvents.map((event, index) => {
+								return (
+									<li key={event.id} className="mb-3">
+										<EventThumbnail css="mb-2" eventData={event} />
+									</li>
+								);
+							})}
+					</ul>
 				</div>
 			</Container>
 		</ProtectedRoute>
