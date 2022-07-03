@@ -2,6 +2,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import type { BtnLinkProps, BtnProps } from "../components/LightButton";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
+import useAllUserEvents from "../lib/utils/hooks/useAllUserEvents";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -30,6 +31,7 @@ const UpcomingEvents = dynamic(() => import("../components/UpcomingEvents"), {
 export default function Dashboard() {
 	//! use collection of events where the user is either the organizer of the event or a participant.
 	const { parsedUser } = useParsedUserData();
+	const { allEvents, status: allEventsStatus } = useAllUserEvents();
 
 	return (
 		<ProtectedRoute>
@@ -38,14 +40,22 @@ export default function Dashboard() {
 				screenName="PROFILE"
 				photoURL={parsedUser?.avatar_url ?? undefined}
 			/>
-			<Container className="pt-4 sm:pt-6">
+			<Container css="pt-4 sm:pt-6">
 				<LightButtonLink
 					redirectTo="/new-event"
 					innerText="Create Event"
 					css="mr-5"
 				/>
-				<LightButton innerText="Join Event" />
-				<UpcomingEvents />
+				<LightButton innerText="Join Event" css="mb-9" />
+				<div>
+					<h1>Upcoming Events</h1>
+					{/* //TODO: SORT THE EVENTS BASED ON FINISH DATE */}
+					{allEventsStatus === "success" &&
+						allEvents &&
+						allEvents.map((event, index) => {
+							return <li key={index}>{event.title}</li>;
+						})}
+				</div>
 			</Container>
 		</ProtectedRoute>
 	);
