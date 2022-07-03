@@ -6,7 +6,7 @@ import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
 import useEventData from "../../lib/utils/hooks/useEventData";
 import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { EventDataFromFirestore } from "../../lib/utils/types";
+import { EventData } from "../../lib/utils/types";
 import EventAvailabalityTable from "../../components/EventAvailabalityTable";
 
 export default function eventId() {
@@ -52,7 +52,7 @@ export default function eventId() {
 function OrganizerOverview({
 	eventData,
 }: {
-	eventData: EventDataFromFirestore;
+	eventData: EventData;
 }) {
 	return (
 		<>
@@ -81,7 +81,7 @@ function OrganizerOverview({
 function ParticipantOverview({
 	eventData,
 }: {
-	eventData: EventDataFromFirestore;
+	eventData: EventData;
 }) {
 	return (
 		<>

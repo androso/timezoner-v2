@@ -71,7 +71,7 @@ export type HourPickerProps = baseFormFieldProps & {
 	name: "hour_range.start_hour" | "hour_range.end_hour";
 };
 
-export type EventDataFromFirestore = {
+export type EventData = {
 	date_range: {
 		start_date: Date;
 		end_date: Date;
