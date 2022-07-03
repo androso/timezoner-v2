@@ -1,17 +1,31 @@
 import {
 	collection,
-	doc,
+	DocumentReference,
 	FirestoreError,
 	getDoc,
 	onSnapshot,
 	query,
-	QuerySnapshot,
-	where,
+	Timestamp,
 } from "firebase/firestore";
 import React from "react";
 import { firestore } from "../../firebase";
 import { EventDataFromFirestore, UserData } from "../types";
 import useParsedUserData from "./useParsedUserData";
+
+type RawEventDataFromFirestore = {
+	date_range: {
+		start_date: Timestamp;
+		end_date: Timestamp;
+	};
+	hour_range: {
+		start_hour: Timestamp;
+		end_hour: Timestamp;
+	};
+	title: string;
+	description: string;
+	og_timezone: string;
+	organizer_ref: DocumentReference;
+};
 
 const useAllUserEvents = () => {
 	// gets all events where this user is in the organizer data or in the participants array
@@ -23,7 +37,7 @@ const useAllUserEvents = () => {
 		"loading" | "idle" | "success" | "error"
 	>("idle");
 	const [error, setError] = React.useState<null | FirestoreError>(null);
-	
+
 	React.useEffect(() => {
 		if (!parsedUser) return;
 
@@ -33,7 +47,20 @@ const useAllUserEvents = () => {
 			eventsQuery,
 			(eventsSnap) => {
 				eventsSnap.forEach((eventDoc) => {
-					const event = eventDoc.data() as EventDataFromFirestore;
+					const rawEventData = eventDoc.data() as RawEventDataFromFirestore;
+
+					const event = {
+						...rawEventData,
+						date_range: {
+							start_date: rawEventData.date_range.start_date.toDate(),
+							end_date: rawEventData.date_range.end_date.toDate(),
+						},
+						hour_range: {
+							start_hour: rawEventData.hour_range.start_hour.toDate(),
+							end_hour: rawEventData.hour_range.end_hour.toDate(),
+						},
+					} as EventDataFromFirestore;
+
 					// we get the organizer doc to check it they're the organizer
 					getDoc(event.organizer_ref).then((organizerSnap) => {
 						const organizerData = organizerSnap.data() as UserData;
