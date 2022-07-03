@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { EventData } from "../lib/utils/types";
 
@@ -31,14 +32,22 @@ export default function EventThumbnail({
 	const endDate = getFormattedDate(eventData.date_range.end_date);
 
 	return (
-		<div className="border-2 border-orange-400 flex">
-			<Image src={eventData.organizer_data.avatar_url} width="60" height="60" />
-			<div>
-				<h6>{eventData.title}</h6>
-				<p>
-					{startDate} - {endDate}
-				</p>
-			</div>
-		</div>
+		<Link href={`/event/${eventData.id}`}>
+			<a>
+				<div className="border-2 border-orange-400 flex">
+					<Image
+						src={eventData.organizer_data.avatar_url}
+						width="60"
+						height="60"
+					/>
+					<div>
+						<h6>{eventData.title}</h6>
+						<p>
+							{startDate} - {endDate}
+						</p>
+					</div>
+				</div>
+			</a>
+		</Link>
 	);
 }
