@@ -10,7 +10,13 @@
 	font-style: normal;
 	font-display: swap;
 }
-
+@font-face {
+	font-family: "Poppins";
+	src: url("/fonts/Poppins/Poppins-Medium.ttf");
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}	
 @font-face {
 	font-family: "Poppins";
 	src: url("/fonts/Poppins/Poppins-Bold.ttf");
@@ -37,6 +43,14 @@
 
 @font-face {
 	font-family: "Roboto";
+	src: url("/fonts/Roboto/Roboto-Medium.ttf");
+	font-weight: 500;
+	font-style: normal;
+}
+
+
+@font-face {
+	font-family: "Roboto";
 	src: url("/fonts/Roboto/Roboto-Bold.ttf");
 	font-weight: 700;
 	font-style: normal;
@@ -54,6 +68,14 @@
 	font-family: "Inter";
 	src: url("/fonts/Inter/Inter-Regular.ttf");
 	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/Inter/Inter-Medium.ttf");
+	font-weight: 500;
 	font-style: normal;
 	font-display: swap;
 }
