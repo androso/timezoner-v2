@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import React from "react";
 import { firestore } from "../../firebase";
-import { EventDataFromFirestore, UserData } from "../types";
+import { EventData, UserData } from "../types";
 import useParsedUserData from "./useParsedUserData";
 
 type RawEventDataFromFirestore = {
@@ -31,7 +31,7 @@ const useAllUserEvents = () => {
 	// gets all events where this user is in the organizer data or in the participants array
 	const { parsedUser } = useParsedUserData();
 	const [allEvents, setAllEvents] = React.useState<
-		EventDataFromFirestore[] | null
+		EventData[] | null
 	>(null);
 	const [status, setStatus] = React.useState<
 		"loading" | "idle" | "success" | "error"
@@ -48,24 +48,23 @@ const useAllUserEvents = () => {
 			(eventsSnap) => {
 				eventsSnap.forEach((eventDoc) => {
 					const rawEventData = eventDoc.data() as RawEventDataFromFirestore;
-
-					const event = {
-						...rawEventData,
-						date_range: {
-							start_date: rawEventData.date_range.start_date.toDate(),
-							end_date: rawEventData.date_range.end_date.toDate(),
-						},
-						hour_range: {
-							start_hour: rawEventData.hour_range.start_hour.toDate(),
-							end_hour: rawEventData.hour_range.end_hour.toDate(),
-						},
-					} as EventDataFromFirestore;
-
 					// we get the organizer doc to check it they're the organizer
-					getDoc(event.organizer_ref).then((organizerSnap) => {
+					getDoc(rawEventData.organizer_ref).then((organizerSnap) => {
 						const organizerData = organizerSnap.data() as UserData;
 						if (organizerData.id == parsedUser.id) {
-							event.organizer_data = organizerData;
+							const event = {
+								...rawEventData,
+								date_range: {
+									start_date: rawEventData.date_range.start_date.toDate(),
+									end_date: rawEventData.date_range.end_date.toDate(),
+								},
+								hour_range: {
+									start_hour: rawEventData.hour_range.start_hour.toDate(),
+									end_hour: rawEventData.hour_range.end_hour.toDate(),
+								},
+								organizer_data: organizerData,
+							};
+
 							setAllEvents((prevEvents) => {
 								if (prevEvents) {
 									return [...prevEvents, event];
