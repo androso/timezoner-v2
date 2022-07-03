@@ -10,7 +10,7 @@ import {
 } from "react-hook-form";
 import Input, { LoadingInput } from "./Input";
 import { Suspense } from "react";
-import { addDoc, collection, doc } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
@@ -49,6 +49,7 @@ export default function CreateEventForm() {
 		const { dateRange, hour_range, description, title, timezone } = data;
 
 		if (parsedUser) {
+			const eventDocRef = doc(collection(firestore, "events"));
 			const dataSentToFirestore = {
 				date_range: {
 					start_date: dateRange[0],
@@ -59,13 +60,9 @@ export default function CreateEventForm() {
 				description: description,
 				og_timezone: timezone,
 				organizer_ref: doc(firestore, "users", parsedUser.id),
+				id: eventDocRef.id,
 			};
-
-			const eventDocRef = await addDoc(
-				collection(firestore, "events"),
-				dataSentToFirestore
-			);
-
+			await setDoc(eventDocRef, dataSentToFirestore);
 			router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });
 		}
 	};

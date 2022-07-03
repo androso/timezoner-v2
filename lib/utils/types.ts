@@ -85,4 +85,5 @@ export type EventData = {
 	description: string;
 	og_timezone: string;
 	organizer_ref: DocumentReference;
+	id: string;
 };
