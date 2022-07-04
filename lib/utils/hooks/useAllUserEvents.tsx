@@ -4,6 +4,7 @@ import {
 	FirestoreError,
 	getDoc,
 	limit,
+	orderBy,
 	onSnapshot,
 	query,
 	Timestamp,
@@ -43,7 +44,7 @@ const useAllUserEvents = () => {
 		if (!parsedUser) return;
 
 		setStatus("loading");
-		const eventsQuery = query(collection(firestore, "events"));
+		const eventsQuery = query(collection(firestore, "events"), orderBy("date_range.start_date"));
 		let unsubscribe = onSnapshot(
 			eventsQuery,
 			(eventsSnap) => {
