@@ -1,4 +1,6 @@
 TODO:
+- Add pagination to all events 
+- check if we could use react-query for useAllEvents
 - Start using react-query with firestore for keeping stale eventdata
 - Add error boundary
 - Replace React-select and React-datepicker w lightweight options

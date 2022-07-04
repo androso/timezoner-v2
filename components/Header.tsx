@@ -37,7 +37,7 @@ export default function Header({
 						<p className="font-bold text-sm sm:text-base xl:text-lg">
 							{screenName}
 						</p>
-						<h1 className="text-4xl font-bold break-words max-w-[100%] sm:text-6xl xl:text-8xl">
+						<h1 className="text-4xl font-bold break-words max-w-[100%] sm:text-6xl xl:text-7xl">
 							{capitalizeFirstLetter(title)}
 						</h1>
 					</div>

@@ -3,6 +3,7 @@ import {
 	DocumentReference,
 	FirestoreError,
 	getDoc,
+	limit,
 	onSnapshot,
 	query,
 	Timestamp,
@@ -25,14 +26,14 @@ type RawEventDataFromFirestore = {
 	description: string;
 	og_timezone: string;
 	organizer_ref: DocumentReference;
+	id: string;
 };
 
 const useAllUserEvents = () => {
+	//TODO: paginate events in batches of 4-5 and order them based on their start date, (the sooner they are, the higher they appear)
 	// gets all events where this user is in the organizer data or in the participants array
 	const { parsedUser } = useParsedUserData();
-	const [allEvents, setAllEvents] = React.useState<
-		EventData[] | null
-	>(null);
+	const [allEvents, setAllEvents] = React.useState<EventData[] | null>(null);
 	const [status, setStatus] = React.useState<
 		"loading" | "idle" | "success" | "error"
 	>("idle");
