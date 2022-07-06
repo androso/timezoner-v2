@@ -116,7 +116,7 @@ export default function Dashboard() {
 				<LightButtonLink
 					redirectTo="/new-event"
 					innerText="Create Event"
-					css="mr-5"
+					css="mr-5 mb-3 sm:mb-9"
 				/>
 				<LightButton innerText="Join Event" css="mb-9" />
 				<div>

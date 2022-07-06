@@ -24,7 +24,7 @@ const getFormattedDate = (date: Date) => {
 	const day = date.getDate();
 	return `${month} ${day}`;
 };
-export default function EventThumbnail({
+function EventThumbnail({
 	eventData,
 	css,
 }: {
@@ -38,7 +38,7 @@ export default function EventThumbnail({
 		<Link href={`/event/${eventData.id}`}>
 			<a className={`${css} event-btn-transition`}>
 				<div className=" flex py-6 px-4 rounded-md bg-gradient-to-t from-eventGradientBott to-eventGradientTop z-0 event-btn-transition relative">
-					<div className="mr-2 relative h-16 w-16">
+					<div className="mr-2 relative h-16 w-16 sm:w-20 sm:h-20">
 						<Image
 							src={eventData.organizer_data.avatar_url}
 							layout="fill"
@@ -52,10 +52,12 @@ export default function EventThumbnail({
 						</p>
 					</div>
 					<span className="self-center mr-2 text-secondaryWhite">
-						<FontAwesomeIcon icon={faChevronRight} className="h-4" />
+						<FontAwesomeIcon icon={faChevronRight} className="h-5" />
 					</span>
 				</div>
 			</a>
 		</Link>
 	);
 }
+EventThumbnail.displayName = "EventThumbnail";
+export default EventThumbnail;
