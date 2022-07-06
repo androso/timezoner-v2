@@ -6,12 +6,14 @@ import useAllUserEvents from "../lib/utils/hooks/useAllUserEvents";
 import EventThumbnail from "../components/EventThumbnail";
 import {
 	collection,
+	getDoc,
 	getDocs,
 	limit,
 	orderBy,
 	query,
 	startAfter,
 	startAt,
+	where,
 } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
 import reactSelect from "react-select";
@@ -51,6 +53,7 @@ export default function Dashboard() {
 	const {
 		allEvents,
 		status: allEventsStatus,
+		setAllEvents,
 		lastDocSnap,
 	} = useAllUserEvents();
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
@@ -61,7 +64,7 @@ export default function Dashboard() {
 
 	React.useEffect(() => {
 		console.log(allEvents);
-	})
+	});
 	return (
 		<ProtectedRoute>
 			<Header
@@ -84,7 +87,21 @@ export default function Dashboard() {
 						</button>
 						<button
 							className="p-4 bg-gray-800 rounded-md "
-							onClick={() => {
+							onClick={async () => {
+								if (parsedUser) {
+									const eventsQuery = query(
+										collection(firestore, "events"),
+										where("organizer_id", "==", parsedUser.id),
+										orderBy("date_range.start_date"),
+										startAfter(lastDocSnap),
+										limit(10)
+									);
+									const snapshot = await getDocs(eventsQuery);
+									const { participatingEvents: nextBatchOfEvents } =
+										await getUserEventsData(snapshot);
+									// setEventsPageIndex(prevIndex => prevIndex + 1);
+								}
+
 								// if (allEvents) {
 								// 	const eventsQuery = query(
 								// 		collection(firestore, "events"),
