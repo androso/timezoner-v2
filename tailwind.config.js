@@ -12,7 +12,7 @@ module.exports = {
 			},
 			maxWidth: {
 				"tablet-max-w": "90%",
-				"mobile-max-w": "95%",
+				"mobile-max-w": "88%",
 				"desktop-max-w": "1300px",
 			},
 			colors: {

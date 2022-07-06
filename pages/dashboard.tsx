@@ -40,7 +40,6 @@ const LightButton = dynamic<BtnProps>(
 export default function Dashboard() {
 	//! use collection of events where the user is either the organizer of the event or a participant.
 	// currently we're only fetching events organized
-
 	const { parsedUser } = useParsedUserData();
 	const {
 		allEvents,
@@ -54,6 +53,57 @@ export default function Dashboard() {
 		eventsPageIndex * 5,
 		eventsPageIndex * 5 + 5
 	);
+
+	const handlePreviousPage = () =>
+		setEventsPageIndex((prevIndex) => prevIndex - 1);
+
+	const handleNextPage = async () => {
+		if (allEvents) {
+			const currentIndex = eventsPageIndex + 1; // so that we start from 1 instead of 0
+			const numberOfPagesAvailable = Math.ceil(allEvents.length / 5);
+			const isPageSecondToLast = numberOfPagesAvailable - 1 === currentIndex;
+
+			if (!lastDocSnap && currentIndex === numberOfPagesAvailable) {
+				console.log("button next should be disabled, find a way");
+				return;
+			}
+
+			if (isPageSecondToLast && lastDocSnap) {
+				// we fetch
+				if (parsedUser) {
+					const eventsQuery = query(
+						collection(firestore, "events"),
+						where("organizer_id", "==", parsedUser.id),
+						orderBy("date_range.start_date"),
+						startAfter(lastDocSnap),
+						limit(10)
+					);
+
+					const snapshot = await getDocs(eventsQuery);
+					const { participatingEvents: nextBatchOfEvents, lastEventSnapshot } =
+						await getUserEventsData(snapshot);
+
+					setAllEvents((prevEvents) => {
+						if (prevEvents) {
+							return [...prevEvents, ...nextBatchOfEvents];
+						} else {
+							return [...nextBatchOfEvents];
+						}
+					});
+					setEventsPageIndex((prevIndex) => prevIndex + 1);
+					if (!nextBatchOfEvents[0]) {
+						console.log("we should disable the button now");
+						setLastDocSnap(undefined);
+					} else {
+						setLastDocSnap(lastEventSnapshot);
+					}
+					return;
+				}
+			}
+			// we update the index by default
+			setEventsPageIndex((prevIndex) => prevIndex + 1);
+		}
+	};
 
 	return (
 		<ProtectedRoute>
@@ -70,81 +120,30 @@ export default function Dashboard() {
 				/>
 				<LightButton innerText="Join Event" css="mb-9" />
 				<div>
-					<div className="mb-6 flex">
-						<h1 className="font-bold text-3xl grow">Upcoming Events</h1>
-						<button
-							className="p-4 bg-gray-800 rounded-md mr-2  disabled:bg-gray-500"
-							disabled={eventsPageIndex === 0 ? true : false}
-							onClick={() => {
-								setEventsPageIndex((prevIndex) => prevIndex - 1);
-							}}
-						>
-							Previous
-						</button>
-						<p className="self-center mr-2 ">{eventsPageIndex + 1}</p>
-						<button
-							className={`p-4 bg-gray-800 rounded-md disabled:bg-gray-500`}
-							disabled={
-								allEvents &&
-								eventsPageIndex + 1 === Math.ceil(allEvents?.length / 5)
-									? true
-									: false
-							}
-							onClick={async () => {
-								if (allEvents) {
-									const currentIndex = eventsPageIndex + 1; // so that we start from 1 instead of 0
-									const numberOfPagesAvailable = Math.ceil(
-										allEvents.length / 5
-									);
-									const isPageSecondToLast =
-										numberOfPagesAvailable - 1 === currentIndex;
-
-									if (!lastDocSnap && currentIndex === numberOfPagesAvailable) {
-										console.log("button next should be disabled, find a way");
-										return;
-									}
-
-									if (isPageSecondToLast && lastDocSnap) {
-										// we fetch
-										if (parsedUser) {
-											const eventsQuery = query(
-												collection(firestore, "events"),
-												where("organizer_id", "==", parsedUser.id),
-												orderBy("date_range.start_date"),
-												startAfter(lastDocSnap),
-												limit(10)
-											);
-
-											const snapshot = await getDocs(eventsQuery);
-											const {
-												participatingEvents: nextBatchOfEvents,
-												lastEventSnapshot,
-											} = await getUserEventsData(snapshot);
-
-											setAllEvents((prevEvents) => {
-												if (prevEvents) {
-													return [...prevEvents, ...nextBatchOfEvents];
-												} else {
-													return [...nextBatchOfEvents];
-												}
-											});
-											setEventsPageIndex((prevIndex) => prevIndex + 1);
-											if (!nextBatchOfEvents[0]) {
-												console.log("we should disable the button now");
-												setLastDocSnap(undefined);
-											} else {
-												setLastDocSnap(lastEventSnapshot);
-											}
-											return;
-										}
-									}
-									// we update the index by default
-									setEventsPageIndex((prevIndex) => prevIndex + 1);
+					<div className="mb-6 flex flex-col sm:flex-row ">
+						<h1 className="font-bold text-3xl grow mb-5">Upcoming Events</h1>
+						<div className="flex">
+							<button
+								className="h-1/2 self-center p-3 sm:h-min  bg-gray-800 rounded-md mr-2  disabled:bg-gray-500"
+								disabled={eventsPageIndex === 0 ? true : false}
+								onClick={handlePreviousPage}
+							>
+								Previous
+							</button>
+							<p className="self-center mr-2 ">{eventsPageIndex + 1}</p>
+							<button
+								className={`h-1/2  self-center p-3 sm:h-min bg-gray-800 rounded-md disabled:bg-gray-500`}
+								disabled={
+									allEvents &&
+									eventsPageIndex + 1 === Math.ceil(allEvents?.length / 5)
+										? true
+										: false
 								}
-							}}
-						>
-							Next
-						</button>
+								onClick={handleNextPage}
+							>
+								Next
+							</button>
+						</div>
 					</div>
 					<ul>
 						{allEventsStatus === "success" &&

@@ -4,7 +4,7 @@ import React from "react";
 import { EventData } from "../lib/utils/types";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-//TODO: WORK ON HOW TO FORMAT CORRECTLY THE DATE RANGE
+
 const getFormattedDate = (date: Date) => {
 	const allMonths = [
 		"Jan",
