@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"dev": "next dev",
-		"emulators": "firebase emulators:start",
+		"emulators": "firebase emulators:start --import=./sample-data --export-on-exit",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
@@ -45,6 +45,7 @@
 		"@types/express": "^4.17.13",
 		"@types/lodash": "^4.14.182",
 		"@types/lodash.escaperegexp": "^4.1.7",
+		"@types/lodash.isequal": "^4.5.6",
 		"@types/node": "^17.0.24",
 		"@types/react": "^18.0.1",
 		"@types/react-datepicker": "^4.4.1",
