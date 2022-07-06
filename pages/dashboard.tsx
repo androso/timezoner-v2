@@ -107,10 +107,10 @@ export default function Dashboard() {
 									const isPageSecondToLast =
 										numberOfPagesAvailable - 1 === currentIndex;
 
-									if (isPageSecondToLast && !lastDocSnap) {
+									if (!lastDocSnap && currentIndex === numberOfPagesAvailable) {
 										//! this fires if you go to the last page, then back 1, then try to go next
 										console.log(
-											"button next should be disabled from now on, find a way"
+											"button next should be disabled, find a way"
 										);
 										return;
 									}
