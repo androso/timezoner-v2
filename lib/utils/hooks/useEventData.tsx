@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { firestore } from "../../firebase";
 import { EventData, UserData } from "../types";
 import { useQuery } from "react-query";
+import useAllUserEvents from "./useAllUserEvents";
 
 const fetchEventData = async (
 	eventId: string
@@ -24,7 +25,9 @@ const fetchEventData = async (
 				organizer_data: organizerData,
 			};
 		} else {
-			return Promise.reject(new Error("Document is corrupt :( no valid Organizer Data"))
+			return Promise.reject(
+				new Error("Document is corrupt :( no valid Organizer Data")
+			);
 		}
 	} else {
 		return Promise.reject(new Error("Event not found :("));
@@ -32,15 +35,29 @@ const fetchEventData = async (
 };
 
 const useEventData = () => {
+	// we could check if the event with eventId is saved in useAllUserEvents();
+	// if it's not, we call fetchEventData
+
 	const router = useRouter();
 	const { eventId } = router.query;
-
+	const { allEvents } = useAllUserEvents();
 	const { status, data, error } = useQuery(
-		["eventData", eventId],
+		["eventData", eventId, allEvents],
 		async () => {
-			if (typeof eventId === "string") {
-				const data = await fetchEventData(eventId);
-				return data;
+			if (typeof eventId === "string" && allEvents) {
+				let eventAlreadyFetched = allEvents.find(
+					(event) => event.id === eventId
+				);
+				if (eventAlreadyFetched) {
+					console.log("this event was found in the allUsers array");
+					return eventAlreadyFetched;
+				} else {
+					console.log(
+						"this event wasn't found in the allUsers array, and thus had to be fetched individually"
+					);
+					const data = await fetchEventData(eventId);
+					return data;
+				}
 			}
 		},
 		{

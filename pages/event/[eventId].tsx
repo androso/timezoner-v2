@@ -8,14 +8,19 @@ import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { EventData } from "../../lib/utils/types";
 import EventAvailabalityTable from "../../components/EventAvailabalityTable";
+import { EventsProvider } from "../../lib/context/allUserEvents";
 
-export default function eventId() {
+export default function Page() {
+	return (
+		<EventsProvider>
+			<EventId />
+		</EventsProvider>
+	);
+}
+
+function EventId() {
 	const { eventData, status, error } = useEventData();
 	const { parsedUser } = useParsedUserData();
-
-	if (status === "loading" || status === "idle") {
-		return <LoadingOverview />;
-	}
 
 	if (status === "success") {
 		if (parsedUser && eventData) {
@@ -26,7 +31,6 @@ export default function eventId() {
 			}
 		}
 	}
-
 	if (status === "error") {
 		return (
 			<ProtectedRoute>
@@ -47,13 +51,16 @@ export default function eventId() {
 			</ProtectedRoute>
 		);
 	}
+	// if (status === "loading" || status === "idle") {
+	return (
+		<ProtectedRoute>
+			<LoadingOverview />
+		</ProtectedRoute>
+	);
+	// }
 }
 
-function OrganizerOverview({
-	eventData,
-}: {
-	eventData: EventData;
-}) {
+function OrganizerOverview({ eventData }: { eventData: EventData }) {
 	return (
 		<>
 			<Header
@@ -78,11 +85,7 @@ function OrganizerOverview({
 	);
 }
 
-function ParticipantOverview({
-	eventData,
-}: {
-	eventData: EventData;
-}) {
+function ParticipantOverview({ eventData }: { eventData: EventData }) {
 	return (
 		<>
 			<Header
