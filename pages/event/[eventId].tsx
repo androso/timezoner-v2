@@ -9,6 +9,8 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { EventData } from "../../lib/utils/types";
 import EventAvailabalityTable from "../../components/EventAvailabalityTable";
 import { EventsProvider } from "../../lib/context/allUserEvents";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
 
 export default function Page() {
 	return (
@@ -73,9 +75,10 @@ function OrganizerOverview({ eventData }: { eventData: EventData }) {
 				<h2>Event availability</h2>
 				{/* // TODO: add settings icon here ! */}
 				<button
-					className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md"
+					className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md flex "
 					onClick={() => console.log("showing the form ! ")}
 				>
+					<FontAwesomeIcon icon={faGear} className="w-5 h-5 mr-2"/>
 					Settings
 				</button>
 				{/* //TODO: ADD TABLE HERE */}
