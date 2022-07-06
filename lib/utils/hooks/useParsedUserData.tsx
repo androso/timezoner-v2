@@ -1,4 +1,4 @@
-import { useAuth } from "../../context";
+import { useAuth } from "../../context/auth";
 import { getParsedDataFromUser } from "../client-helpers";
 
 const useParsedUserData = () => {

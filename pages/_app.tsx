@@ -1,5 +1,5 @@
 import "../styles/globals.css";
-import { AuthProvider } from "../lib/context";
+import { AuthProvider } from "../lib/context/auth";
 
 import dynamic from "next/dynamic";
 import type { AppProps } from "next/app";

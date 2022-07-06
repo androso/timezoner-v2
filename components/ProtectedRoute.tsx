@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import React from "react";
-import { useAuth } from "../lib/context";
+import { useAuth } from "../lib/context/auth";
 
 const DynamicLoginForm = dynamic(() => import("../components/LoginForm"), {
 	ssr: false,
