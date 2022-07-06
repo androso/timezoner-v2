@@ -64,6 +64,7 @@ const useAllUserEvents = () => {
 		allEvents,
 		setAllEvents,
 		lastDocSnap,
+		setLastDocSnap
 	};
 };
 

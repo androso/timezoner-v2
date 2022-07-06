@@ -55,6 +55,7 @@ export default function Dashboard() {
 		status: allEventsStatus,
 		setAllEvents,
 		lastDocSnap,
+		setLastDocSnap
 	} = useAllUserEvents();
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
 	const currentPageEvents = allEvents?.slice(
@@ -88,6 +89,10 @@ export default function Dashboard() {
 						<button
 							className="p-4 bg-gray-800 rounded-md "
 							onClick={async () => {
+								if (!lastDocSnap) {
+									console.log(" no more events!");
+									return
+								}
 								if (parsedUser) {
 									const eventsQuery = query(
 										collection(firestore, "events"),
@@ -97,24 +102,20 @@ export default function Dashboard() {
 										limit(10)
 									);
 									const snapshot = await getDocs(eventsQuery);
-									const { participatingEvents: nextBatchOfEvents } =
+									const { participatingEvents: nextBatchOfEvents, lastEventSnapshot } =
 										await getUserEventsData(snapshot);
-									// setEventsPageIndex(prevIndex => prevIndex + 1);
+									setAllEvents(prevEvents => {
+										if (prevEvents) {
+											console.log("this is happening!", {prevEvents, nextBatchOfEvents})
+											return [...prevEvents, ...nextBatchOfEvents]
+										} else {
+											
+											return [...nextBatchOfEvents];
+										}
+									})
+									setEventsPageIndex(prevIndex => prevIndex + 1);
+									setLastDocSnap(lastEventSnapshot);
 								}
-
-								// if (allEvents) {
-								// 	const eventsQuery = query(
-								// 		collection(firestore, "events"),
-								// 		orderBy("date_range.start_date"),
-								// 		startAfter(lastDocSnap),
-								// 		limit(10)
-								// 	);
-								// 	//! we should only get events organized by user, put that logic into a function.
-								// 	getDocs(eventsQuery).then((snapshot) => {
-								// 		snapshot.forEach((doc) => console.log(doc.data()));
-								// 	});
-								// }
-								// setEventsPageIndex((prevIndex) => prevIndex + 1);
 							}}
 						>
 							Next
