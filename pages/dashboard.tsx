@@ -53,12 +53,11 @@ export default function Dashboard() {
 		status: allEventsStatus,
 		lastDocSnap,
 	} = useAllUserEvents();
-
-	// const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
-	// const currentPageEvents = allEvents?.slice(
-	// 	eventsPageIndex * 5,
-	// 	eventsPageIndex * 5 + 5
-	// );
+	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
+	const currentPageEvents = allEvents?.slice(
+		eventsPageIndex * 5,
+		eventsPageIndex * 5 + 5
+	);
 
 	React.useEffect(() => {
 		console.log(allEvents);
@@ -105,7 +104,7 @@ export default function Dashboard() {
 						</button>
 					</div>
 					<ul>
-						{allEventsStatus === "success" &&
+						{/* {allEventsStatus === "success" &&
 							allEvents &&
 							allEvents?.map((event, index) => {
 								return (
@@ -113,9 +112,9 @@ export default function Dashboard() {
 										<EventThumbnail css="mb-2" eventData={event} />
 									</li>
 								);
-							})}
+							})} */}
 
-						{/* {allEventsStatus === "success" &&
+						{allEventsStatus === "success" &&
 							currentPageEvents &&
 							currentPageEvents.map((event, index) => {
 								return (
@@ -123,7 +122,7 @@ export default function Dashboard() {
 										<EventThumbnail css="mb-2" eventData={event} />
 									</li>
 								);
-							})} */}
+							})}
 					</ul>
 				</div>
 			</Container>
