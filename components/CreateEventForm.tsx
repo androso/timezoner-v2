@@ -60,7 +60,8 @@ export default function CreateEventForm() {
 				description: description,
 				og_timezone: timezone,
 				organizer_ref: doc(firestore, "users", parsedUser.id),
-				id: eventDocRef.id,
+				organizer_id: parsedUser.id,
+				id: eventDocRef.id
 			};
 			await setDoc(eventDocRef, dataSentToFirestore);
 			router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });

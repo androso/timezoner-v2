@@ -1,6 +1,6 @@
 import { Credential } from "firebase-admin/app";
 import { Control, UseFormRegister } from "react-hook-form";
-import { DocumentReference } from "firebase/firestore";
+import { DocumentReference, Timestamp } from "firebase/firestore";
 export type adminAppConfig = {
 	credential: Credential;
 };
@@ -85,5 +85,24 @@ export type EventData = {
 	description: string;
 	og_timezone: string;
 	organizer_ref: DocumentReference;
+	organizer_id: string;
 	id: string;
 };
+
+export type RawEventDataFromFirestore = {
+	date_range: {
+		start_date: Timestamp;
+		end_date: Timestamp;
+	};
+	hour_range: {
+		start_hour: Timestamp;
+		end_hour: Timestamp;
+	};
+	title: string;
+	description: string;
+	og_timezone: string;
+	organizer_ref: DocumentReference;
+	organizer_id: string;
+	id: string;
+};
+
