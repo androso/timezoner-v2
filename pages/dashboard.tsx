@@ -4,6 +4,18 @@ import type { BtnLinkProps, BtnProps } from "../components/LightButton";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
 import useAllUserEvents from "../lib/utils/hooks/useAllUserEvents";
 import EventThumbnail from "../components/EventThumbnail";
+import {
+	collection,
+	getDocs,
+	limit,
+	orderBy,
+	query,
+	startAfter,
+	startAt,
+} from "firebase/firestore";
+import { firestore } from "../lib/firebase";
+import reactSelect from "react-select";
+import { getUserEventsData } from "../lib/utils/client-helpers";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -31,9 +43,26 @@ const UpcomingEvents = dynamic(() => import("../components/UpcomingEvents"), {
 
 export default function Dashboard() {
 	//! use collection of events where the user is either the organizer of the event or a participant.
-	const { parsedUser } = useParsedUserData();
-	const { allEvents, status: allEventsStatus } = useAllUserEvents();
+	// We could fetch two pages (10 documents) but only render the first 5 of them.
+	// We show the next button if there are more than 5 documents in the allEvents state,
+	// if not, it means this is the last page
 
+	const { parsedUser } = useParsedUserData();
+	const {
+		allEvents,
+		status: allEventsStatus,
+		lastDocSnap,
+	} = useAllUserEvents();
+
+	// const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
+	// const currentPageEvents = allEvents?.slice(
+	// 	eventsPageIndex * 5,
+	// 	eventsPageIndex * 5 + 5
+	// );
+
+	React.useEffect(() => {
+		console.log(allEvents);
+	})
 	return (
 		<ProtectedRoute>
 			<Header
@@ -49,20 +78,53 @@ export default function Dashboard() {
 				/>
 				<LightButton innerText="Join Event" css="mb-9" />
 				<div>
-					<h1 className="font-bold text-3xl mb-6">Upcoming Events</h1>
-					{/* //TODO: SORT THE EVENTS BASED ON FINISH DATE */}
+					<div className="mb-6 flex">
+						<h1 className="font-bold text-3xl grow">Upcoming Events</h1>
+						<button className="p-4 bg-gray-800 rounded-md mr-2">
+							Previous
+						</button>
+						<button
+							className="p-4 bg-gray-800 rounded-md "
+							onClick={() => {
+								// if (allEvents) {
+								// 	const eventsQuery = query(
+								// 		collection(firestore, "events"),
+								// 		orderBy("date_range.start_date"),
+								// 		startAfter(lastDocSnap),
+								// 		limit(10)
+								// 	);
+								// 	//! we should only get events organized by user, put that logic into a function.
+								// 	getDocs(eventsQuery).then((snapshot) => {
+								// 		snapshot.forEach((doc) => console.log(doc.data()));
+								// 	});
+								// }
+								// setEventsPageIndex((prevIndex) => prevIndex + 1);
+							}}
+						>
+							Next
+						</button>
+					</div>
 					<ul>
 						{allEventsStatus === "success" &&
 							allEvents &&
-							allEvents.map((event, index) => {
+							allEvents?.map((event, index) => {
 								return (
 									<li key={event.id} className="mb-3 relative">
 										<EventThumbnail css="mb-2" eventData={event} />
 									</li>
 								);
 							})}
+
+						{/* {allEventsStatus === "success" &&
+							currentPageEvents &&
+							currentPageEvents.map((event, index) => {
+								return (
+									<li key={event.id} className="mb-3 relative">
+										<EventThumbnail css="mb-2" eventData={event} />
+									</li>
+								);
+							})} */}
 					</ul>
-					
 				</div>
 			</Container>
 		</ProtectedRoute>
