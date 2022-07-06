@@ -16,8 +16,8 @@ import {
 	where,
 } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
-import reactSelect from "react-select";
 import { getUserEventsData } from "../lib/utils/client-helpers";
+import _isEqual from "lodash.isequal";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -55,7 +55,7 @@ export default function Dashboard() {
 		status: allEventsStatus,
 		setAllEvents,
 		lastDocSnap,
-		setLastDocSnap
+		setLastDocSnap,
 	} = useAllUserEvents();
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
 	const currentPageEvents = allEvents?.slice(
@@ -64,8 +64,9 @@ export default function Dashboard() {
 	);
 
 	React.useEffect(() => {
-		console.log(allEvents);
+		// console.log(allEvents);
 	});
+
 	return (
 		<ProtectedRoute>
 			<Header
@@ -83,43 +84,121 @@ export default function Dashboard() {
 				<div>
 					<div className="mb-6 flex">
 						<h1 className="font-bold text-3xl grow">Upcoming Events</h1>
-						<button className="p-4 bg-gray-800 rounded-md mr-2" onClick={() => {
-
-						}}>
+						<button
+							className="p-4 bg-gray-800 rounded-md mr-2  disabled:bg-gray-500"
+							disabled={eventsPageIndex === 0 ? true : false}
+							onClick={() => {
+								setEventsPageIndex((prevIndex) => prevIndex - 1);
+							}}
+						>
 							Previous
 						</button>
 						<p className="self-center mr-2 ">{eventsPageIndex + 1}</p>
 						<button
 							className={`p-4 bg-gray-800 rounded-md disabled:bg-gray-500`}
-							disabled={!lastDocSnap ? true : false}
+							// disabled={!lastDocSnap && (eventsPageIndex === Math.floor(allEvents?.length / 5) -1) ? true : false}
 							onClick={async () => {
-								if (!lastDocSnap) {
-									console.log(" no more events!");
-									return
-								}
-								if (parsedUser) {
-									const eventsQuery = query(
-										collection(firestore, "events"),
-										where("organizer_id", "==", parsedUser.id),
-										orderBy("date_range.start_date"),
-										startAfter(lastDocSnap),
-										limit(10)
+								//! WORKING ON:
+								if (allEvents) {
+									const currentIndex = eventsPageIndex + 1; // so that we start from 1 instead of 0
+									const numberOfPagesAvailable = Math.ceil(
+										allEvents.length / 5
 									);
-									const snapshot = await getDocs(eventsQuery);
-									const { participatingEvents: nextBatchOfEvents, lastEventSnapshot } =
-										await getUserEventsData(snapshot);
-									setAllEvents(prevEvents => {
-										if (prevEvents) {
-											console.log("this is happening!", {prevEvents, nextBatchOfEvents})
-											return [...prevEvents, ...nextBatchOfEvents]
-										} else {
-											
-											return [...nextBatchOfEvents];
+									const isPageSecondToLast =
+										numberOfPagesAvailable - 1 === currentIndex;
+
+									if (isPageSecondToLast && !lastDocSnap) {
+										//! this fires if you go to the last page, then back 1, then try to go next
+										console.log(
+											"button next should be disabled from now on, find a way"
+										);
+										return;
+									}
+
+									if (!isPageSecondToLast && lastDocSnap) {
+										// we just update the eventspageindex
+										setEventsPageIndex((prevIndex) => prevIndex + 1);
+									}
+
+									if (isPageSecondToLast && lastDocSnap) {
+										// we fetch
+										// console.log("we fetch mijo");
+										if (parsedUser) {
+											const eventsQuery = query(
+												collection(firestore, "events"),
+												where("organizer_id", "==", parsedUser.id),
+												orderBy("date_range.start_date"),
+												startAfter(lastDocSnap),
+												limit(10)
+											);
+
+											const snapshot = await getDocs(eventsQuery);
+											const {
+												participatingEvents: nextBatchOfEvents,
+												lastEventSnapshot,
+											} = await getUserEventsData(snapshot);
+
+											setAllEvents((prevEvents) => {
+												if (prevEvents) {
+													return [...prevEvents, ...nextBatchOfEvents];
+												} else {
+													return [...nextBatchOfEvents];
+												}
+											});
+											setEventsPageIndex((prevIndex) => prevIndex + 1);
+											if (!nextBatchOfEvents[0]) {
+												console.log("we should disable the button now");
+												setLastDocSnap(undefined);
+											} else {
+												setLastDocSnap(lastEventSnapshot);
+											}
 										}
-									})
-									setEventsPageIndex(prevIndex => prevIndex + 1);
-									setLastDocSnap(lastEventSnapshot);
+									}
+									// console.log("unhandled :(");
+									console.log({ isPageSecondToLast, lastDocSnap });
 								}
+
+								// 	if (
+								// 		eventsPageIndex + 1 ===
+								// 		Math.ceil(allEvents.length / 5) - 1
+								// 	) {
+								// 		// console.log("we should fetch new next batch of events!");
+
+								// 		if (parsedUser) {
+								// 			const eventsQuery = query(
+								// 				collection(firestore, "events"),
+								// 				where("organizer_id", "==", parsedUser.id),
+								// 				orderBy("date_range.start_date"),
+								// 				startAfter(lastDocSnap),
+								// 				limit(10)
+								// 			);
+
+								// 			const snapshot = await getDocs(eventsQuery);
+								// 			const {
+								// 				participatingEvents: nextBatchOfEvents,
+								// 				lastEventSnapshot,
+								// 			} = await getUserEventsData(snapshot);
+								// 			console.log({ nextBatchOfEvents });
+								// 			setAllEvents((prevEvents) => {
+								// 				if (prevEvents) {
+								// 					return [...prevEvents, ...nextBatchOfEvents];
+								// 				} else {
+								// 					return [...nextBatchOfEvents];
+								// 				}
+								// 			});
+								// 			setEventsPageIndex((prevIndex) => prevIndex + 1);
+								// 			setLastDocSnap(lastEventSnapshot);
+								// 			console.log("we just fetched a new batch of events !");
+								// 		}
+								// 	} else {
+								// 		console.log("updating index");
+								// 		setEventsPageIndex((prevIndex) => prevIndex + 1);
+								// 	}
+								// }
+								// if (!lastDocSnap) {
+								// 	console.log(" no more events!");
+								// 	return;
+								// }
 							}}
 						>
 							Next
