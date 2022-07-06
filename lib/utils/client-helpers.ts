@@ -1,7 +1,13 @@
 import { User } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
+	doc,
+	DocumentData,
+	getDoc,
+	QuerySnapshot,
+	setDoc,
+} from "firebase/firestore";
 import { firestore } from "../firebase";
-import { UserData } from "./types";
+import { RawEventDataFromFirestore, UserData } from "./types";
 
 const defaultGoogleAvatarSize = 96;
 
@@ -50,7 +56,7 @@ export const sendUserToFirestore = async (user: User, provider: string) => {
 			return await setDoc(doc(firestore, "users", userId), {
 				username: user.displayName,
 				email: user.email,
-				avatar_url: getHighQualityAvatar(user.photoURL || '3', "google.com"),
+				avatar_url: getHighQualityAvatar(user.photoURL || "3", "google.com"),
 				provider,
 				id: userId,
 			});
@@ -99,3 +105,35 @@ export function getHighQualityAvatar(avatar_url: string, provider: string) {
 		return avatar_url;
 	}
 }
+
+export const getUserEventsData = async (
+	snapshot: QuerySnapshot<DocumentData>
+) => {
+	let lastEventSnapshot;
+	let participatingEvents = await Promise.all(
+		snapshot.docs.map(async (eventDoc, index) => {
+			const rawEventData = eventDoc.data() as RawEventDataFromFirestore;
+			const organizerData = (
+				await getDoc(rawEventData.organizer_ref)
+			).data() as UserData;
+
+			const event = {
+				...rawEventData,
+				date_range: {
+					start_date: rawEventData.date_range.start_date.toDate(),
+					end_date: rawEventData.date_range.end_date.toDate(),
+				},
+				hour_range: {
+					start_hour: rawEventData.hour_range.start_hour.toDate(),
+					end_hour: rawEventData.hour_range.end_hour.toDate(),
+				},
+				organizer_data: organizerData,
+			};
+			if (index === snapshot.docs.length - 1) {
+				lastEventSnapshot = eventDoc;
+			}
+			return event;
+		})
+	);
+	return { participatingEvents, lastEventSnapshot };
+};
