@@ -83,11 +83,15 @@ export default function Dashboard() {
 				<div>
 					<div className="mb-6 flex">
 						<h1 className="font-bold text-3xl grow">Upcoming Events</h1>
-						<button className="p-4 bg-gray-800 rounded-md mr-2">
+						<button className="p-4 bg-gray-800 rounded-md mr-2" onClick={() => {
+
+						}}>
 							Previous
 						</button>
+						<p className="self-center mr-2 ">{eventsPageIndex + 1}</p>
 						<button
-							className="p-4 bg-gray-800 rounded-md "
+							className={`p-4 bg-gray-800 rounded-md disabled:bg-gray-500`}
+							disabled={!lastDocSnap ? true : false}
 							onClick={async () => {
 								if (!lastDocSnap) {
 									console.log(" no more events!");
