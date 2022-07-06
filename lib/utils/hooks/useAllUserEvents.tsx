@@ -1,37 +1,23 @@
 import {
 	collection,
-	DocumentReference,
 	FirestoreError,
 	getDoc,
 	limit,
 	orderBy,
 	onSnapshot,
 	query,
-	Timestamp,
+	QueryDocumentSnapshot,
+	where,
 } from "firebase/firestore";
 import React from "react";
 import { firestore } from "../../firebase";
-import { EventData, UserData } from "../types";
+import { getUserEventsData } from "../client-helpers";
+import { EventData, RawEventDataFromFirestore, UserData } from "../types";
 import useParsedUserData from "./useParsedUserData";
-
-type RawEventDataFromFirestore = {
-	date_range: {
-		start_date: Timestamp;
-		end_date: Timestamp;
-	};
-	hour_range: {
-		start_hour: Timestamp;
-		end_hour: Timestamp;
-	};
-	title: string;
-	description: string;
-	og_timezone: string;
-	organizer_ref: DocumentReference;
-	id: string;
-};
 
 const useAllUserEvents = () => {
 	//TODO: paginate events in batches of 4-5 and order them based on their start date, (the sooner they are, the higher they appear)
+
 	// gets all events where this user is in the organizer data or in the participants array
 	const { parsedUser } = useParsedUserData();
 	const [allEvents, setAllEvents] = React.useState<EventData[] | null>(null);
@@ -39,43 +25,49 @@ const useAllUserEvents = () => {
 		"loading" | "idle" | "success" | "error"
 	>("idle");
 	const [error, setError] = React.useState<null | FirestoreError>(null);
+	const [lastDocSnap, setLastDocSnap] = React.useState<QueryDocumentSnapshot>();
 
 	React.useEffect(() => {
 		if (!parsedUser) return;
-
 		setStatus("loading");
-		const eventsQuery = query(collection(firestore, "events"), orderBy("date_range.start_date"));
+
+		const eventsQuery = query(
+			collection(firestore, "events"),
+			where("organizer_id", "==", parsedUser.id),
+			orderBy("date_range.start_date"),
+			limit(10)
+		);
+
 		let unsubscribe = onSnapshot(
 			eventsQuery,
-			(eventsSnap) => {
+			async (eventsSnap) => {
+				//! WORKING ON: Moving this to a helper function, so that it can be reused in dashboart, to feth userEvents.
 				eventsSnap.forEach((eventDoc) => {
 					const rawEventData = eventDoc.data() as RawEventDataFromFirestore;
 					// we get the organizer doc to check it they're the organizer
 					getDoc(rawEventData.organizer_ref).then((organizerSnap) => {
 						const organizerData = organizerSnap.data() as UserData;
-						if (organizerData.id == parsedUser.id) {
-							const event = {
-								...rawEventData,
-								date_range: {
-									start_date: rawEventData.date_range.start_date.toDate(),
-									end_date: rawEventData.date_range.end_date.toDate(),
-								},
-								hour_range: {
-									start_hour: rawEventData.hour_range.start_hour.toDate(),
-									end_hour: rawEventData.hour_range.end_hour.toDate(),
-								},
-								organizer_data: organizerData,
-							};
-
-							setAllEvents((prevEvents) => {
-								if (prevEvents) {
-									return [...prevEvents, event];
-								} else {
-									return [event];
-								}
-							});
-							setStatus("success");
-						}
+						const event = {
+							...rawEventData,
+							date_range: {
+								start_date: rawEventData.date_range.start_date.toDate(),
+								end_date: rawEventData.date_range.end_date.toDate(),
+							},
+							hour_range: {
+								start_hour: rawEventData.hour_range.start_hour.toDate(),
+								end_hour: rawEventData.hour_range.end_hour.toDate(),
+							},
+							organizer_data: organizerData,
+						};
+						setAllEvents((prevEvents) => {
+							if (prevEvents) {
+								return [...prevEvents, event];
+							} else {
+								return [event];
+							}
+						});
+						setLastDocSnap(eventDoc);
+						setStatus("success");
 					});
 				});
 			},
@@ -91,6 +83,8 @@ const useAllUserEvents = () => {
 		status,
 		error,
 		allEvents,
+		setAllEvents,
+		lastDocSnap,
 	};
 };
 
