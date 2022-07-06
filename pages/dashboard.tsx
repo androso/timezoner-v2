@@ -115,11 +115,6 @@ export default function Dashboard() {
 										return;
 									}
 
-									if (!isPageSecondToLast && lastDocSnap) {
-										// we just update the eventspageindex
-										setEventsPageIndex((prevIndex) => prevIndex + 1);
-									}
-
 									if (isPageSecondToLast && lastDocSnap) {
 										// we fetch
 										// console.log("we fetch mijo");
@@ -152,10 +147,11 @@ export default function Dashboard() {
 											} else {
 												setLastDocSnap(lastEventSnapshot);
 											}
+											return;
 										}
 									}
-									// console.log("unhandled :(");
-									console.log({ isPageSecondToLast, lastDocSnap });
+									// we update the index by default
+									setEventsPageIndex(prevIndex => prevIndex + 1);
 								}
 
 								// 	if (
