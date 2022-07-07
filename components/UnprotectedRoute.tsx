@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useAuth } from "../lib/context";
+import { useAuth } from "../lib/context/auth";
 
 type props = {
 	children: any;
