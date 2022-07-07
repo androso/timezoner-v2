@@ -8,19 +8,19 @@ import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { EventData } from "../../lib/utils/types";
 import EventAvailabalityTable from "../../components/EventAvailabalityTable";
-import { EventsProvider } from "../../lib/context/allUserEvents";
+// import { EventsProvider } from "../../lib/context/allUserEvents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 
-export default function Page() {
-	return (
-		<EventsProvider>
-			<EventId />
-		</EventsProvider>
-	);
-}
+// export default function Page() {
+// 	return (
+// 		<EventsProvider>
+// 			<EventId />
+// 		</EventsProvider>
+// 	);
+// }
 
-function EventId() {
+export default function EventId() {
 	const { eventData, status, error } = useEventData();
 	const { parsedUser } = useParsedUserData();
 
@@ -33,6 +33,7 @@ function EventId() {
 			}
 		}
 	}
+
 	if (status === "error") {
 		return (
 			<ProtectedRoute>
@@ -63,6 +64,10 @@ function EventId() {
 }
 
 function OrganizerOverview({ eventData }: { eventData: EventData }) {
+	const [showDialog, setShowDialog] = React.useState(false);
+	const open = () => setShowDialog(true);
+	const close = () => setShowDialog(false);
+
 	return (
 		<>
 			<Header
@@ -73,14 +78,14 @@ function OrganizerOverview({ eventData }: { eventData: EventData }) {
 			<Container css="pt-4 sm:pt-6 relative">
 				<HomeBreadcrumbs currentPage="Event Overview" />
 				<h2>Event availability</h2>
-				{/* // TODO: add settings icon here ! */}
 				<button
 					className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md flex "
-					onClick={() => console.log("showing the form ! ")}
+					onClick={open}
 				>
-					<FontAwesomeIcon icon={faGear} className="w-5 h-5 mr-2"/>
+					<FontAwesomeIcon icon={faGear} className="w-5 h-5 mr-2" />
 					Settings
 				</button>
+				
 				{/* //TODO: ADD TABLE HERE */}
 				<EventAvailabalityTable />
 			</Container>

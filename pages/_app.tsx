@@ -7,6 +7,7 @@ import type { PageWrapperProps } from "../components/Layouts/PageWrapper";
 import type { ToasterProps } from "react-hot-toast";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { EventsProvider } from "../lib/context/allUserEvents";
 const DynamicToaster = dynamic<ToasterProps>(
 	() => import("react-hot-toast").then((md) => md.Toaster),
 	{
@@ -28,8 +29,10 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<DynamicPageWrapper>
 			<QueryClientProvider client={queryClient}>
 				<AuthProvider>
-					<Component {...pageProps} />
-					<DynamicToaster />
+					<EventsProvider>
+						<Component {...pageProps} />
+						<DynamicToaster />
+					</EventsProvider>
 				</AuthProvider>
 				<ReactQueryDevtools initialIsOpen={false} />
 			</QueryClientProvider>

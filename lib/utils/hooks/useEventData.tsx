@@ -3,7 +3,8 @@ import { useRouter } from "next/router";
 import { firestore } from "../../firebase";
 import { EventData, UserData } from "../types";
 import { useQuery } from "react-query";
-import useAllUserEvents from "./useAllUserEvents";
+// import useAllUserEvents from "./useAllUserEvents";
+import { useAllEvents } from "../../context/allUserEvents";
 
 const fetchEventData = async (
 	eventId: string
@@ -40,7 +41,7 @@ const useEventData = () => {
 
 	const router = useRouter();
 	const { eventId } = router.query;
-	const { allEvents } = useAllUserEvents();
+	const { allEvents } = useAllEvents();
 	const { status, data, error } = useQuery(
 		["eventData", eventId, allEvents],
 		async () => {
@@ -65,7 +66,7 @@ const useEventData = () => {
 		}
 	);
 	const eventData = data as EventData | undefined;
-
+	
 	return {
 		eventData,
 		status,

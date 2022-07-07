@@ -2,7 +2,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import type { BtnLinkProps, BtnProps } from "../components/LightButton";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
-import useAllUserEvents from "../lib/utils/hooks/useAllUserEvents";
+// import useAllUserEvents from "../lib/utils/hooks/useAllUserEvents";
 import EventThumbnail from "../components/EventThumbnail";
 import {
 	collection,
@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
 import { getUserEventsData } from "../lib/utils/client-helpers";
+import { useAllEvents } from "../lib/context/allUserEvents";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -37,6 +38,13 @@ const LightButton = dynamic<BtnProps>(
 	{ ssr: false }
 );
 
+// export default function Page () {
+// 	return (
+// 		<EventsProvider>
+// 			<Dashboard />
+// 		</EventsProvider>
+// 	)
+// }
 export default function Dashboard() {
 	//! use collection of events where the user is either the organizer of the event or a participant.
 	// currently we're only fetching events organized
@@ -47,7 +55,8 @@ export default function Dashboard() {
 		setAllEvents,
 		lastDocSnap,
 		setLastDocSnap,
-	} = useAllUserEvents();
+	} = useAllEvents();
+
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
 	const currentPageEvents = allEvents?.slice(
 		eventsPageIndex * 5,
