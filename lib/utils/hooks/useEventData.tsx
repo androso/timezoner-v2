@@ -3,8 +3,8 @@ import { useRouter } from "next/router";
 import { firestore } from "../../firebase";
 import { EventData, UserData } from "../types";
 import { useQuery } from "react-query";
-// import useAllUserEvents from "./useAllUserEvents";
 import { useAllEvents } from "../../context/allUserEvents";
+import useParsedUserData from "./useParsedUserData";
 
 const fetchEventData = async (
 	eventId: string
@@ -38,27 +38,36 @@ const fetchEventData = async (
 const useEventData = () => {
 	// we could check if the event with eventId is saved in useAllUserEvents();
 	// if it's not, we call fetchEventData
-
 	const router = useRouter();
 	const { eventId } = router.query;
 	const { allEvents } = useAllEvents();
+	const { parsedUser } = useParsedUserData();
 	const { status, data, error } = useQuery(
-		["eventData", eventId, allEvents],
+		["eventData", eventId, allEvents, parsedUser],
 		async () => {
-			if (typeof eventId === "string" && allEvents) {
-				let eventAlreadyFetched = allEvents.find(
+			//! We should fetch only if the user is authenticated AND authorized
+			if (!router.isReady) {
+				// console.log("router is not ready yet");
+				return;
+			}
+			if (typeof eventId === "string") {
+				let eventAlreadyFetched = allEvents?.find(
 					(event) => event.id === eventId
 				);
 				if (eventAlreadyFetched) {
-					console.log("this event was found in the allUsers array");
+					// console.log("this event was found in the allUsers array");
 					return eventAlreadyFetched;
-				} else {
-					console.log(
-						"this event wasn't found in the allUsers array, and thus had to be fetched individually"
-					);
+				} else if (parsedUser) {
+					// console.log("this event wasn't found in the allUsers array, and thus had to be fetched individually");
 					const data = await fetchEventData(eventId);
 					return data;
+				} else {
+					// console.log("we're not fetching bc we're not authenticated");
+					return;
 				}
+				// console.log("what is this weird edge-case?")
+			} else {
+				// console.log("typeof eventId is not string", eventId);
 			}
 		},
 		{
@@ -66,7 +75,6 @@ const useEventData = () => {
 		}
 	);
 	const eventData = data as EventData | undefined;
-	
 	return {
 		eventData,
 		status,
