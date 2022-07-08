@@ -21,26 +21,34 @@ import { faGear } from "@fortawesome/free-solid-svg-icons";
 // }
 
 export default function EventId() {
-	const { eventData, status, error } = useEventData();
+	const { eventData, status: eventStatus, error: eventError } = useEventData();
 	const { parsedUser } = useParsedUserData();
+	// React.useEffect(() => {
+	// 	console.log({eventData, parsedUser});
+	// }, [eventData, parsedUser]);
+	//TODO:
+ 	//!ERROR: why eventstatus can be success but have no eventdata or parseduser?
 
-	if (status === "success") {
-		if (parsedUser && eventData) {
-			if (parsedUser?.id === eventData?.organizer_data.id) {
-				return <OrganizerOverview eventData={eventData} />;
-			} else {
-				return <ParticipantOverview eventData={eventData} />;
-			}
+	if (eventStatus === "success" && parsedUser && eventData) {
+		// console.log("we have succeded!");
+		if (parsedUser?.id === eventData?.organizer_data.id) {
+			return <OrganizerOverview eventData={eventData} />;
+		} else {
+			return <ParticipantOverview eventData={eventData} />;
 		}
 	}
 
-	if (status === "error") {
-		return (
-			<ProtectedRoute>
-				{error instanceof Error ? (
+	return (
+		<ProtectedRoute>
+			{eventStatus === "success" && !parsedUser && !eventData && (
+				<LoadingOverview />
+			)}
+			{eventStatus === "loading" && <LoadingOverview />}
+			{eventStatus === "error" &&
+				(eventError instanceof Error ? (
 					<Container css="pt-8">
 						<HomeBreadcrumbs currentPage="Event" />
-						<pre>{error.message}</pre>
+						<pre>{eventError.message}</pre>
 					</Container>
 				) : (
 					<Container css="pt-8">
@@ -50,26 +58,31 @@ export default function EventId() {
 							page
 						</p>
 					</Container>
-				)}
-			</ProtectedRoute>
-		);
-	}
-	// if (status === "loading" || status === "idle") {
-	return (
-		<ProtectedRoute>
-			<LoadingOverview />
+				))}
 		</ProtectedRoute>
 	);
-	// }
 }
 
-function OrganizerOverview({ eventData }: { eventData: EventData }) {
-	const [showDialog, setShowDialog] = React.useState(false);
-	const open = () => setShowDialog(true);
-	const close = () => setShowDialog(false);
+function OrganizerOverview({
+	eventData,
+}: {
+	eventData: EventData | undefined;
+}) {
+	//TODO: replace this implementation with ReachUI/dialog
 
+	const [showDialog, setShowDialog] = React.useState(false);
+	const openDialog = () => setShowDialog(true);
+	const closeDialog = () => setShowDialog(false);
+	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
+	if (!eventData) {
+		return <LoadingOverview />;
+	}
 	return (
-		<>
+		<div
+			onClick={() => {
+				if (showDialog) closeDialog();
+			}}
+		>
 			<Header
 				title={eventData.title}
 				screenName="EVENT"
@@ -78,22 +91,38 @@ function OrganizerOverview({ eventData }: { eventData: EventData }) {
 			<Container css="pt-4 sm:pt-6 relative">
 				<HomeBreadcrumbs currentPage="Event Overview" />
 				<h2>Event availability</h2>
-				<button
-					className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md flex "
-					onClick={open}
-				>
-					<FontAwesomeIcon icon={faGear} className="w-5 h-5 mr-2" />
-					Settings
-				</button>
-				
+				<div className=" mb-4">
+					<button
+						className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md flex "
+						onClick={toggleDialog}
+					>
+						<FontAwesomeIcon icon={faGear} className="w-5 h-5 mr-2" />
+						Settings
+					</button>
+
+					<div
+						id="dialog"
+						onClick={(event) => event.stopPropagation()}
+						className={`dialog-content w-[364px] h-[640px] bg-[#333] mt-2 absolute ${
+							showDialog ? "block" : "hidden"
+						}`}
+					></div>
+				</div>
 				{/* //TODO: ADD TABLE HERE */}
 				<EventAvailabalityTable />
 			</Container>
-		</>
+		</div>
 	);
 }
 
-function ParticipantOverview({ eventData }: { eventData: EventData }) {
+function ParticipantOverview({
+	eventData,
+}: {
+	eventData: EventData | undefined;
+}) {
+	if (!eventData) {
+		return <LoadingOverview />;
+	}
 	return (
 		<>
 			<Header
@@ -103,6 +132,7 @@ function ParticipantOverview({ eventData }: { eventData: EventData }) {
 			/>
 			<Container css="pt-4 sm:pt-6">
 				<HomeBreadcrumbs currentPage="Event" />
+				<p>Participant overview</p>
 			</Container>
 		</>
 	);
