@@ -33,7 +33,6 @@ function EventThumbnail({
 }) {
 	const startDate = getFormattedDate(eventData.date_range.start_date);
 	const endDate = getFormattedDate(eventData.date_range.end_date);
-
 	return (
 		<Link href={`/event/${eventData.id}`}>
 			<a className={`${css} event-btn-transition`}>

@@ -16,6 +16,8 @@ import {
 import { firestore } from "../lib/firebase";
 import { getUserEventsData } from "../lib/utils/client-helpers";
 import { useAllEvents } from "../lib/context/allUserEvents";
+import LoginForm from "../components/LoginForm";
+import LogoutButton from "../components/LogoutButton";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -48,12 +50,13 @@ const LightButton = dynamic<BtnProps>(
 export default function Dashboard() {
 	//! use collection of events where the user is either the organizer of the event or a participant.
 	// currently we're only fetching events organized
-	const { parsedUser } = useParsedUserData();
+	const { parsedUser, loading: userIsLoading } = useParsedUserData();
 	const {
 		allEvents,
 		status: allEventsStatus,
 		setAllEvents,
 		lastDocSnap,
+		error: allEventsError,
 		setLastDocSnap,
 	} = useAllEvents();
 
@@ -114,8 +117,35 @@ export default function Dashboard() {
 		}
 	};
 
+	// React.useEffect(() => {
+	// 	console.log({
+	// 		currentPageEvents,
+	// 		allEvents,
+	// 		allEventsStatus,
+	// 		allEventsError,
+	// 		message: "first render!",
+	// 	});
+	// }, [currentPageEvents, allEvents, allEventsStatus, allEventsError]);
+	// console.log("re-render!")
+
+	// return (
+	// 	<>
+	// 		<p>{parsedUser?.username ?? "unknown"}</p>
+	// 		<p>{currentPageEvents?.map(event => <li key={event.id}>{event.title}</li>) ?? "no events :("}</p>
+	// 		<LogoutButton />
+	// 		<LoginForm />
+	// 	</>
+	// );
+
+	if (!parsedUser && !userIsLoading) {
+		return (
+			<>
+				<LoginForm />
+			</>
+		);
+	}
 	return (
-		<ProtectedRoute>
+		<>
 			<Header
 				title={parsedUser?.username ?? undefined}
 				screenName="PROFILE"
@@ -156,8 +186,7 @@ export default function Dashboard() {
 					</div>
 					<ul>
 						{allEventsStatus === "success" &&
-							currentPageEvents &&
-							currentPageEvents.map((event, index) => {
+							currentPageEvents?.map((event, index) => {
 								return (
 									<li key={event.id} className="mb-3 relative">
 										<EventThumbnail css="mb-2" eventData={event} />
@@ -167,6 +196,6 @@ export default function Dashboard() {
 					</ul>
 				</div>
 			</Container>
-		</ProtectedRoute>
+		</>
 	);
 }

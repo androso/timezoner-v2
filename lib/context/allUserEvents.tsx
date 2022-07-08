@@ -38,6 +38,7 @@ const useAllEvents = () => {
 	if (context === undefined) {
 		throw new Error("useAllEvents must be used within a EventsProvider");
 	}
+	// console.log({eventsContext: context});
 	return context;
 };
 
