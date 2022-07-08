@@ -14,6 +14,7 @@ import { collection, doc, setDoc } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
+import EventFormFields from "./EventFormFields";
 
 const DatePicker = dynamic(() => import("react-datepicker"), {
 	ssr: false,
@@ -36,10 +37,14 @@ const Hourpicker = dynamic(() => import("./Hourpicker"), {
 		></input>
 	),
 });
+
 const TimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
 	suspense: true,
 });
 
+
+// TODO: abstract form fields into EventFormFields, we should provide this component with action buttons (each one will have its own onclick handler)
+// TODO: and also a form context(?)
 export default function CreateEventForm() {
 	const formMethods = useForm<EventFormValues>({});
 	const { parsedUser } = useParsedUserData();
@@ -75,108 +80,7 @@ export default function CreateEventForm() {
 				className="py-6 px-6 bg-gradient-to-b from-softBlackTransparent to-softBlackTransparent mx-auto rounded-md max-w-lg"
 				autoComplete="off"
 			>
-				<h2 className=" font-semibold text-2xl mb-1">Create Event</h2>
-				<p className="font-medium text-shadowWhite mb-3">
-					You'll be able to invite your friends later
-				</p>
-				<hr className="bg-[#666666] border-none h-[1px] rounded-sm mb-5" />
-				<div className="mb-4">
-					<Input
-						placeholder="Event Title"
-						label="Title"
-						required
-						register={formMethods.register}
-						name="title"
-					/>
-				</div>
-				<div className="mb-2">
-					<label
-						className="block font-medium text-lg"
-						htmlFor="event_description"
-					>
-						Description
-					</label>
-					<textarea
-						className="w-full bg-deepBlack basic-input-field placeholder:text-shadowWhite2"
-						id="event_description"
-						rows={2}
-						placeholder="Add a description..."
-						required
-						{...formMethods.register("description", { required: true })}
-					></textarea>
-				</div>
-				<div className="mb-2">
-					<Suspense
-						fallback={
-							<LoadingInput label="Timezone" placeholder="..." required />
-						}
-					>
-						<TimezonesSelect register={formMethods.register} />
-					</Suspense>
-				</div>
-				<div className="mb-2">
-					<label htmlFor="event_date" className="block text-lg font-medium">
-						Date
-					</label>
-
-					<Controller
-						name="dateRange"
-						control={formMethods.control}
-						defaultValue={[null, null]}
-						render={({ field }) => {
-							const [startingDate, endingDate] = field.value;
-							return (
-								<DatePicker
-									selected={startingDate}
-									onChange={(dates: dateRange) => {
-										field.onChange(dates);
-									}}
-									selectsRange
-									startDate={startingDate}
-									endDate={endingDate}
-									className="basic-input-field w-full placeholder:text-shadowWhite2"
-									onBlur={field.onBlur}
-									name={field.name}
-									wrapperClassName="datepicker"
-									dateFormat="MMMM d"
-									placeholderText="Select Date..."
-									required
-								/>
-							);
-						}}
-					/>
-				</div>
-				<div className="mb-6">
-					<div className="flex ">
-						<div>
-							<Hourpicker
-								label="From"
-								placeholder="Start"
-								required
-								control={formMethods.control}
-								name="hour_range.start_hour"
-							/>
-						</div>
-						<div>
-							<Hourpicker
-								label="To"
-								placeholder="End"
-								required
-								control={formMethods.control}
-								name="hour_range.end_hour"
-							/>
-						</div>
-					</div>
-					<p
-						className={`${
-							formMethods.formState.errors.hour_range?.end_hour
-								? "visible"
-								: "invisible"
-						} text-red-500 font-medium text-lg`}
-					>
-						{formMethods.formState.errors.hour_range?.end_hour?.message}
-					</p>
-				</div>
+				<EventFormFields formMethods={formMethods}/>
 				<div className="w-full text-center">
 					<LightButton
 						innerText="CREATE EVENT"
@@ -188,3 +92,5 @@ export default function CreateEventForm() {
 		</FormProvider>
 	);
 }
+
+
