@@ -1,4 +1,4 @@
-import { useAuth } from "../lib/context";
+import { useAuth } from "../lib/context/auth";
 import dynamic from "next/dynamic";
 import UnprotectedRoute from "../components/UnprotectedRoute";
 
