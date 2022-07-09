@@ -3,6 +3,7 @@ import {
 	doc,
 	DocumentData,
 	getDoc,
+	QueryDocumentSnapshot,
 	QuerySnapshot,
 	setDoc,
 } from "firebase/firestore";
@@ -109,7 +110,8 @@ export function getHighQualityAvatar(avatar_url: string, provider: string) {
 export const getUserEventsData = async (
 	snapshot: QuerySnapshot<DocumentData>
 ) => {
-	let lastEventSnapshot;
+	let lastEventSnapshot: undefined | QueryDocumentSnapshot<DocumentData> = undefined;
+	
 	let participatingEvents = await Promise.all(
 		snapshot.docs.map(async (eventDoc, index) => {
 			const rawEventData = eventDoc.data() as RawEventDataFromFirestore;
@@ -135,5 +137,6 @@ export const getUserEventsData = async (
 			return event;
 		})
 	);
+	
 	return { participatingEvents, lastEventSnapshot };
 };
