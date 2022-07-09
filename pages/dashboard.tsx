@@ -17,7 +17,7 @@ import { firestore } from "../lib/firebase";
 import { getUserEventsData } from "../lib/utils/client-helpers";
 import { useAllEvents } from "../lib/context/allUserEvents";
 import LoginForm from "../components/LoginForm";
-import LogoutButton from "../components/LogoutButton";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -40,26 +40,19 @@ const LightButton = dynamic<BtnProps>(
 	{ ssr: false }
 );
 
-// export default function Page () {
-// 	return (
-// 		<EventsProvider>
-// 			<Dashboard />
-// 		</EventsProvider>
-// 	)
-// }
 export default function Dashboard() {
 	//! use collection of events where the user is either the organizer of the event or a participant.
 	// currently we're only fetching events organized
+	//! if i create an event => go back to dashboard => the event that we just created doesn't appear here
 	const { parsedUser, loading: userIsLoading } = useParsedUserData();
 	const {
 		allEvents,
 		status: allEventsStatus,
 		setAllEvents,
 		lastDocSnap,
-		error: allEventsError,
 		setLastDocSnap,
 	} = useAllEvents();
-
+	
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
 	const currentPageEvents = allEvents?.slice(
 		eventsPageIndex * 5,
@@ -117,26 +110,6 @@ export default function Dashboard() {
 		}
 	};
 
-	// React.useEffect(() => {
-	// 	console.log({
-	// 		currentPageEvents,
-	// 		allEvents,
-	// 		allEventsStatus,
-	// 		allEventsError,
-	// 		message: "first render!",
-	// 	});
-	// }, [currentPageEvents, allEvents, allEventsStatus, allEventsError]);
-	// console.log("re-render!")
-
-	// return (
-	// 	<>
-	// 		<p>{parsedUser?.username ?? "unknown"}</p>
-	// 		<p>{currentPageEvents?.map(event => <li key={event.id}>{event.title}</li>) ?? "no events :("}</p>
-	// 		<LogoutButton />
-	// 		<LoginForm />
-	// 	</>
-	// );
-
 	if (!parsedUser && !userIsLoading) {
 		return (
 			<>
@@ -185,14 +158,18 @@ export default function Dashboard() {
 						</div>
 					</div>
 					<ul>
-						{allEventsStatus === "success" &&
-							currentPageEvents?.map((event, index) => {
+						{allEventsStatus === "success" && currentPageEvents ? (
+							currentPageEvents.map((event) => {
 								return (
 									<li key={event.id} className="mb-3 relative">
 										<EventThumbnail css="mb-2" eventData={event} />
 									</li>
 								);
-							})}
+							})
+						) : (
+							<LoadingSpinner css="h-48" />
+						)}
+						
 					</ul>
 				</div>
 			</Container>
