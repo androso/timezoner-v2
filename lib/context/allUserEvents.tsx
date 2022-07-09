@@ -5,18 +5,29 @@ import {
 } from "firebase/firestore";
 import React from "react";
 import useAllUserEvents from "../utils/hooks/useAllUserEvents";
+import { StatusTypes } from "../utils/hooks/useAsync";
 import { EventData } from "../utils/types";
 
+// type AllUserEventsContextType = {
+// 	status: "loading" | "idle" | "success" | "error";
+// 	error: FirestoreError | null;
+// 	allEvents: EventData[] | null;
+// 	setAllEvents: React.Dispatch<React.SetStateAction<EventData[] | null>>;
+// 	lastDocSnap: QueryDocumentSnapshot | undefined;
+// 	setLastDocSnap: React.Dispatch<
+// 		React.SetStateAction<QueryDocumentSnapshot<DocumentData> | undefined>
+// 	>;
+// 	reset: () => void;
+// };
+
 type AllUserEventsContextType = {
-	status: "loading" | "idle" | "success" | "error";
-	error: FirestoreError | null;
-	allEvents: EventData[] | null;
-	setAllEvents: React.Dispatch<React.SetStateAction<EventData[] | null>>;
-	lastDocSnap: QueryDocumentSnapshot | undefined;
-	setLastDocSnap: React.Dispatch<
-		React.SetStateAction<QueryDocumentSnapshot<DocumentData> | undefined>
-	>;
+	allEvents: EventData[] | undefined;
+	lastDocSnap: EventData[] | undefined;
+	error: Error | null;
 	reset: () => void;
+	run: (promise: Promise<unknown>) => void;
+	status: StatusTypes;
+	refetch: () => Promise<void>;
 };
 const AllUserEventsContext = React.createContext<
 	undefined | AllUserEventsContextType
