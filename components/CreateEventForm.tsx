@@ -1,47 +1,17 @@
 import dynamic from "next/dynamic";
 import "react-datepicker/dist/react-datepicker.css";
-import type { dateRange, EventFormValues } from "../lib/utils/types";
+import type { EventFormValues } from "../lib/utils/types";
 import { LightButton } from "./LightButton";
 import {
 	useForm,
-	Controller,
 	SubmitHandler,
 	FormProvider,
 } from "react-hook-form";
-import Input, { LoadingInput } from "./Input";
-import { Suspense } from "react";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
 import EventFormFields from "./EventFormFields";
-
-const DatePicker = dynamic(() => import("react-datepicker"), {
-	ssr: false,
-	loading: () => (
-		<input
-			type="text"
-			className="basic-input-field w-full placeholder:text-shadowWhite2 mr-4"
-			placeholder="Select Date..."
-		></input>
-	),
-});
-
-const Hourpicker = dynamic(() => import("./Hourpicker"), {
-	ssr: false,
-	loading: () => (
-		<input
-			type="text"
-			className="basic-input-field mt-6 placeholder:text-shadowWhite2 w-[120px]"
-			placeholder="Hour"
-		></input>
-	),
-});
-
-const TimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
-	suspense: true,
-});
-
 
 // TODO: abstract form fields into EventFormFields, we should provide this component with action buttons (each one will have its own onclick handler)
 // TODO: and also a form context(?)
