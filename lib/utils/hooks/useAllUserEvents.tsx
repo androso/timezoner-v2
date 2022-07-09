@@ -42,12 +42,14 @@ const useAllUserEvents = () => {
 	// gets all events where this user is in the organizer data or in the participants array
 	//!limit is 10
 	const { parsedUser } = useParsedUserData();
-	const { data, error, reset, run, status } = useAsync();
+	const { data, error, reset, run, status, setData} = useAsync({
+		participatingEvents: [],
+		lastEventSnapshot: undefined
+	});
 	const rawData = data as RawDataType;
 	const allEvents = rawData?.participatingEvents;
-	const lastDocSnap = rawData?.participatingEvents;
+	const lastDocSnap = rawData?.lastEventSnapshot;
 	
-	//! using useAsync
 	React.useEffect(() => {
 		if (!parsedUser) return;
 		fetchEvents(run, parsedUser);
@@ -58,6 +60,7 @@ const useAllUserEvents = () => {
 	return {
 		allEvents,
 		refetch,
+		setData,
 		lastDocSnap,
 		error,
 		reset,
