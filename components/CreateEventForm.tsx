@@ -2,11 +2,7 @@ import dynamic from "next/dynamic";
 import "react-datepicker/dist/react-datepicker.css";
 import type { EventFormValues } from "../lib/utils/types";
 import { LightButton } from "./LightButton";
-import {
-	useForm,
-	SubmitHandler,
-	FormProvider,
-} from "react-hook-form";
+import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
@@ -36,7 +32,7 @@ export default function CreateEventForm() {
 				og_timezone: timezone,
 				organizer_ref: doc(firestore, "users", parsedUser.id),
 				organizer_id: parsedUser.id,
-				id: eventDocRef.id
+				id: eventDocRef.id,
 			};
 			await setDoc(eventDocRef, dataSentToFirestore);
 			router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });
@@ -50,7 +46,12 @@ export default function CreateEventForm() {
 				className="py-6 px-6 bg-gradient-to-b from-softBlackTransparent to-softBlackTransparent mx-auto rounded-md max-w-lg"
 				autoComplete="off"
 			>
-				<EventFormFields formMethods={formMethods}/>
+				<h2 className=" font-semibold text-2xl mb-1">Create Event</h2>
+				<p className="font-medium text-shadowWhite mb-3">
+					You'll be able to invite your friends later
+				</p>
+				<hr className="bg-[#666666] border-none h-[1px] rounded-sm mb-5" />
+				<EventFormFields formMethods={formMethods} />
 				<div className="w-full text-center">
 					<LightButton
 						innerText="CREATE EVENT"
@@ -62,5 +63,3 @@ export default function CreateEventForm() {
 		</FormProvider>
 	);
 }
-
-

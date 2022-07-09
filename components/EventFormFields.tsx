@@ -34,11 +34,6 @@ export default function EventFormFields({
 }) {
 	return (
 		<>
-			<h2 className=" font-semibold text-2xl mb-1">Create Event</h2>
-			<p className="font-medium text-shadowWhite mb-3">
-				You'll be able to invite your friends later
-			</p>
-			<hr className="bg-[#666666] border-none h-[1px] rounded-sm mb-5" />
 			<div className="mb-4">
 				<Input
 					placeholder="Event Title"
