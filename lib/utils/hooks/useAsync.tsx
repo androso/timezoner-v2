@@ -73,12 +73,18 @@ const useAsync = (initialState: InitialStateProps = {}) => {
 	const reset = () =>
 		dispatch({ type: AsyncActionType.reset, data: null, error: null });
 
+	const setData = React.useCallback(
+		(data: unknown) => dispatch({ type: AsyncActionType.resolved, data }),
+		[dispatch]
+	);
+
 	return {
 		error,
 		status,
 		data,
+		setData,
 		run,
-		reset
+		reset,
 	};
 };
 
