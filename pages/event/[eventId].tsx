@@ -68,10 +68,7 @@ function OrganizerOverview({
 	const { eventId } = router.query;
 	//!WORKING ON : adding default values to this form
 	React.useEffect(() => {
-		console.log(
-			typeof eventData?.hour_range.start_hour,
-			eventData?.hour_range.start_hour
-		);
+		console.log(eventData?.og_timezone);
 	}, [eventData]);
 	const formMethods = useForm<EventFormValues>({
 		defaultValues: {
@@ -82,7 +79,7 @@ function OrganizerOverview({
 				start_hour: eventData?.hour_range.start_hour,
 				end_hour: eventData?.hour_range.end_hour,
 			},
-			dateRange: [eventData?.date_range.start_date, eventData?.date_range.end_date]
+			dateRange: [eventData?.date_range.start_date, eventData?.date_range.end_date],
 		},
 	});
 	const submitForm = () => {
@@ -153,7 +150,7 @@ function OrganizerOverview({
 								<button className="h-7 absolute top-0 right-0 mr-5 mt-6">
 									<FontAwesomeIcon icon={faXmark} className="h-full" />
 								</button>
-								<EventFormFields formMethods={formMethods} />
+								<EventFormFields formMethods={formMethods} defaultTimezone={eventData.og_timezone} />
 								<LightButton
 									innerText="DELETE"
 									btnType="button"
