@@ -18,6 +18,7 @@ import { getUserEventsData } from "../lib/utils/client-helpers";
 import { useAllEvents } from "../lib/context/allUserEvents";
 import LoginForm from "../components/LoginForm";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { fetchEvents } from "../lib/utils/hooks/useAllUserEvents";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -48,11 +49,12 @@ export default function Dashboard() {
 	const {
 		allEvents,
 		status: allEventsStatus,
-		setAllEvents,
 		lastDocSnap,
-		setLastDocSnap,
+		reset: resetEvents,
+		run,
+		refetch
 	} = useAllEvents();
-	
+
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
 	const currentPageEvents = allEvents?.slice(
 		eventsPageIndex * 5,
@@ -62,53 +64,59 @@ export default function Dashboard() {
 	const handlePreviousPage = () =>
 		setEventsPageIndex((prevIndex) => prevIndex - 1);
 
-	const handleNextPage = async () => {
-		if (allEvents) {
-			const currentIndex = eventsPageIndex + 1; // so that we start from 1 instead of 0
-			const numberOfPagesAvailable = Math.ceil(allEvents.length / 5);
-			const isPageSecondToLast = numberOfPagesAvailable - 1 === currentIndex;
+	React.useLayoutEffect(() => {
+		if (!parsedUser) return;
+		resetEvents();
+		refetch();
+	}, []);
 
-			if (!lastDocSnap && currentIndex === numberOfPagesAvailable) {
-				console.log("button next should be disabled, find a way");
-				return;
-			}
+	// const handleNextPage = async () => {
+	// 	if (allEvents) {
+	// 		const currentIndex = eventsPageIndex + 1; // so that we start from 1 instead of 0
+	// 		const numberOfPagesAvailable = Math.ceil(allEvents.length / 5);
+	// 		const isPageSecondToLast = numberOfPagesAvailable - 1 === currentIndex;
 
-			if (isPageSecondToLast && lastDocSnap) {
-				// we fetch
-				if (parsedUser) {
-					const eventsQuery = query(
-						collection(firestore, "events"),
-						where("organizer_id", "==", parsedUser.id),
-						orderBy("date_range.start_date"),
-						startAfter(lastDocSnap),
-						limit(10)
-					);
+	// 		if (!lastDocSnap && currentIndex === numberOfPagesAvailable) {
+	// 			console.log("button next should be disabled, find a way");
+	// 			return;
+	// 		}
 
-					const snapshot = await getDocs(eventsQuery);
-					const { participatingEvents: nextBatchOfEvents, lastEventSnapshot } =
-						await getUserEventsData(snapshot);
+	// 		if (isPageSecondToLast && lastDocSnap) {
+	// 			// we fetch
+	// 			if (parsedUser) {
+	// 				const eventsQuery = query(
+	// 					collection(firestore, "events"),
+	// 					where("organizer_id", "==", parsedUser.id),
+	// 					orderBy("date_range.start_date"),
+	// 					startAfter(lastDocSnap),
+	// 					limit(10)
+	// 				);
 
-					setAllEvents((prevEvents) => {
-						if (prevEvents) {
-							return [...prevEvents, ...nextBatchOfEvents];
-						} else {
-							return [...nextBatchOfEvents];
-						}
-					});
-					setEventsPageIndex((prevIndex) => prevIndex + 1);
-					if (!nextBatchOfEvents[0]) {
-						console.log("we should disable the button now");
-						setLastDocSnap(undefined);
-					} else {
-						setLastDocSnap(lastEventSnapshot);
-					}
-					return;
-				}
-			}
-			// we update the index by default
-			setEventsPageIndex((prevIndex) => prevIndex + 1);
-		}
-	};
+	// 				const snapshot = await getDocs(eventsQuery);
+	// 				const { participatingEvents: nextBatchOfEvents, lastEventSnapshot } =
+	// 					await getUserEventsData(snapshot);
+
+	// 				setAllEvents((prevEvents) => {
+	// 					if (prevEvents) {
+	// 						return [...prevEvents, ...nextBatchOfEvents];
+	// 					} else {
+	// 						return [...nextBatchOfEvents];
+	// 					}
+	// 				});
+	// 				setEventsPageIndex((prevIndex) => prevIndex + 1);
+	// 				if (!nextBatchOfEvents[0]) {
+	// 					console.log("we should disable the button now");
+	// 					setLastDocSnap(undefined);
+	// 				} else {
+	// 					setLastDocSnap(lastEventSnapshot);
+	// 				}
+	// 				return;
+	// 			}
+	// 		}
+	// 		// we update the index by default
+	// 		setEventsPageIndex((prevIndex) => prevIndex + 1);
+	// 	}
+	// };
 
 	if (!parsedUser && !userIsLoading) {
 		return (
@@ -151,14 +159,14 @@ export default function Dashboard() {
 										? true
 										: false
 								}
-								onClick={handleNextPage}
+								onClick={() => null}
 							>
 								Next
 							</button>
 						</div>
 					</div>
 					<ul>
-						{allEventsStatus === "success" && currentPageEvents ? (
+						{allEventsStatus === "resolved" && currentPageEvents ? (
 							currentPageEvents.map((event) => {
 								return (
 									<li key={event.id} className="mb-3 relative">
@@ -169,7 +177,6 @@ export default function Dashboard() {
 						) : (
 							<LoadingSpinner css="h-48" />
 						)}
-						
 					</ul>
 				</div>
 			</Container>
