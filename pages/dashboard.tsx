@@ -18,7 +18,6 @@ import { getUserEventsData } from "../lib/utils/client-helpers";
 import { useAllEvents } from "../lib/context/allUserEvents";
 import LoginForm from "../components/LoginForm";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { fetchEvents } from "../lib/utils/hooks/useAllUserEvents";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -44,15 +43,15 @@ const LightButton = dynamic<BtnProps>(
 export default function Dashboard() {
 	//! use collection of events where the user is either the organizer of the event or a participant.
 	// currently we're only fetching events organized
-	//! if i create an event => go back to dashboard => the event that we just created doesn't appear here
+
 	const { parsedUser, loading: userIsLoading } = useParsedUserData();
 	const {
 		allEvents,
 		status: allEventsStatus,
 		lastDocSnap,
 		reset: resetEvents,
-		run,
-		refetch
+		setData,
+		refetch,
 	} = useAllEvents();
 
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
@@ -70,53 +69,46 @@ export default function Dashboard() {
 		refetch();
 	}, []);
 
-	// const handleNextPage = async () => {
-	// 	if (allEvents) {
-	// 		const currentIndex = eventsPageIndex + 1; // so that we start from 1 instead of 0
-	// 		const numberOfPagesAvailable = Math.ceil(allEvents.length / 5);
-	// 		const isPageSecondToLast = numberOfPagesAvailable - 1 === currentIndex;
+	const handleNextPage = async () => {
+		if (allEvents) {
+			const currentIndex = eventsPageIndex + 1; // so that we start from 1 instead of 0
+			const numberOfPagesAvailable = Math.ceil(allEvents.length / 5);
+			const isPageSecondToLast = numberOfPagesAvailable - 1 === currentIndex;
 
-	// 		if (!lastDocSnap && currentIndex === numberOfPagesAvailable) {
-	// 			console.log("button next should be disabled, find a way");
-	// 			return;
-	// 		}
+			if (!lastDocSnap && currentIndex === numberOfPagesAvailable) {
+				console.log("button next should be disabled, find a way");
+				return;
+			}
 
-	// 		if (isPageSecondToLast && lastDocSnap) {
-	// 			// we fetch
-	// 			if (parsedUser) {
-	// 				const eventsQuery = query(
-	// 					collection(firestore, "events"),
-	// 					where("organizer_id", "==", parsedUser.id),
-	// 					orderBy("date_range.start_date"),
-	// 					startAfter(lastDocSnap),
-	// 					limit(10)
-	// 				);
-
-	// 				const snapshot = await getDocs(eventsQuery);
-	// 				const { participatingEvents: nextBatchOfEvents, lastEventSnapshot } =
-	// 					await getUserEventsData(snapshot);
-
-	// 				setAllEvents((prevEvents) => {
-	// 					if (prevEvents) {
-	// 						return [...prevEvents, ...nextBatchOfEvents];
-	// 					} else {
-	// 						return [...nextBatchOfEvents];
-	// 					}
-	// 				});
-	// 				setEventsPageIndex((prevIndex) => prevIndex + 1);
-	// 				if (!nextBatchOfEvents[0]) {
-	// 					console.log("we should disable the button now");
-	// 					setLastDocSnap(undefined);
-	// 				} else {
-	// 					setLastDocSnap(lastEventSnapshot);
-	// 				}
-	// 				return;
-	// 			}
-	// 		}
-	// 		// we update the index by default
-	// 		setEventsPageIndex((prevIndex) => prevIndex + 1);
-	// 	}
-	// };
+			if (isPageSecondToLast && lastDocSnap) {
+				// we fetch
+				if (parsedUser) {
+					const eventsQuery = query(
+						collection(firestore, "events"),
+						where("organizer_id", "==", parsedUser.id),
+						orderBy("date_range.start_date"),
+						startAfter(lastDocSnap),
+						limit(10)
+					);
+					const snapshot = await getDocs(eventsQuery);
+					const { participatingEvents: nextBatchOfEvents, lastEventSnapshot } =
+						await getUserEventsData(snapshot);
+					const newEventsArray = [...allEvents, ...nextBatchOfEvents];
+					const nextDocSnapshot = !nextBatchOfEvents[0]
+						? undefined
+						: lastEventSnapshot;
+					setEventsPageIndex((prevIndex) => prevIndex + 1);
+					setData({
+						participatingEvents: newEventsArray,
+						lastEventSnapshot: nextDocSnapshot,
+					});
+					return;
+				}
+			}
+			// we update the index by default
+			setEventsPageIndex((prevIndex) => prevIndex + 1);
+		}
+	};
 
 	if (!parsedUser && !userIsLoading) {
 		return (
@@ -159,7 +151,7 @@ export default function Dashboard() {
 										? true
 										: false
 								}
-								onClick={() => null}
+								onClick={handleNextPage}
 							>
 								Next
 							</button>
