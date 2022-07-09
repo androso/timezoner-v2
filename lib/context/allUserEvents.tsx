@@ -1,6 +1,5 @@
 import {
 	DocumentData,
-	FirestoreError,
 	QueryDocumentSnapshot,
 } from "firebase/firestore";
 import React from "react";

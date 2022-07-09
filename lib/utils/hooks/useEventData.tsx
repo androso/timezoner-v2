@@ -36,8 +36,6 @@ const fetchEventData = async (
 };
 
 const useEventData = () => {
-	// we could check if the event with eventId is saved in useAllUserEvents();
-	// if it's not, we call fetchEventData
 	const router = useRouter();
 	const { eventId } = router.query;
 	const { allEvents } = useAllEvents();
@@ -47,7 +45,6 @@ const useEventData = () => {
 		async () => {
 			//! We should fetch only if the user is authenticated AND authorized
 			if (!router.isReady) {
-				// console.log("router is not ready yet");
 				return;
 			}
 			if (typeof eventId === "string") {

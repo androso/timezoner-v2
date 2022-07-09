@@ -11,7 +11,7 @@ import {
 import React from "react";
 import { firestore } from "../../firebase";
 import { getUserEventsData } from "../client-helpers";
-import { EventData, RawEventDataFromFirestore, UserData } from "../types";
+import { EventData, UserData } from "../types";
 import useAsync from "./useAsync";
 import useParsedUserData from "./useParsedUserData";
 
@@ -50,6 +50,7 @@ const useAllUserEvents = () => {
 	const allEvents = rawData?.participatingEvents;
 	const lastDocSnap = rawData?.lastEventSnapshot;
 	
+
 	React.useEffect(() => {
 		if (!parsedUser) return;
 		fetchEvents(run, parsedUser);

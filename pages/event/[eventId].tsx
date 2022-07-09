@@ -8,24 +8,13 @@ import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { EventData } from "../../lib/utils/types";
 import EventAvailabalityTable from "../../components/EventAvailabalityTable";
-// import { EventsProvider } from "../../lib/context/allUserEvents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 
-// export default function Page() {
-// 	return (
-// 		<EventsProvider>
-// 			<EventId />
-// 		</EventsProvider>
-// 	);
-// }
 
 export default function EventId() {
 	const { eventData, status: eventStatus, error: eventError } = useEventData();
 	const { parsedUser } = useParsedUserData();
-	// React.useEffect(() => {
-	// 	console.log({eventData, parsedUser});
-	// }, [eventData, parsedUser]);
 	//TODO:
  	//!ERROR: why eventstatus can be success but have no eventdata or parseduser?
 
