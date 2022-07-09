@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-import "react-datepicker/dist/react-datepicker.css";
 import type { EventFormValues } from "../lib/utils/types";
 import { LightButton } from "./LightButton";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
