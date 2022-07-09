@@ -24,7 +24,15 @@ const useAllUserEvents = () => {
 		"loading" | "idle" | "success" | "error"
 	>("idle");
 	const [error, setError] = React.useState<null | FirestoreError>(null);
-	const [lastDocSnap, setLastDocSnap] = React.useState<QueryDocumentSnapshot>();
+	const [lastDocSnap, setLastDocSnap] = React.useState<QueryDocumentSnapshot | undefined>();
+
+
+	const reset = () => {
+		setAllEvents(null);
+		setStatus("idle");
+		setError(null);
+		setLastDocSnap(undefined);
+	}
 
 	React.useEffect(() => {
 		if (!parsedUser || status === "success") return;
@@ -75,6 +83,7 @@ const useAllUserEvents = () => {
 		setAllEvents,
 		lastDocSnap,
 		setLastDocSnap,
+		reset
 	};
 };
 

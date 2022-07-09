@@ -16,6 +16,7 @@ type AllUserEventsContextType = {
 	setLastDocSnap: React.Dispatch<
 		React.SetStateAction<QueryDocumentSnapshot<DocumentData> | undefined>
 	>;
+	reset: () => void;
 };
 const AllUserEventsContext = React.createContext<
 	undefined | AllUserEventsContextType
