@@ -1,14 +1,14 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { firestore } from "../../firebase";
-import { EventData, UserData } from "../types";
+import { EventData, RawEventDataFromFirestore, UserData } from "../types";
 import { useQuery } from "react-query";
 import { useAllEvents } from "../../context/allUserEvents";
 import useParsedUserData from "./useParsedUserData";
 
 const fetchEventData = async (
 	eventId: string
-): Promise<EventData | undefined> => {
+): Promise<RawEventDataFromFirestore | undefined> => {
 	/*
 	 * fetchData should be returning
 	 * a single object with the eventData and organizerData, if succesful
@@ -17,7 +17,7 @@ const fetchEventData = async (
 	const docRef = doc(firestore, "events", eventId);
 	const docSnap = await getDoc(docRef);
 	if (docSnap.exists()) {
-		const eventData = docSnap.data() as EventData;
+		const eventData = docSnap.data() as RawEventDataFromFirestore;
 		const organizerSnap = await getDoc(eventData.organizer_ref);
 		if (organizerSnap.exists()) {
 			const organizerData = organizerSnap.data() as UserData;
@@ -57,7 +57,17 @@ const useEventData = () => {
 				} else if (parsedUser) {
 					// console.log("this event wasn't found in the allUsers array, and thus had to be fetched individually");
 					const data = await fetchEventData(eventId);
-					return data;
+					return {
+						...data,
+						date_range: {
+							start_date: data?.date_range.start_date.toDate(),
+							end_date: data?.date_range.end_date.toDate(),
+						},
+						hour_range: {
+							start_hour: data?.hour_range.start_hour.toDate(),
+							end_hour: data?.hour_range.end_hour.toDate(),
+						},
+					};
 				} else {
 					// console.log("we're not fetching bc we're not authenticated");
 					return;
