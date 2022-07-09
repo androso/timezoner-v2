@@ -8,26 +8,15 @@ import useAllUserEvents from "../utils/hooks/useAllUserEvents";
 import { StatusTypes } from "../utils/hooks/useAsync";
 import { EventData } from "../utils/types";
 
-// type AllUserEventsContextType = {
-// 	status: "loading" | "idle" | "success" | "error";
-// 	error: FirestoreError | null;
-// 	allEvents: EventData[] | null;
-// 	setAllEvents: React.Dispatch<React.SetStateAction<EventData[] | null>>;
-// 	lastDocSnap: QueryDocumentSnapshot | undefined;
-// 	setLastDocSnap: React.Dispatch<
-// 		React.SetStateAction<QueryDocumentSnapshot<DocumentData> | undefined>
-// 	>;
-// 	reset: () => void;
-// };
-
 type AllUserEventsContextType = {
 	allEvents: EventData[] | undefined;
-	lastDocSnap: EventData[] | undefined;
+	lastDocSnap: QueryDocumentSnapshot<DocumentData> | undefined;
 	error: Error | null;
 	reset: () => void;
 	run: (promise: Promise<unknown>) => void;
 	status: StatusTypes;
 	refetch: () => Promise<void>;
+	setData: (data: unknown) => void;
 };
 const AllUserEventsContext = React.createContext<
 	undefined | AllUserEventsContextType
@@ -50,7 +39,6 @@ const useAllEvents = () => {
 	if (context === undefined) {
 		throw new Error("useAllEvents must be used within a EventsProvider");
 	}
-	// console.log({eventsContext: context});
 	return context;
 };
 
