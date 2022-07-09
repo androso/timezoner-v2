@@ -6,17 +6,22 @@ import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
 import useEventData from "../../lib/utils/hooks/useEventData";
 import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { EventData } from "../../lib/utils/types";
+import { EventData, EventFormValues } from "../../lib/utils/types";
 import EventAvailabalityTable from "../../components/EventAvailabalityTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
-
+import CreateEventForm from "../../components/CreateEventForm";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import { deleteDoc, doc } from "firebase/firestore";
+import { firestore } from "../../lib/firebase";
+import { LightButton } from "../../components/LightButton";
 
 export default function EventId() {
 	const { eventData, status: eventStatus, error: eventError } = useEventData();
 	const { parsedUser } = useParsedUserData();
 	//TODO:
- 	//!ERROR: why eventstatus can be success but have no eventdata or parseduser?
+	//!ERROR: why eventstatus can be success but have no eventdata or parseduser?
 
 	if (eventStatus === "success" && parsedUser && eventData) {
 		// console.log("we have succeded!");
@@ -58,11 +63,30 @@ function OrganizerOverview({
 	eventData: EventData | undefined;
 }) {
 	//TODO: replace this implementation with ReachUI/dialog
+	const router = useRouter();
+	const { eventId } = router.query;
 
+	const formMethods = useForm<EventFormValues>();
+
+	const submitForm = () => {
+		// update the event in firestore
+	};
+	const deleteEvent = async () => {
+		if (typeof eventId != "string") return;
+		try {
+			await deleteDoc(doc(firestore, "events", eventId));
+			console.log("document deleted succesfully!");
+		} catch (e) {
+			console.error(e);
+		}
+	};
+
+	//abstract this state into compound components for Dialog
 	const [showDialog, setShowDialog] = React.useState(false);
 	const openDialog = () => setShowDialog(true);
 	const closeDialog = () => setShowDialog(false);
 	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
+
 	if (!eventData) {
 		return <LoadingOverview />;
 	}
@@ -95,7 +119,20 @@ function OrganizerOverview({
 						className={`dialog-content w-[364px] h-[640px] bg-[#333] mt-2 absolute ${
 							showDialog ? "block" : "hidden"
 						}`}
-					></div>
+					>
+						{/* Update event form */}
+						<form
+							onSubmit={formMethods.handleSubmit(submitForm)}
+							className="py-6 px-6 bg-gradient-to-b from-softBlackTransparent to-softBlackTransparent mx-auto rounded-md max-w-lg"
+							autoComplete="off"
+						>
+							<LightButton
+								innerText="DELETE"
+								btnType="button"
+								clickFunc={deleteEvent}
+							/>
+						</form>
+					</div>
 				</div>
 				{/* //TODO: ADD TABLE HERE */}
 				<EventAvailabalityTable />
