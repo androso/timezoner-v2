@@ -147,7 +147,7 @@ function OrganizerOverview({
 								<p className="font-medium text-shadowWhite mb-3">
 									Update the details of your event here
 								</p>
-								<button className="h-7 absolute top-0 right-0 mr-5 mt-6">
+								<button className="h-7 absolute top-0 right-0 mr-5 mt-6" onClick={closeDialog}>
 									<FontAwesomeIcon icon={faXmark} className="h-full" />
 								</button>
 								<EventFormFields formMethods={formMethods} defaultTimezone={eventData.og_timezone} />
