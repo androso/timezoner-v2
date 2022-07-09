@@ -10,12 +10,13 @@ import { EventData, EventFormValues } from "../../lib/utils/types";
 import EventAvailabalityTable from "../../components/EventAvailabalityTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
-import CreateEventForm from "../../components/CreateEventForm";
-import { useForm } from "react-hook-form";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FormProvider, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { deleteDoc, doc } from "firebase/firestore";
 import { firestore } from "../../lib/firebase";
 import { LightButton } from "../../components/LightButton";
+import EventFormFields from "../../components/EventFormFields";
 
 export default function EventId() {
 	const { eventData, status: eventStatus, error: eventError } = useEventData();
@@ -65,9 +66,25 @@ function OrganizerOverview({
 	//TODO: replace this implementation with ReachUI/dialog
 	const router = useRouter();
 	const { eventId } = router.query;
-
-	const formMethods = useForm<EventFormValues>();
-
+	//!WORKING ON : adding default values to this form
+	React.useEffect(() => {
+		console.log(
+			typeof eventData?.hour_range.start_hour,
+			eventData?.hour_range.start_hour
+		);
+	}, [eventData]);
+	const formMethods = useForm<EventFormValues>({
+		defaultValues: {
+			title: eventData?.title,
+			description: eventData?.description,
+			timezone: eventData?.og_timezone,
+			hour_range: {
+				start_hour: eventData?.hour_range.start_hour,
+				end_hour: eventData?.hour_range.end_hour,
+			},
+			dateRange: [eventData?.date_range.start_date, eventData?.date_range.end_date]
+		},
+	});
 	const submitForm = () => {
 		// update the event in firestore
 	};
@@ -116,22 +133,34 @@ function OrganizerOverview({
 					<div
 						id="dialog"
 						onClick={(event) => event.stopPropagation()}
-						className={`dialog-content w-[364px] h-[640px] bg-[#333] mt-2 absolute ${
+						className={`dialog-content bg-[#333] mt-2 absolute ${
 							showDialog ? "block" : "hidden"
 						}`}
 					>
 						{/* Update event form */}
-						<form
-							onSubmit={formMethods.handleSubmit(submitForm)}
-							className="py-6 px-6 bg-gradient-to-b from-softBlackTransparent to-softBlackTransparent mx-auto rounded-md max-w-lg"
-							autoComplete="off"
-						>
-							<LightButton
-								innerText="DELETE"
-								btnType="button"
-								clickFunc={deleteEvent}
-							/>
-						</form>
+						<FormProvider {...formMethods}>
+							<form
+								onSubmit={formMethods.handleSubmit(submitForm)}
+								className="py-6 px-6 bg-gradient-to-b from-softBlackTransparent to-softBlackTransparent mx-auto rounded-md max-w-lg relative"
+								autoComplete="off"
+							>
+								<h2 className=" font-semibold text-2xl mb-1">
+									Event's settings
+								</h2>
+								<p className="font-medium text-shadowWhite mb-3">
+									Update the details of your event here
+								</p>
+								<button className="h-7 absolute top-0 right-0 mr-5 mt-6">
+									<FontAwesomeIcon icon={faXmark} className="h-full" />
+								</button>
+								<EventFormFields formMethods={formMethods} />
+								<LightButton
+									innerText="DELETE"
+									btnType="button"
+									clickFunc={deleteEvent}
+								/>
+							</form>
+						</FormProvider>
 					</div>
 				</div>
 				{/* //TODO: ADD TABLE HERE */}
