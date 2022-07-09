@@ -1,89 +1,68 @@
 import {
 	collection,
-	FirestoreError,
-	getDoc,
 	limit,
 	orderBy,
-	onSnapshot,
 	query,
 	QueryDocumentSnapshot,
 	where,
+	getDocs,
+	DocumentData,
 } from "firebase/firestore";
 import React from "react";
 import { firestore } from "../../firebase";
 import { getUserEventsData } from "../client-helpers";
 import { EventData, RawEventDataFromFirestore, UserData } from "../types";
+import useAsync from "./useAsync";
 import useParsedUserData from "./useParsedUserData";
+
+type RawDataType =
+	| {
+			participatingEvents: EventData[];
+			lastEventSnapshot: QueryDocumentSnapshot<DocumentData> | undefined;
+	  }
+	| null
+	| undefined;
+
+export const fetchEvents = async (
+	run: (promise: Promise<unknown>) => void,
+	parsedUser: UserData | null
+) => {
+	if (!parsedUser) return;
+	const eventsQuery = query(
+		collection(firestore, "events"),
+		where("organizer_id", "==", parsedUser.id),
+		orderBy("date_range.start_date"),
+		limit(10)
+	);
+	const eventsSnap = await getDocs(eventsQuery);
+	run(getUserEventsData(eventsSnap));
+};
 
 const useAllUserEvents = () => {
 	// gets all events where this user is in the organizer data or in the participants array
 	//!limit is 10
 	const { parsedUser } = useParsedUserData();
-	const [allEvents, setAllEvents] = React.useState<EventData[] | null>(null);
-	const [status, setStatus] = React.useState<
-		"loading" | "idle" | "success" | "error"
-	>("idle");
-	const [error, setError] = React.useState<null | FirestoreError>(null);
-	const [lastDocSnap, setLastDocSnap] = React.useState<QueryDocumentSnapshot | undefined>();
-
-
-	const reset = () => {
-		setAllEvents(null);
-		setStatus("idle");
-		setError(null);
-		setLastDocSnap(undefined);
-	}
-
-	React.useEffect(() => {
-		if (!parsedUser || status === "success") return;
+	const { data, error, reset, run, status } = useAsync();
+	const rawData = data as RawDataType;
+	const allEvents = rawData?.participatingEvents;
+	const lastDocSnap = rawData?.participatingEvents;
 	
-		setStatus("loading");
-		
-		const eventsQuery = query(
-			collection(firestore, "events"),
-			where("organizer_id", "==", parsedUser.id),
-			orderBy("date_range.start_date"),
-			limit(10)
-		);
-		// !why use a onSnapshot if we only access this data once and limit it to 10? refactor (?)
-		let unsubscribe = onSnapshot(
-			eventsQuery,
-			async (eventsSnap) => {
-				//! The error is happening in this call.
-				const { participatingEvents: userEvents, lastEventSnapshot } =
-					await getUserEventsData(eventsSnap);
-				// console.log(userEvents);
-				//! If we trigger a state here, it will trigger a re-render of this. 
-				//! we need to find a way to avoid fetching this whole thing after we had done it once (?)
+	//! using useAsync
+	React.useEffect(() => {
+		if (!parsedUser) return;
+		fetchEvents(run, parsedUser);
+	}, [run, parsedUser]);
 
-				setAllEvents((prevEvents) => {
-					if (prevEvents) {
-						return [...prevEvents, ...userEvents];
-					} else {
-						return [...userEvents];
-					}
-				});
-				setLastDocSnap(lastEventSnapshot);
-				setStatus("success");
-			},
-			(error) => {
-				setStatus("error");
-				setError(error);
-			}
-		);
-
-		return unsubscribe;
-	}, [parsedUser]);
-	console.log("re-rendering");
+	const refetch = React.useCallback(() => fetchEvents(run, parsedUser), [run, parsedUser])
 
 	return {
-		status,
-		error,
 		allEvents,
-		setAllEvents,
+		refetch,
 		lastDocSnap,
-		setLastDocSnap,
-		reset
+		error,
+		reset,
+		run,
+		status,
 	};
 };
 
