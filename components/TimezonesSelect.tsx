@@ -1,21 +1,24 @@
 import Downshift from "downshift";
 import { matchSorter } from "match-sorter";
 import React from "react";
-import { defaultTimezone, timezonesLabels } from "../lib/timezonesData";
-import type { UseFormRegister } from "react-hook-form";
-import type { EventFormValues } from "../lib/utils/types";
+import { timezonesLabels } from "../lib/timezonesData";
+import { useController } from "react-hook-form";
 
 export default function TimezonesSelect({
-	register,
+	defaultTimezone,
 }: {
-	register: UseFormRegister<EventFormValues>;
+	defaultTimezone: string;
 }) {
-	const select = register("timezone", { required: true });
+	const controllerProps = {
+		name: "timezone",
+		defaultValue: defaultTimezone,
+	};
+	const { field } = useController(controllerProps);
 	return (
 		<Downshift
 			itemToString={(item) => (item ? item : "")}
-			initialSelectedItem={defaultTimezone.label}
-			onSelect={(tz) => select.onChange}
+			initialSelectedItem={defaultTimezone}
+			onSelect={(tz) => field.onChange(tz)}
 		>
 			{({
 				getInputProps,
@@ -42,8 +45,8 @@ export default function TimezonesSelect({
 						<input
 							{...getInputProps()}
 							className="basic-input-field grow rounded-r-none rounded-br-none border-r-0 w-full"
-							onBlur={select.onBlur}
-							ref={select.ref}
+							onBlur={field.onBlur}
+							ref={field.ref}
 						/>
 						<button
 							aria-label={"toggle menu"}

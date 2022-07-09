@@ -4,6 +4,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { dateRange, EventFormValues } from "../lib/utils/types";
 import Input, { LoadingInput } from "./Input";
 import "react-datepicker/dist/react-datepicker.css";
+import { defaultTimezone } from "../lib/timezonesData";
 import TimezonesSelect from "./TimezonesSelect";
 
 const DatePicker = dynamic(() => import("react-datepicker"), {
@@ -66,7 +67,9 @@ export default function EventFormFields({
 						<LoadingInput label="Timezone" placeholder="..." required />
 					}
 				>
-					<TimezonesSelect register={formMethods.register} />
+					<TimezonesSelect
+						defaultTimezone={defaultTimezone.label}
+					/>
 				</Suspense>
 			</div>
 			<div className="mb-2">

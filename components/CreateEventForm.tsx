@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import type { EventFormValues } from "../lib/utils/types";
 import { LightButton } from "./LightButton";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
@@ -7,14 +6,15 @@ import { firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
 import EventFormFields from "./EventFormFields";
+import React from "react";
 
 // TODO: abstract form fields into EventFormFields, we should provide this component with action buttons (each one will have its own onclick handler)
 // TODO: and also a form context(?)
 export default function CreateEventForm() {
-	const formMethods = useForm<EventFormValues>({});
+	const formMethods = useForm<EventFormValues>();
 	const { parsedUser } = useParsedUserData();
 	const router = useRouter();
-
+	
 	const submitForm: SubmitHandler<EventFormValues> = async (data) => {
 		const { dateRange, hour_range, description, title, timezone } = data;
 
