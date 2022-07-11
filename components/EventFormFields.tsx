@@ -1,11 +1,10 @@
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { dateRange, EventFormValues } from "../lib/utils/types";
 import Input, { LoadingInput } from "./Input";
 import "react-datepicker/dist/react-datepicker.css";
 import { defaultTimezone as localTimezone } from "../lib/timezonesData";
-import TimezonesSelect from "./TimezonesSelect";
+// import TimezonesSelect from "./TimezonesSelect";
 
 const DatePicker = dynamic(() => import("react-datepicker"), {
 	ssr: false,
@@ -29,9 +28,13 @@ const Hourpicker = dynamic(() => import("./Hourpicker"), {
 	),
 });
 
+const TimezonesSelect = dynamic(() => import("./TimezonesSelect"), {
+	ssr: false,
+	loading: () => <LoadingInput label="Timezone" placeholder="..." required />,
+});
 export default function EventFormFields({
 	formMethods,
-	defaultTimezone
+	defaultTimezone,
 }: {
 	formMethods: UseFormReturn<EventFormValues, object>;
 	defaultTimezone?: string;
@@ -64,15 +67,9 @@ export default function EventFormFields({
 				></textarea>
 			</div>
 			<div className="mb-2">
-				<Suspense
-					fallback={
-						<LoadingInput label="Timezone" placeholder="..." required />
-					}
-				>
-					<TimezonesSelect
-						defaultTimezone={defaultTimezone ?? localTimezone.label}
-					/>
-				</Suspense>
+				<TimezonesSelect
+					defaultTimezone={defaultTimezone ?? localTimezone.label}
+				/>
 			</div>
 			<div className="mb-2">
 				<label htmlFor="event_date" className="block text-lg font-medium">
