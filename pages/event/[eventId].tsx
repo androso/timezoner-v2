@@ -17,6 +17,8 @@ import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { firestore } from "../../lib/firebase";
 import { LightButton } from "../../components/LightButton";
 import EventFormFields from "../../components/EventFormFields";
+import { DialogContent, DialogOverlay } from "@reach/dialog";
+import "@reach/dialog/styles.css";
 
 export default function EventId() {
 	const { eventData, status: eventStatus, error: eventError } = useEventData();
@@ -69,9 +71,11 @@ function OrganizerOverview({
 	//TODO: add double authorization dialog when deleting an event
 	//abstract this state into compound components for Dialog
 	const [showDialog, setShowDialog] = React.useState(false);
+	const [showDeleteWarning, setShowDeleteWarning] = React.useState(false);
 	const openDialog = () => setShowDialog(true);
 	const closeDialog = () => setShowDialog(false);
 	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
+
 	const router = useRouter();
 	const { eventId } = router.query;
 	const formMethods = useForm<EventFormValues>({
@@ -183,7 +187,7 @@ function OrganizerOverview({
 									/>
 									<button
 										type="button"
-										onClick={deleteEvent}
+										onClick={() => setShowDeleteWarning(true)}
 										className={`bg-gray-300 relative text-darkText font-semibold rounded-md px-6 py-3 hover:bg-red-500 hover:text-whiteText1 transition-colors`}
 									>
 										DELETE EVENT
@@ -192,6 +196,47 @@ function OrganizerOverview({
 							</form>
 						</FormProvider>
 					</div>
+					<DialogOverlay
+						isOpen={showDeleteWarning}
+						onDismiss={() => {
+							setShowDeleteWarning(false);
+							closeDialog();
+						}}
+						style={{ background: "hsla(0, 0%, 0%, 0.5)" }}
+					>
+						<DialogContent
+							aria-label="Delete event warning"
+							className="!bg-[#3e4559] text-whiteText1 shadow-md !min-w-fit !sm:w-[50vw] relative"
+						>
+							<span role="heading" className="text-2xl font-bold">
+								Delete Event
+							</span>
+							<button
+								className="h-7 absolute top-0 right-0 mr-5 mt-6"
+								onClick={() => {
+									setShowDeleteWarning(false);
+									setShowDialog(false);
+								}}
+							>
+								<FontAwesomeIcon icon={faXmark} className="h-full" />
+							</button>
+							<p className="mb-4">
+								Are you sure you want to delete this event? this action can't be
+								undone
+							</p>
+							<div className="flex justify-end">
+								<button className="px-3 py-1 bg-slate-500 rounded-md text-lg mr-2 transition-all border-2 border-transparent hover:border-whiteText1">
+									Cancel
+								</button>
+								<button
+									onClick={() => deleteEvent()}
+									className="px-3 py-1 text-lg bg-red-500 rounded-md transition-all border-2 border-transparent hover:border-whiteText1"
+								>
+									Delete Event
+								</button>
+							</div>
+						</DialogContent>
+					</DialogOverlay>
 				</div>
 				{/* //TODO: ADD TABLE HERE */}
 				<EventAvailabalityTable />
