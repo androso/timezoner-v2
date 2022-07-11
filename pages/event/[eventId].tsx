@@ -154,7 +154,7 @@ function OrganizerOverview({
 						onClick={(event) => event.stopPropagation()}
 						className={`dialog-content bg-[#333] mt-2 absolute ${
 							showDialog ? "block" : "hidden"
-						}`}
+						} sm:min-w-[460px]`}
 					>
 						{/* Update event form */}
 						<FormProvider {...formMethods}>
@@ -188,7 +188,7 @@ function OrganizerOverview({
 									<button
 										type="button"
 										onClick={() => setShowDeleteWarning(true)}
-										className={`bg-gray-300 relative text-darkText font-semibold rounded-md px-6 py-3 hover:bg-red-500 hover:text-whiteText1 transition-colors`}
+										className={`bg-gray-300 relative text-darkText font-semibold rounded-md px-6 py-3 hover:bg-red-500 focus:bg-red-600 hover:text-whiteText1 transition-colors`}
 									>
 										DELETE EVENT
 									</button>
