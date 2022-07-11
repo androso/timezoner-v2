@@ -11,9 +11,9 @@ import EventAvailabalityTable from "../../components/EventAvailabalityTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { firestore } from "../../lib/firebase";
 import { LightButton } from "../../components/LightButton";
 import EventFormFields from "../../components/EventFormFields";
@@ -63,13 +63,17 @@ function OrganizerOverview({
 }: {
 	eventData: EventData | undefined;
 }) {
+	const { parsedUser } = useParsedUserData();
 	//TODO: replace this implementation with ReachUI/dialog
+	//TODO: handle any form of error DONT BE LAZY DUDE YOU GOTTA DO IT!
+	//TODO: add double authorization dialog when deleting an event
+	//abstract this state into compound components for Dialog
+	const [showDialog, setShowDialog] = React.useState(false);
+	const openDialog = () => setShowDialog(true);
+	const closeDialog = () => setShowDialog(false);
+	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
 	const router = useRouter();
 	const { eventId } = router.query;
-	//!WORKING ON : adding default values to this form
-	React.useEffect(() => {
-		console.log(eventData?.og_timezone);
-	}, [eventData]);
 	const formMethods = useForm<EventFormValues>({
 		defaultValues: {
 			title: eventData?.title,
@@ -79,27 +83,41 @@ function OrganizerOverview({
 				start_hour: eventData?.hour_range.start_hour,
 				end_hour: eventData?.hour_range.end_hour,
 			},
-			dateRange: [eventData?.date_range.start_date, eventData?.date_range.end_date],
+			dateRange: [
+				eventData?.date_range.start_date,
+				eventData?.date_range.end_date,
+			],
 		},
 	});
-	const submitForm = () => {
-		// update the event in firestore
-	};
 	const deleteEvent = async () => {
 		if (typeof eventId != "string") return;
 		try {
 			await deleteDoc(doc(firestore, "events", eventId));
-			console.log("document deleted succesfully!");
+			router.push("/dashboard", undefined, { shallow: true });
 		} catch (e) {
 			console.error(e);
 		}
 	};
 
-	//abstract this state into compound components for Dialog
-	const [showDialog, setShowDialog] = React.useState(false);
-	const openDialog = () => setShowDialog(true);
-	const closeDialog = () => setShowDialog(false);
-	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
+	const updateEvent = async (data: EventFormValues) => {
+		const { dateRange, hour_range, description, title, timezone } = data;
+
+		if (eventData?.id && parsedUser) {
+			const eventDocRef = doc(firestore, "events", eventData?.id);
+			const dataSentToFirestore = {
+				date_range: {
+					start_date: dateRange[0],
+					end_date: dateRange[1] ?? dateRange[0],
+				},
+				hour_range,
+				title,
+				description: description,
+				og_timezone: timezone,
+			};
+			setDoc(eventDocRef, dataSentToFirestore, { merge: true });
+			closeDialog();
+		}
+	};
 
 	if (!eventData) {
 		return <LoadingOverview />;
@@ -115,7 +133,7 @@ function OrganizerOverview({
 				screenName="EVENT"
 				photoURL={eventData.organizer_data.avatar_url}
 			/>
-			<Container css="pt-4 sm:pt-6 relative">
+			<Container css="pt-4 sm:pt-6 relative mb-72">
 				<HomeBreadcrumbs currentPage="Event Overview" />
 				<h2>Event availability</h2>
 				<div className=" mb-4">
@@ -137,7 +155,7 @@ function OrganizerOverview({
 						{/* Update event form */}
 						<FormProvider {...formMethods}>
 							<form
-								onSubmit={formMethods.handleSubmit(submitForm)}
+								onSubmit={formMethods.handleSubmit(updateEvent)}
 								className="py-6 px-6 bg-gradient-to-b from-softBlackTransparent to-softBlackTransparent mx-auto rounded-md max-w-lg relative"
 								autoComplete="off"
 							>
@@ -147,15 +165,30 @@ function OrganizerOverview({
 								<p className="font-medium text-shadowWhite mb-3">
 									Update the details of your event here
 								</p>
-								<button className="h-7 absolute top-0 right-0 mr-5 mt-6" onClick={closeDialog}>
+								<button
+									className="h-7 absolute top-0 right-0 mr-5 mt-6"
+									onClick={closeDialog}
+								>
 									<FontAwesomeIcon icon={faXmark} className="h-full" />
 								</button>
-								<EventFormFields formMethods={formMethods} defaultTimezone={eventData.og_timezone} />
-								<LightButton
-									innerText="DELETE"
-									btnType="button"
-									clickFunc={deleteEvent}
+								<EventFormFields
+									formMethods={formMethods}
+									defaultTimezone={eventData.og_timezone}
 								/>
+								<div className="flex flex-col w-2/3 mx-auto">
+									<LightButton
+										innerText="UPDATE EVENT"
+										btnType="submit"
+										css={"mb-3"}
+									/>
+									<button
+										type="button"
+										onClick={deleteEvent}
+										className={`bg-gray-300 relative text-darkText font-semibold rounded-md px-6 py-3 hover:bg-red-500 hover:text-whiteText1 transition-colors`}
+									>
+										DELETE EVENT
+									</button>
+								</div>
 							</form>
 						</FormProvider>
 					</div>
