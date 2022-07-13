@@ -51,6 +51,28 @@ const eventModel = {
 	],
 };
 
+const eventModelV1 = {
+	organizer_ref: "users/GZXeW7Yj0mmHAG53v1Ht",
+	title: "my event title",
+	og_timezone: "America/El Salvador",
+	id: "3aBKtwKysEpDrPxa0D6J",
+	description: "random description",
+	date_range: {
+		start_date: new Date("jul 15, 2022"), //Timestamp
+		end_date: new Date("jul 15, 2022"), //Timestamp
+	},
+	hours_range: {
+		start_hour: new Date(), // TIMESTAMP => DATE => get hours
+		end_hour: new Date(), // eg 15-20
+	},
+	participants: [
+		{
+			user_ref: "users/iWB2KBrzkIcGZSd2LMebVL7IwLi2", //reference to the participant document, where we get the username, photo, etc
+			
+		}
+	]
+};
+
 const UserData = {
 	username: "adnroso",
 	email: "androso@gmail.com",
