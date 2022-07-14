@@ -38,7 +38,7 @@ const fetchEventData = async (
 const useEventData = () => {
 	const router = useRouter();
 	const { eventId } = router.query;
-	const { allEvents } = useAllEvents();
+	const { allEvents, status: allEventsStatus } = useAllEvents();
 	const { parsedUser } = useParsedUserData();
 	const { status, data, error } = useQuery(
 		["eventData", eventId, allEvents, parsedUser],
@@ -47,15 +47,16 @@ const useEventData = () => {
 			if (!router.isReady) {
 				return;
 			}
+			if (allEventsStatus === 'loading' || allEventsStatus==="idle") return
 			if (typeof eventId === "string") {
 				let eventAlreadyFetched = allEvents?.find(
 					(event) => event.id === eventId
 				);
 				if (eventAlreadyFetched) {
-					// console.log("this event was found in the allUsers array");
+					console.log("this event was found in the allUsers array");
 					return eventAlreadyFetched;
 				} else if (parsedUser) {
-					// console.log("this event wasn't found in the allUsers array, and thus had to be fetched individually");
+					console.log("this event wasn't found in the allUsers array, and thus had to be fetched individually");
 					const data = await fetchEventData(eventId);
 					return {
 						...data,
@@ -69,7 +70,7 @@ const useEventData = () => {
 						},
 					};
 				} else {
-					// console.log("we're not fetching bc we're not authenticated");
+					console.log("we're not fetching bc we're not authenticated");
 					return;
 				}
 				// console.log("what is this weird edge-case?")
