@@ -140,3 +140,34 @@ export const getUserEventsData = async (
 	
 	return { participatingEvents, lastEventSnapshot };
 };
+
+export const getDatesBetweenRange = (start: Date, end: Date):Date[] => {
+	const startDate = start.getDate();
+	const endDate = end.getDate();
+	if  (startDate === endDate) {
+		return [start]
+	} else {
+		const prevDate = new Date(end.getTime());
+		prevDate.setDate(prevDate.getDate() - 1);
+		return [...getDatesBetweenRange(start, prevDate), end]
+	}
+}
+
+export const getHoursBetweenRange = (start: Date, end: Date):Date[] => {
+	const startTime = {
+		hours: start.getHours(),
+		minutes: start.getMinutes(),
+	}
+	const endTime = {
+		hours: end.getHours(),
+		minutes: end.getMinutes(),
+	}
+	
+	if (startTime.hours === endTime.hours && startTime.minutes === endTime.minutes) {
+		return [start]
+	} else {
+		const prevHour = new Date(end.getTime()); 
+		prevHour.setMinutes(prevHour.getMinutes() - 30);
+		return [...getHoursBetweenRange(start, prevHour), end]
+	}
+}
