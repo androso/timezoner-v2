@@ -293,7 +293,42 @@ function OrganizerOverview({
 						</tbody>
 					</table>
 				) : (
-					"it's a date range!"
+					<table>
+						<thead>
+							<tr>
+								{datesRange &&
+									datesRange.map((date) => (
+										<th className="border-2 border-red-500">
+											<span className="block text-left">
+												{date.toLocaleString("default", {
+													month: "short",
+													day: "numeric",
+												})}{" "}
+											</span>
+											<span className="block text-left">
+												{date.toLocaleString("default", {
+													weekday: "long",
+												})}
+											</span>
+										</th>
+									))}
+							</tr>
+						</thead>
+						<tbody>
+							{hoursRange?.map((hourObj) => {
+								return (
+									<tr className="border-2 border-yellow-400">
+										{datesRange?.map((date) => (
+											<td className="border-yellow-400 border-2 ">
+												{hourObj.getHours()}:
+												{hourObj.getMinutes() === 0 ? "00" : hourObj.getMinutes()}
+											</td>
+										))}
+									</tr>
+								);
+							})}
+						</tbody>
+					</table>
 				)}
 			</Container>
 		</div>
