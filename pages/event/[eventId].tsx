@@ -7,7 +7,6 @@ import useEventData from "../../lib/utils/hooks/useEventData";
 import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { EventData, EventFormValues } from "../../lib/utils/types";
-import EventAvailabalityTable from "../../components/EventAvailabalityTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -19,6 +18,10 @@ import { LightButton } from "../../components/LightButton";
 import EventFormFields from "../../components/EventFormFields";
 import { DialogContent, DialogOverlay } from "@reach/dialog";
 import "@reach/dialog/styles.css";
+import {
+	getDatesBetweenRange,
+	getHoursBetweenRange,
+} from "../../lib/utils/client-helpers";
 
 export default function EventId() {
 	const { eventData, status: eventStatus, error: eventError } = useEventData();
@@ -66,18 +69,32 @@ function OrganizerOverview({
 	eventData: EventData | undefined;
 }) {
 	const { parsedUser } = useParsedUserData();
-	//TODO: replace this implementation with ReachUI/dialog
-	//TODO: handle any form of error DONT BE LAZY DUDE YOU GOTTA DO IT!
-	//TODO: add double authorization dialog when deleting an event
-	//abstract this state into compound components for Dialog
 	const [showDialog, setShowDialog] = React.useState(false);
 	const [showDeleteWarning, setShowDeleteWarning] = React.useState(false);
-	const openDialog = () => setShowDialog(true);
 	const closeDialog = () => setShowDialog(false);
 	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
 
+	const eventIsSameDay =
+		eventData?.date_range.start_date?.getDate() ===
+			eventData?.date_range.end_date?.getDate() &&
+		eventData?.date_range.start_date?.getMonth() ===
+			eventData?.date_range.end_date?.getMonth();
+	const datesRange = eventData
+		? getDatesBetweenRange(
+				eventData.date_range.start_date,
+				eventData.date_range.end_date
+		  )
+		: undefined;
+
+	const hoursRange = eventData
+		? getHoursBetweenRange(
+				eventData.hour_range.start_hour,
+				eventData.hour_range.end_hour
+		  )
+		: undefined;
 	const router = useRouter();
 	const { eventId } = router.query;
+
 	const formMethods = useForm<EventFormValues>({
 		defaultValues: {
 			title: eventData?.title,
@@ -93,6 +110,7 @@ function OrganizerOverview({
 			],
 		},
 	});
+
 	const deleteEvent = async () => {
 		if (typeof eventId != "string") return;
 		try {
@@ -126,6 +144,7 @@ function OrganizerOverview({
 	if (!eventData) {
 		return <LoadingOverview />;
 	}
+
 	return (
 		<div
 			onClick={() => {
@@ -239,7 +258,43 @@ function OrganizerOverview({
 					</DialogOverlay>
 				</div>
 				{/* //TODO: ADD TABLE HERE */}
-				<EventAvailabalityTable />
+
+				{eventIsSameDay ? (
+					<table>
+						<thead>
+							<tr>
+								<th className="flex flex-col items-start border-2 border-red-500">
+									<span>
+										{eventData.date_range.start_date.toLocaleString("default", {
+											month: "short",
+											day: "numeric",
+										})}{" "}
+									</span>
+									<span>
+										{eventData.date_range.start_date.toLocaleString("default", {
+											weekday: "long",
+										})}
+									</span>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{getHoursBetweenRange(
+								eventData.hour_range.start_hour,
+								eventData.hour_range.end_hour
+							).map((hour) => (
+								<tr className="border-2 border-yellow-400">
+									<td>
+										{hour.getHours()}:
+										{hour.getMinutes() === 0 ? "00" : hour.getMinutes()}
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				) : (
+					"it's a date range!"
+				)}
 			</Container>
 		</div>
 	);
