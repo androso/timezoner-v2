@@ -53,10 +53,10 @@ const useEventData = () => {
 					(event) => event.id === eventId
 				);
 				if (eventAlreadyFetched) {
-					console.log("this event was found in the allUsers array");
+					// console.log("this event was found in the allUsers array");
 					return eventAlreadyFetched;
 				} else if (parsedUser) {
-					console.log("this event wasn't found in the allUsers array, and thus had to be fetched individually");
+					// console.log("this event wasn't found in the allUsers array, and thus had to be fetched individually");
 					const data = await fetchEventData(eventId);
 					return {
 						...data,
@@ -70,7 +70,7 @@ const useEventData = () => {
 						},
 					};
 				} else {
-					console.log("we're not fetching bc we're not authenticated");
+					// console.log("we're not fetching bc we're not authenticated");
 					return;
 				}
 				// console.log("what is this weird edge-case?")

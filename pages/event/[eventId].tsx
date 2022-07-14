@@ -22,6 +22,7 @@ import {
 	getDatesBetweenRange,
 	getHoursBetweenRange,
 } from "../../lib/utils/client-helpers";
+import toast from "react-hot-toast";
 
 export default function EventId() {
 	const { eventData, status: eventStatus, error: eventError } = useEventData();
@@ -110,7 +111,7 @@ function OrganizerOverview({
 			await deleteDoc(doc(firestore, "events", eventId));
 			router.push("/dashboard", undefined, { shallow: true });
 		} catch (e) {
-			console.error(e);
+			toast.error("There was an error deleting the event");
 		}
 	};
 
@@ -129,8 +130,13 @@ function OrganizerOverview({
 				description: description,
 				og_timezone: timezone,
 			};
-			setDoc(eventDocRef, dataSentToFirestore, { merge: true });
-			closeDialog();
+			try {
+				await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
+				closeDialog();
+				toast.success("Event updated succesfully");
+			} catch(e) {
+				toast.error("There was an error while updating the event")
+			}
 		}
 	};
 
@@ -188,6 +194,7 @@ function OrganizerOverview({
 								<button
 									className="h-7 absolute top-0 right-0 mr-5 mt-6"
 									onClick={closeDialog}
+									type="button"
 								>
 									<FontAwesomeIcon icon={faXmark} className="h-full" />
 								</button>
