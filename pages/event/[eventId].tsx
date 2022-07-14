@@ -26,23 +26,21 @@ import {
 export default function EventId() {
 	const { eventData, status: eventStatus, error: eventError } = useEventData();
 	const { parsedUser } = useParsedUserData();
-	//TODO:
-	//!ERROR: why eventstatus can be success but have no eventdata or parseduser?
 
+	// we have to check if eventStatus is success and also if eventData is not null 
+	// because for useQuery, the action was succesful as long as it didn't throw an error
 	if (eventStatus === "success" && parsedUser && eventData) {
-		// console.log("we have succeded!");
 		if (parsedUser?.id === eventData?.organizer_data.id) {
 			return <OrganizerOverview eventData={eventData} />;
 		} else {
 			return <ParticipantOverview eventData={eventData} />;
 		}
+	} else if (eventStatus === 'success' && !eventData) {
+		return <LoadingOverview />
 	}
-
+	
 	return (
 		<ProtectedRoute>
-			{eventStatus === "success" && !parsedUser && !eventData && (
-				<LoadingOverview />
-			)}
 			{eventStatus === "loading" && <LoadingOverview />}
 			{eventStatus === "error" &&
 				(eventError instanceof Error ? (
@@ -69,16 +67,12 @@ function OrganizerOverview({
 	eventData: EventData | undefined;
 }) {
 	const { parsedUser } = useParsedUserData();
+	const router = useRouter();
 	const [showDialog, setShowDialog] = React.useState(false);
 	const [showDeleteWarning, setShowDeleteWarning] = React.useState(false);
 	const closeDialog = () => setShowDialog(false);
 	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
 
-	const eventIsSameDay =
-		eventData?.date_range.start_date?.getDate() ===
-			eventData?.date_range.end_date?.getDate() &&
-		eventData?.date_range.start_date?.getMonth() ===
-			eventData?.date_range.end_date?.getMonth();
 	const datesRange = eventData
 		? getDatesBetweenRange(
 				eventData.date_range.start_date,
@@ -92,7 +86,6 @@ function OrganizerOverview({
 				eventData.hour_range.end_hour
 		  )
 		: undefined;
-	const router = useRouter();
 	const { eventId } = router.query;
 
 	const formMethods = useForm<EventFormValues>({
@@ -142,7 +135,11 @@ function OrganizerOverview({
 	};
 
 	if (!eventData) {
-		return <LoadingOverview />;
+		return (
+			<LoadingOverview>
+				<LoadingSpinner />
+			</LoadingOverview>
+		);
 	}
 
 	return (
@@ -322,13 +319,13 @@ function ParticipantOverview({
 	);
 }
 
-function LoadingOverview() {
+function LoadingOverview({ children }: { children?: any }) {
 	return (
 		<>
 			<Header title={undefined} screenName="EVENT" photoURL={undefined} />
 			<Container css="pt-4 sm:pt-6">
 				<HomeBreadcrumbs currentPage="Event" />
-				<LoadingSpinner css="!h-60" />
+				{children}
 			</Container>
 		</>
 	);
