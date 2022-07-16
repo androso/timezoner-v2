@@ -17,6 +17,7 @@ export default function EventAvailabalityTable({
 	//! Working on: being able to select more than once
 	const [dragRoot, setDragRoot] = React.useState<HTMLDivElement | null>(null);
 	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>([]);
+
 	const selectableItems = React.useRef<Box[]>([]);
 	const onSelectionChange = React.useCallback(
 		(box: Box) => {
@@ -31,16 +32,15 @@ export default function EventAvailabalityTable({
 			selectableItems.current.forEach((item, index) => {
 				if (boxesIntersect(boxWithAdjustedPosition, item)) {
 					indexesToSelect.push(index);
+					// console.log(index);
 				}
 			});
+
+			// setSelectedIndexes((prevIndexes) => [...prevIndexes, ...indexesToSelect]);
 			setSelectedIndexes(indexesToSelect);
 		},
 		[selectableItems]
 	);
-
-	React.useEffect(() => {
-		console.log(selectedIndexes);
-	}, [selectedIndexes]);
 
 	const { DragSelection } = useSelectionContainer({
 		onSelectionChange,
@@ -68,6 +68,12 @@ export default function EventAvailabalityTable({
 
 	return (
 		<>
+			<button
+				onClick={() => console.log(selectedIndexes)}
+				className="bg-gray-800 p-3 mb-4 rounded-md"
+			>
+				Log selected Indexes
+			</button>
 			<DragSelection />
 			<table>
 				<thead>
@@ -90,22 +96,33 @@ export default function EventAvailabalityTable({
 							))}
 					</tr>
 				</thead>
-				<tbody ref={(newRef) => setDragRoot(newRef)} className="relative">
+				<tbody ref={(newRef) => setDragRoot(newRef)}>
 					{hoursRange?.map((hourObj, tableRowIndex) => {
 						return (
 							<tr className="border-2 border-yellow-400" key={tableRowIndex}>
 								{datesRange?.map((date, tableDataIndex) => {
-									// console.log(tableRowIndex * datesRange.length + tableDataIndex)
+									// The index relative to how far from the first item we are.
+									const globalItemIndex =
+										tableRowIndex * datesRange.length + tableDataIndex;
 									return (
 										<td
-											className={`border-yellow-400 border-2 h-[60px] ${
-												selectedIndexes.includes(
-													tableRowIndex * datesRange.length + tableDataIndex
-												)
+											className={`border-yellow-400 border-2 ${
+												selectedIndexes.includes(globalItemIndex)
 													? "bg-green-600"
 													: null
 											}`}
 											key={tableDataIndex}
+											onClick={() => {
+												setSelectedIndexes((prevIndexes) => {
+													if (prevIndexes.includes(globalItemIndex)) {
+														return prevIndexes.filter(
+															(selectedIndex) => selectedIndex !== globalItemIndex
+														);
+													} else {
+														return [...prevIndexes, globalItemIndex];
+													}
+												});
+											}}
 										>
 											{hourObj.getHours()}:
 											{hourObj.getMinutes() === 0 ? "00" : hourObj.getMinutes()}
