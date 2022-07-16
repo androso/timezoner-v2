@@ -23,6 +23,8 @@ import {
 	getHoursBetweenRange,
 } from "../../lib/utils/client-helpers";
 import toast from "react-hot-toast";
+import EventAvailabalityTable from "../../components/EventAvailabalityTable";
+import Drag from "../drag";
 
 export default function EventId() {
 	const { eventData, status: eventStatus, error: eventError } = useEventData();
@@ -262,46 +264,14 @@ function OrganizerOverview({
 					</DialogOverlay>
 				</div>
 				{/* //TODO: ADD TABLE HERE */}
-				<table>
-					<thead>
-						<tr>
-							{datesRange &&
-								datesRange.map((date) => (
-									<th className="border-2 border-red-500">
-										<span className="block text-left">
-											{date.toLocaleString("default", {
-												month: "short",
-												day: "numeric",
-											})}{" "}
-										</span>
-										<span className="block text-left">
-											{date.toLocaleString("default", {
-												weekday: "long",
-											})}
-										</span>
-									</th>
-								))}
-						</tr>
-					</thead>
-					<tbody>
-						{hoursRange?.map((hourObj) => {
-							return (
-								<tr className="border-2 border-yellow-400">
-									{datesRange?.map((date) => (
-										<td className="border-yellow-400 border-2 ">
-											{hourObj.getHours()}:
-											{hourObj.getMinutes() === 0 ? "00" : hourObj.getMinutes()}
-										</td>
-									))}
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
+				<EventAvailabalityTable hoursRange={hoursRange} datesRange={datesRange}/>
+				{/* <Drag /> */}
 			</Container>
 		</div>
 	);
 }
+
+
 
 function ParticipantOverview({
 	eventData,
