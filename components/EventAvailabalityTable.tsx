@@ -14,16 +14,22 @@ export default function EventAvailabalityTable({
 	hoursRange,
 	datesRange,
 }: PropsTypes) {
+	//! Working on: being able to select more than once
 	const [dragRoot, setDragRoot] = React.useState<HTMLDivElement | null>(null);
 	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>([]);
 	const selectableItems = React.useRef<Box[]>([]);
-
 	const onSelectionChange = React.useCallback(
 		(box: Box) => {
 			const indexesToSelect: number[] = [];
-
+			//! We update the values of the box that we receive, because those are relative to the viewport, not the document
+			//TODO: Is there a way to make this work with values relative to the viewport?
+			const boxWithAdjustedPosition = {
+				...box,
+				left: box.left + window.scrollX,
+				top: box.top + window.scrollY,
+			};
 			selectableItems.current.forEach((item, index) => {
-				if (boxesIntersect(box, item)) {
+				if (boxesIntersect(boxWithAdjustedPosition, item)) {
 					indexesToSelect.push(index);
 				}
 			});
@@ -33,8 +39,9 @@ export default function EventAvailabalityTable({
 	);
 
 	React.useEffect(() => {
-		// console.log(selectedIndexes);
+		console.log(selectedIndexes);
 	}, [selectedIndexes]);
+
 	const { DragSelection } = useSelectionContainer({
 		onSelectionChange,
 		selectionProps: {
@@ -44,17 +51,15 @@ export default function EventAvailabalityTable({
 	});
 
 	React.useEffect(() => {
-		if (dragRoot) {
-			const allBoxes = [];
+		if (dragRoot && window) {
 			Array.from(dragRoot.children).forEach((tableRow) => {
 				Array.from(tableRow.children).forEach((tableData) => {
-					const { left, top, width, height } =
-						tableData.getBoundingClientRect();
+					const elementRect = tableData.getBoundingClientRect();
 					selectableItems.current.push({
-						left,
-						top,
-						width,
-						height,
+						left: elementRect.left + window.scrollX,
+						top: elementRect.top + window.scrollY,
+						width: elementRect.width,
+						height: elementRect.height,
 					});
 				});
 			});
@@ -85,11 +90,12 @@ export default function EventAvailabalityTable({
 							))}
 					</tr>
 				</thead>
-				<tbody ref={(newRef) => setDragRoot(newRef)}>
+				<tbody ref={(newRef) => setDragRoot(newRef)} className="relative">
 					{hoursRange?.map((hourObj, tableRowIndex) => {
 						return (
 							<tr className="border-2 border-yellow-400" key={tableRowIndex}>
 								{datesRange?.map((date, tableDataIndex) => {
+									// console.log(tableRowIndex * datesRange.length + tableDataIndex)
 									return (
 										<td
 											className={`border-yellow-400 border-2 h-[60px] ${

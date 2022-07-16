@@ -34,7 +34,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 						<DynamicToaster />
 					</EventsProvider>
 				</AuthProvider>
-				<ReactQueryDevtools initialIsOpen={false} />
 			</QueryClientProvider>
 		</DynamicPageWrapper>
 	);
