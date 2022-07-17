@@ -16,6 +16,7 @@ module.exports = {
 				"desktop-max-w": "1300px",
 			},
 			colors: {
+				tdBgColor: "hsla(224, 33%, 94%, .15)",
 				lightBlue: "hsl(182, 100%, 88%)",
 				lightGreen: "hsl(130, 100%, 88%)",
 				gunMetal: "hsl(192, 15%, 18%)",

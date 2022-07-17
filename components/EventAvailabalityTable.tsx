@@ -84,7 +84,10 @@ export default function EventAvailabalityTable({
 					<tr>
 						{datesRange &&
 							datesRange.map((date, index) => (
-								<th className="border-2 border-red-500" key={index}>
+								<th
+									className="py-3 px-6 bg-gradient-to-b from-[#6C747A] to-[#4B565D] last:rounded-tr-xl first:rounded-tl-xl"
+									key={index}
+								>
 									<span className="block text-left">
 										{date.toLocaleString("default", {
 											month: "short",
@@ -103,30 +106,34 @@ export default function EventAvailabalityTable({
 				<tbody ref={(newRef) => setDragRoot(newRef)}>
 					{hoursRange?.map((hourObj, tableRowIndex) => {
 						return (
-							<tr className="border-2 border-yellow-400" key={tableRowIndex}>
+							<tr key={tableRowIndex}>
 								{datesRange?.map((date, tableDataIndex) => {
 									// The index relative to how far from the first item we are.
 									const globalItemIndex =
 										tableRowIndex * datesRange.length + tableDataIndex;
 									return (
 										<td
-											className={`border-yellow-400 border-2 ${
+											className={`px-6 py-4 ${
 												selectedIndexes.includes(globalItemIndex)
 													? "bg-green-600"
-													: null
+													: "bg-tdBgColor"
+											} ${
+												tableRowIndex === hoursRange.length - 1
+													? "last:rounded-br-xl first:rounded-bl-xl"
+													: ""
 											}`}
 											key={tableDataIndex}
 											onClick={() => {
-													setSelectedIndexes((prevIndexes) => {
-														if (prevIndexes.includes(globalItemIndex)) {
-															return prevIndexes.filter(
-																(selectedIndex) =>
-																	selectedIndex !== globalItemIndex
-															);
-														} else {
-															return [...prevIndexes, globalItemIndex];
-														}
-													});
+												setSelectedIndexes((prevIndexes) => {
+													if (prevIndexes.includes(globalItemIndex)) {
+														return prevIndexes.filter(
+															(selectedIndex) =>
+																selectedIndex !== globalItemIndex
+														);
+													} else {
+														return [...prevIndexes, globalItemIndex];
+													}
+												});
 											}}
 										>
 											{hourObj.getHours()}:
