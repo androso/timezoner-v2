@@ -14,14 +14,14 @@ export default function EventAvailabalityTable({
 	hoursRange,
 	datesRange,
 }: PropsTypes) {
-	//! Working on: being able to select more than once
 	const [dragRoot, setDragRoot] = React.useState<HTMLDivElement | null>(null);
 	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>([]);
 
 	const selectableItems = React.useRef<Box[]>([]);
+
+	//TODO: make this function be called only when the position of the mouse has exceeded a box(?)
 	const onSelectionChange = React.useCallback(
 		(box: Box) => {
-			const indexesToSelect: number[] = [];
 			//! We update the values of the box that we receive, because those are relative to the viewport, not the document
 			//TODO: Is there a way to make this work with values relative to the viewport?
 			const boxWithAdjustedPosition = {
@@ -29,15 +29,18 @@ export default function EventAvailabalityTable({
 				left: box.left + window.scrollX,
 				top: box.top + window.scrollY,
 			};
+			const indexesToSelect: number[] = [];
 			selectableItems.current.forEach((item, index) => {
-				if (boxesIntersect(boxWithAdjustedPosition, item)) {
+				if (
+					boxesIntersect(boxWithAdjustedPosition, item) &&
+					selectedIndexes.includes(index) == false
+				) {
 					indexesToSelect.push(index);
-					// console.log(index);
 				}
 			});
-
-			// setSelectedIndexes((prevIndexes) => [...prevIndexes, ...indexesToSelect]);
-			setSelectedIndexes(indexesToSelect);
+			setSelectedIndexes((prevIndexes) => {
+				return Array.from(new Set([...prevIndexes, ...indexesToSelect]));
+			});
 		},
 		[selectableItems]
 	);
@@ -45,12 +48,13 @@ export default function EventAvailabalityTable({
 	const { DragSelection } = useSelectionContainer({
 		onSelectionChange,
 		selectionProps: {
-			style: {},
+			style: { display: "none" },
 		},
 		eventsElement: dragRoot,
 	});
 
 	React.useEffect(() => {
+		//TODO:
 		if (dragRoot && window) {
 			Array.from(dragRoot.children).forEach((tableRow) => {
 				Array.from(tableRow.children).forEach((tableData) => {
@@ -113,15 +117,16 @@ export default function EventAvailabalityTable({
 											}`}
 											key={tableDataIndex}
 											onClick={() => {
-												setSelectedIndexes((prevIndexes) => {
-													if (prevIndexes.includes(globalItemIndex)) {
-														return prevIndexes.filter(
-															(selectedIndex) => selectedIndex !== globalItemIndex
-														);
-													} else {
-														return [...prevIndexes, globalItemIndex];
-													}
-												});
+												// setSelectedIndexes((prevIndexes) => {
+												// 	if (prevIndexes.includes(globalItemIndex)) {
+												// 		return prevIndexes.filter(
+												// 			(selectedIndex) =>
+												// 				selectedIndex !== globalItemIndex
+												// 		);
+												// 	} else {
+												// 		return [...prevIndexes, globalItemIndex];
+												// 	}
+												// });
 											}}
 										>
 											{hourObj.getHours()}:
