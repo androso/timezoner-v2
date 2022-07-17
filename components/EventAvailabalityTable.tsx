@@ -117,16 +117,16 @@ export default function EventAvailabalityTable({
 											}`}
 											key={tableDataIndex}
 											onClick={() => {
-												// setSelectedIndexes((prevIndexes) => {
-												// 	if (prevIndexes.includes(globalItemIndex)) {
-												// 		return prevIndexes.filter(
-												// 			(selectedIndex) =>
-												// 				selectedIndex !== globalItemIndex
-												// 		);
-												// 	} else {
-												// 		return [...prevIndexes, globalItemIndex];
-												// 	}
-												// });
+													setSelectedIndexes((prevIndexes) => {
+														if (prevIndexes.includes(globalItemIndex)) {
+															return prevIndexes.filter(
+																(selectedIndex) =>
+																	selectedIndex !== globalItemIndex
+															);
+														} else {
+															return [...prevIndexes, globalItemIndex];
+														}
+													});
 											}}
 										>
 											{hourObj.getHours()}:
