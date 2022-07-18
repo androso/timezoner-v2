@@ -9,7 +9,7 @@ type PropsTypes = {
 	hoursRange: Date[] | undefined;
 	datesRange: Date[] | undefined;
 };
-export default function EventAvailabalityTable({
+export default function EventSchedulingTable({
 	hoursRange,
 	datesRange,
 }: PropsTypes) {

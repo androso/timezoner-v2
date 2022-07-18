@@ -23,7 +23,7 @@ import {
 	getHoursBetweenRange,
 } from "../../lib/utils/client-helpers";
 import toast from "react-hot-toast";
-import EventAvailabalityTable from "../../components/EventAvailabalityTable";
+import EventSchedulingTable from "../../components/EventSchedulingTable";
 import Drag from "../drag";
 
 export default function EventId() {
@@ -288,6 +288,9 @@ function ParticipantOverview({
 				eventData.hour_range.end_hour
 		  )
 		: undefined;
+	const [tableView, setTableView] = React.useState<
+		"availability" | "scheduling"
+	>("scheduling");
 
 	if (!eventData) {
 		return <LoadingOverview />;
@@ -301,11 +304,32 @@ function ParticipantOverview({
 			/>
 			<Container css="pt-4 sm:pt-6">
 				<HomeBreadcrumbs currentPage="Event" />
-				<p>Participant overview</p>
-				<EventAvailabalityTable
-					hoursRange={hoursRange}
-					datesRange={datesRange}
-				/>
+				<h1 className="font-bold text-3xl">Welcome to {eventData.organizer_data.username}'s Event</h1>
+				<p>{eventData.description}</p>
+				{/* We'll have a select timezone that will change the hours displayed on the table */}
+				<div className="mb-4 ">
+					{/* //TODO: add styles */}
+					<button
+						className="p-3 bg-containerGray rounded-sm mr-3"
+						onClick={() => setTableView("scheduling")}
+					>
+						Scheduling
+					</button>
+					<button
+						className="p-3 bg-containerGray rounded-sm"
+						onClick={() => setTableView("availability")}
+					>
+						Availability
+					</button>
+				</div>
+				{tableView === "scheduling" ? (
+					<EventSchedulingTable
+						hoursRange={hoursRange}
+						datesRange={datesRange}
+					/>
+				) : (
+					<p>availability</p>
+				)}
 			</Container>
 		</>
 	);
