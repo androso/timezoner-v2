@@ -5,7 +5,6 @@ import {
 	Box,
 } from "@air/react-drag-to-select";
 
-//! Working on: Drag and select functionality to choose hours
 type PropsTypes = {
 	hoursRange: Date[] | undefined;
 	datesRange: Date[] | undefined;
@@ -16,7 +15,8 @@ export default function EventAvailabalityTable({
 }: PropsTypes) {
 	const [dragRoot, setDragRoot] = React.useState<HTMLDivElement | null>(null);
 	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>([]);
-
+	// const [tableScrollLeft, setTableScrollLeft] = React.useState();
+	const $table = React.useRef<HTMLTableElement | null>(null);
 	const selectableItems = React.useRef<Box[]>([]);
 
 	//TODO: make this function be called only when the position of the mouse has exceeded a box(?)
@@ -26,9 +26,10 @@ export default function EventAvailabalityTable({
 			//TODO: Is there a way to make this work with values relative to the viewport?
 			const boxWithAdjustedPosition = {
 				...box,
-				left: box.left + window.scrollX,
+				left: box.left + window.scrollX + ($table.current?.scrollLeft ?? 0),
 				top: box.top + window.scrollY,
 			};
+			
 			const indexesToSelect: number[] = [];
 			selectableItems.current.forEach((item, index) => {
 				if (
@@ -42,7 +43,7 @@ export default function EventAvailabalityTable({
 				return Array.from(new Set([...prevIndexes, ...indexesToSelect]));
 			});
 		},
-		[selectableItems]
+		[selectableItems, $table]
 	);
 
 	const { DragSelection } = useSelectionContainer({
@@ -54,7 +55,6 @@ export default function EventAvailabalityTable({
 	});
 
 	React.useEffect(() => {
-		//TODO:
 		if (dragRoot && window) {
 			Array.from(dragRoot.children).forEach((tableRow) => {
 				Array.from(tableRow.children).forEach((tableData) => {
@@ -79,7 +79,7 @@ export default function EventAvailabalityTable({
 				Log selected Indexes
 			</button>
 			<DragSelection />
-			<table>
+			<table className="block overflow-x-auto rounded-xl" ref={$table}>
 				<thead>
 					<tr>
 						{datesRange &&
