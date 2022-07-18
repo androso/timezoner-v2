@@ -30,7 +30,7 @@ export default function EventId() {
 	const { eventData, status: eventStatus, error: eventError } = useEventData();
 	const { parsedUser } = useParsedUserData();
 
-	// we have to check if eventStatus is success and also if eventData is not null 
+	// we have to check if eventStatus is success and also if eventData is not null
 	// because for useQuery, the action was succesful as long as it didn't throw an error
 	if (eventStatus === "success" && parsedUser && eventData) {
 		if (parsedUser?.id === eventData?.organizer_data.id) {
@@ -38,15 +38,15 @@ export default function EventId() {
 		} else {
 			return <ParticipantOverview eventData={eventData} />;
 		}
-	} else if (eventStatus === 'success' && !eventData) {
-		return <LoadingOverview />
 	}
-	
+
 	return (
 		<ProtectedRoute>
-			{eventStatus === "loading" && <LoadingOverview />}
-			{eventStatus === "error" &&
-				(eventError instanceof Error ? (
+			{(eventStatus === "success" && !eventData) ||
+			eventStatus === "loading" ? (
+				<LoadingOverview />
+			) : eventStatus === "error" ? (
+				eventError instanceof Error ? (
 					<Container css="pt-8">
 						<HomeBreadcrumbs currentPage="Event" />
 						<pre>{eventError.message}</pre>
@@ -59,7 +59,8 @@ export default function EventId() {
 							page
 						</p>
 					</Container>
-				))}
+				)
+			) : null}
 		</ProtectedRoute>
 	);
 }
@@ -136,8 +137,8 @@ function OrganizerOverview({
 				await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
 				closeDialog();
 				toast.success("Event updated succesfully");
-			} catch(e) {
-				toast.error("There was an error while updating the event")
+			} catch (e) {
+				toast.error("There was an error while updating the event");
 			}
 		}
 	};
@@ -264,20 +265,30 @@ function OrganizerOverview({
 					</DialogOverlay>
 				</div>
 				{/* //TODO: ADD TABLE HERE */}
-				<EventAvailabalityTable hoursRange={hoursRange} datesRange={datesRange}/>
-				{/* <Drag /> */}
 			</Container>
 		</div>
 	);
 }
-
-
 
 function ParticipantOverview({
 	eventData,
 }: {
 	eventData: EventData | undefined;
 }) {
+	const datesRange = eventData
+		? getDatesBetweenRange(
+				eventData.date_range.start_date,
+				eventData.date_range.end_date
+		  )
+		: undefined;
+
+	const hoursRange = eventData
+		? getHoursBetweenRange(
+				eventData.hour_range.start_hour,
+				eventData.hour_range.end_hour
+		  )
+		: undefined;
+
 	if (!eventData) {
 		return <LoadingOverview />;
 	}
@@ -291,6 +302,10 @@ function ParticipantOverview({
 			<Container css="pt-4 sm:pt-6">
 				<HomeBreadcrumbs currentPage="Event" />
 				<p>Participant overview</p>
+				<EventAvailabalityTable
+					hoursRange={hoursRange}
+					datesRange={datesRange}
+				/>
 			</Container>
 		</>
 	);
