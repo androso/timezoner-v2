@@ -117,6 +117,7 @@ export default function Dashboard() {
 			</>
 		);
 	}
+
 	return (
 		<>
 			<Header
@@ -146,10 +147,11 @@ export default function Dashboard() {
 							<button
 								className={`h-1/2  self-center p-3 sm:h-min bg-gray-800 rounded-md disabled:bg-gray-500`}
 								disabled={
-									allEvents &&
-									eventsPageIndex + 1 === Math.ceil(allEvents?.length / 5)
-										? true
-										: false
+									allEvents?.[0]
+										? eventsPageIndex + 1 === Math.ceil(allEvents?.length / 5)
+											? true
+											: false
+										: true
 								}
 								onClick={handleNextPage}
 							>
