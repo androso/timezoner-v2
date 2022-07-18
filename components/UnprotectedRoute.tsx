@@ -11,6 +11,7 @@ export default function UnprotectedRoute({ children }: props) {
 
 	if (user != null && !loading) {
 		router.push("/dashboard", undefined, { shallow: true });
+		return null;
 	} else if (user == null && !loading) {
 		return children;
 	}
