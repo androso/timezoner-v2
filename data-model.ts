@@ -23,26 +23,29 @@ const eventModel = {
 			user_ref: "users/iWB2KBrzkIcGZSd2LMebVL7IwLi2", //reference to the participant document, where we get the username, photo, etc
 			dates_available: [
 				{
-					start_date: new Date("jul 15, 2022"),
-					end_date: new Date("jul 15, 2022"),
+					date: new Date("jul 21"),
 					hours_ranges: [
 						{
-							start_hour: new Date(), // 15hrs
-							end_hour: new Date(), // 16 hrs
-						},
-						{
-							start_hour: new Date(), // 18 hrs
-							end_hour: new Date(), //20hrs
+							start_hour: new Date("7:30am"),
+							end_hour: new Date("8:00am"),
 						},
 					],
 				},
 				{
-					start_date: new Date("jul 18, 2022"),
-					end_date: new Date("jul 19, 2022"),
-					hours_ranges: [
+					date: new Date("Jul 22"),
+					hours_range: [
 						{
-							start_hour: new Date(), //18hrs
-							end_hour: new Date(), //20hrs
+							start_hour: new Date("8:00am"),
+							end_hour: new Date("8:30am"),
+						},
+					],
+				},
+				{
+					date: new Date("Jul 23"),
+					hours_range: [
+						{
+							start_hour: new Date("8:00am"),
+							end_hour: new Date("8:30am"),
 						},
 					],
 				},
@@ -68,9 +71,39 @@ const eventModelV1 = {
 	participants: [
 		{
 			user_ref: "users/iWB2KBrzkIcGZSd2LMebVL7IwLi2", //reference to the participant document, where we get the username, photo, etc
-			
-		}
-	]
+			// user participates in these dates at these hours
+			// Each date will have its own hour_ranges. Saturday (12pm - 13pm), (15pm - 18pm)
+			schedules: [
+				{
+					date: new Date("jul 21"),
+					hours_range: [
+						{
+							start_hour: new Date("7:30am"),
+							end_hour: new Date("8:00am"),
+						},
+					],
+				},
+				{
+					date: new Date("Jul 22"),
+					hours_range: [
+						{
+							start_hour: new Date("8:00am"),
+							end_hour: new Date("8:30am"),
+						},
+					],
+				},
+				{
+					date: new Date("Jul 23"),
+					hours_range: [
+						{
+							start_hour: new Date("8:00am"),
+							end_hour: new Date("8:30am"),
+						},
+					],
+				},
+			],
+		},
+	],
 };
 
 const UserData = {
