@@ -4,18 +4,49 @@ import {
 	boxesIntersect,
 	Box,
 } from "@air/react-drag-to-select";
+import {
+	arrayUnion,
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	setDoc,
+	updateDoc,
+} from "firebase/firestore";
+import { firestore } from "../lib/firebase";
+import { useRouter } from "next/router";
+import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
+import { EventData } from "../lib/utils/types";
+import {
+	getDatesBetweenRange,
+	getHoursBetweenRange,
+} from "../lib/utils/client-helpers";
+import { queryClient } from "../pages/_app";
 
 type PropsTypes = {
-	hoursRange: Date[] | undefined;
-	datesRange: Date[] | undefined;
+	hoursRange?: Date[] | undefined;
+	datesRange?: Date[] | undefined;
+	eventData: EventData;
 };
-export default function EventSchedulingTable({
-	hoursRange,
-	datesRange,
-}: PropsTypes) {
+export default function EventSchedulingTable({ eventData }: PropsTypes) {
+	const datesRange = eventData
+		? getDatesBetweenRange(
+				eventData.date_range.start_date,
+				eventData.date_range.end_date
+		  )
+		: undefined;
+
+	const hoursRange = eventData
+		? getHoursBetweenRange(
+				eventData.hour_range.start_hour,
+				eventData.hour_range.end_hour
+		  )
+		: undefined;
 	const [dragRoot, setDragRoot] = React.useState<HTMLDivElement | null>(null);
 	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>([]);
-	// const [tableScrollLeft, setTableScrollLeft] = React.useState();
+	const router = useRouter();
+	const { eventId } = router.query;
+	const { parsedUser } = useParsedUserData();
 	const $table = React.useRef<HTMLTableElement | null>(null);
 	const selectableItems = React.useRef<Box[]>([]);
 
@@ -29,7 +60,7 @@ export default function EventSchedulingTable({
 				left: box.left + window.scrollX + ($table.current?.scrollLeft ?? 0),
 				top: box.top + window.scrollY,
 			};
-			
+
 			const indexesToSelect: number[] = [];
 			selectableItems.current.forEach((item, index) => {
 				if (
@@ -45,12 +76,61 @@ export default function EventSchedulingTable({
 		},
 		[selectableItems, $table]
 	);
+	//! WORKING ON: sending data to firestore
+	const sendToFirestore = async () => {
+		const $selectableItems = Array.from(document.getElementsByTagName("td"));
+		const $selectedItems = $selectableItems.filter(($item) =>
+			selectedIndexes.includes(Number($item.dataset.tableDataIndex))
+		);
+	};
+	const sendIndividualSchedule = async (td: HTMLTableCellElement) => {
+		const isSelected = td.classList.contains("selected");
+		const elementIndex = td.dataset.tableElementIndex;
+		// Send to firestore
+		if (isSelected && typeof eventId === "string" && parsedUser) {
+			const date = new Date(td.dataset.date ?? "");
+			const hour = new Date(`${td.dataset.date} ${td.dataset.hour}`);
+			const eventRef = doc(firestore, "events", eventId);
+			const dataSent = {
+				user_ref: doc(firestore, "users", parsedUser?.id),
+			};
+
+			// //! eventData.participants as a sub-collection
+			// const participantsRef = collection(firestore, "events",eventData.id, "participants");
+			// const participantsSnap = await getDocs(participantsRef)
+			// const participants = participantsSnap.docs.map(doc => doc.data());
+			// console.log(participants)
+
+			//! if eventData.participants as an array
+			// We copy the array from firestore, we update the local copy, then send the updated array to firestore
+			const currentEventParticipants = [...(eventData.participants ?? [])];
+			const userParticipantObject = currentEventParticipants.find(
+				(participant) => participant.user_ref.path === `users/${parsedUser.id}`
+			);
+			if (!userParticipantObject) {
+				console.log("first time we use this event");
+				await updateDoc(eventRef, {
+					participants: arrayUnion(dataSent),
+				});
+				queryClient.invalidateQueries("eventData")
+				console.log("saved!");
+			} else {
+				console.log("user is already in the participants of this event");
+				// update the doc
+			}
+			// we find the participant obj whose userref === ours,
+			// we update that object with the received values,
+			// we send to firestore
+		}
+		// Delete hour from firestore
+	};
 
 	const { DragSelection } = useSelectionContainer({
 		onSelectionChange,
 		selectionProps: {
 			style: { display: "none" },
 		},
+		onSelectionEnd: sendToFirestore,
 		eventsElement: dragRoot,
 	});
 
@@ -113,17 +193,22 @@ export default function EventSchedulingTable({
 										tableRowIndex * datesRange.length + tableDataIndex;
 									return (
 										<td
+											data-table-element-index={globalItemIndex}
+											data-date={`${
+												date.getMonth() + 1
+											}/${date.getDate()}/${date.getFullYear()}`}
+											data-hour={`${hourObj.getHours()}:${hourObj.getMinutes()}`}
 											className={`px-6 py-4 ${
 												selectedIndexes.includes(globalItemIndex)
 													? "bg-green-600"
-													: "bg-tdBgColor"
+													: "bg-tdBgColor selected"
 											} ${
 												tableRowIndex === hoursRange.length - 1
 													? "last:rounded-br-xl first:rounded-bl-xl"
 													: ""
 											}`}
 											key={tableDataIndex}
-											onClick={() => {
+											onClick={(e) => {
 												setSelectedIndexes((prevIndexes) => {
 													if (prevIndexes.includes(globalItemIndex)) {
 														return prevIndexes.filter(
@@ -134,6 +219,9 @@ export default function EventSchedulingTable({
 														return [...prevIndexes, globalItemIndex];
 													}
 												});
+												sendIndividualSchedule(
+													e.target as HTMLTableCellElement
+												);
 											}}
 										>
 											{hourObj.getHours()}:

@@ -22,7 +22,7 @@ const DynamicPageWrapper = dynamic<PageWrapperProps>(
 	}
 );
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
