@@ -70,6 +70,16 @@ export type HourPickerProps = baseFormFieldProps & {
 	control: Control<EventFormValues, any>;
 	name: "hour_range.start_hour" | "hour_range.end_hour";
 };
+type Participant = {
+	user_ref: DocumentReference;
+	dates_available: {
+		date: Timestamp;
+		hours_range: {
+			start_hour: Timestamp;
+			end_hour: Timestamp;
+		}[];
+	}[];
+};
 
 export type EventData = {
 	date_range: {
@@ -87,6 +97,7 @@ export type EventData = {
 	organizer_ref: DocumentReference;
 	organizer_id: string;
 	id: string;
+	participants: Participant[]
 };
 
 export type RawEventDataFromFirestore = {
@@ -106,4 +117,3 @@ export type RawEventDataFromFirestore = {
 	organizer_id: string;
 	id: string;
 };
-

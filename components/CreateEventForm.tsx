@@ -32,6 +32,7 @@ export default function CreateEventForm() {
 				organizer_ref: doc(firestore, "users", parsedUser.id),
 				organizer_id: parsedUser.id,
 				id: eventDocRef.id,
+				participants: []
 			};
 			await setDoc(eventDocRef, dataSentToFirestore);
 			router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });
