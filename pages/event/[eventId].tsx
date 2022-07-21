@@ -24,6 +24,8 @@ import {
 } from "../../lib/utils/client-helpers";
 import toast from "react-hot-toast";
 import EventSchedulingTable from "../../components/EventSchedulingTable";
+import TimezonesSelect from "../../components/TimezonesSelect";
+import { defaultTimezone as localTimezone } from "../../lib/timezonesData";
 
 export default function EventId() {
 	const { eventData, status: eventStatus, error: eventError } = useEventData();
@@ -279,6 +281,7 @@ function ParticipantOverview({
 	>("scheduling");
 
 	const [isTouchDevice, setIsTouchDevice] = React.useState(false);
+	const timezoneFormMethods = useForm();
 
 	if (!eventData) {
 		return <LoadingOverview />;
@@ -308,12 +311,19 @@ function ParticipantOverview({
 				photoURL={eventData.organizer_data.avatar_url}
 			/>
 			<Container css="pt-4 sm:pt-6">
-				<HomeBreadcrumbs currentPage="Event" />
-				<h1 className="font-bold text-3xl">
+				<HomeBreadcrumbs currentPage="Event" css="mb-4"/>
+				<h1 className="font-bold text-3xl mb-3">
 					Welcome to {eventData.organizer_data.username}'s Event
 				</h1>
-				<p>{eventData.description}</p>
-				{/* We'll have a select timezone that will change the hours displayed on the table */}
+				<p className="mb-4">{eventData.description}</p>
+				<div className="mb-4">
+					{/* We'll have a select timezone that will change the hours displayed on the table */}
+					<span className="text-gray-300 text-base">Your Timezone:</span>
+					<FormProvider {...timezoneFormMethods}>
+						<TimezonesSelect defaultTimezone={localTimezone.label} inputCss="bg-[#2E2E2E]" buttonCss="bg-[#2E2E2E]" ulCss="bg-[#2E2E2E]"/>
+					</FormProvider>
+					
+				</div>
 				<div className="mb-4 ">
 					{/* //TODO: add styles */}
 					<button
@@ -331,9 +341,7 @@ function ParticipantOverview({
 				</div>
 				{tableView === "scheduling" ? (
 					<>
-						<EventSchedulingTable
-							eventData={eventData}
-						/>
+						<EventSchedulingTable eventData={eventData} />
 						<p>
 							Note:{" "}
 							{isTouchDevice
