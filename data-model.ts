@@ -1,7 +1,23 @@
+const participantsModel = [
+	{
+		user_ref: "",
+		dates_available: [
+			{
+				date: "july 23",
+				hours_selected: ["7:30", "8:00", "9:00"], // we could save as Date
+			},
+			{
+				date: "july 25",
+				hours_selected: ["8:30"],
+			},
+		],
+	},
+];
+
 const eventModel = {
 	organizer_ref: "users/GZXeW7Yj0mmHAG53v1Ht",
 	title: "my event title",
-	og_timezone: "America/El Salvador",
+	og_timezone: "America/El Salvador",	
 	id: "3aBKtwKysEpDrPxa0D6J",
 	description: "random description",
 	date_range: [
@@ -22,6 +38,15 @@ const eventModel = {
 		{
 			user_ref: "users/iWB2KBrzkIcGZSd2LMebVL7IwLi2", //reference to the participant document, where we get the username, photo, etc
 			dates_available: [
+				{
+					date: new Date("jul 14"),
+					hours_ranges: [
+						{
+							start_hour: new Date("12:30pm"),
+							end_hour: new Date("12:30pm"),
+						},
+					],
+				},
 				{
 					date: new Date("jul 21"),
 					hours_ranges: [

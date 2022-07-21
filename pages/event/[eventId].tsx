@@ -274,19 +274,6 @@ function ParticipantOverview({
 }: {
 	eventData: EventData | undefined;
 }) {
-	const datesRange = eventData
-		? getDatesBetweenRange(
-				eventData.date_range.start_date,
-				eventData.date_range.end_date
-		  )
-		: undefined;
-
-	const hoursRange = eventData
-		? getHoursBetweenRange(
-				eventData.hour_range.start_hour,
-				eventData.hour_range.end_hour
-		  )
-		: undefined;
 	const [tableView, setTableView] = React.useState<
 		"availability" | "scheduling"
 	>("scheduling");
@@ -345,8 +332,7 @@ function ParticipantOverview({
 				{tableView === "scheduling" ? (
 					<>
 						<EventSchedulingTable
-							hoursRange={hoursRange}
-							datesRange={datesRange}
+							eventData={eventData}
 						/>
 						<p>
 							Note:{" "}
