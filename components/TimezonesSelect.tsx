@@ -6,8 +6,16 @@ import { useController } from "react-hook-form";
 
 export default function TimezonesSelect({
 	defaultTimezone,
+	inputCss,
+	buttonCss,
+	ulCss,
+	labelText,
 }: {
 	defaultTimezone: string;
+	inputCss?: string;
+	buttonCss?: string;
+	ulCss?: string;
+	labelText?: string;
 }) {
 	const controllerProps = {
 		name: "timezone",
@@ -32,9 +40,11 @@ export default function TimezonesSelect({
 				highlightedIndex,
 			}) => (
 				<div className="relative">
-					<label {...getLabelProps()} className="text-lg">
-						Timezone
-					</label>
+					{labelText && (
+						<label {...getLabelProps()} className="text-lg block font-medium">
+							{labelText}
+						</label>
+					)}
 
 					<div
 						/* 
@@ -44,13 +54,13 @@ export default function TimezonesSelect({
 					>
 						<input
 							{...getInputProps()}
-							className="basic-input-field grow rounded-r-none rounded-br-none border-r-0 w-full"
+							className={`basic-input-field grow rounded-r-none rounded-br-none border-r-0 w-full ${inputCss}`}
 							onBlur={field.onBlur}
 							ref={field.ref}
 						/>
 						<button
 							aria-label={"toggle menu"}
-							className="px-3 bg-deepBlack border-solid border-[#4e4e4e] border-[1px] rounded-r-md rounded-br-md"
+							className={`px-3 bg-deepBlack border-solid border-[#4e4e4e] border-[1px] rounded-r-md rounded-br-md ${buttonCss}`}
 							type="button"
 							{...getToggleButtonProps()}
 						>
@@ -61,7 +71,7 @@ export default function TimezonesSelect({
 						{...getMenuProps()}
 						className={`${
 							isOpen ? "visible" : "invisible"
-						} mt-1 max-h-48 w-full overflow-y-scroll absolute z-10 bg-deepBlack border-solid border-[#415d95] border-[1px]`}
+						} mt-1 max-h-48 w-full overflow-y-scroll absolute z-10 bg-deepBlack border-solid border-[#415d95] border-[1px] ${ulCss}`}
 					>
 						{isOpen
 							? (inputValue != "" && inputValue != null

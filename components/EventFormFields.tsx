@@ -69,6 +69,7 @@ export default function EventFormFields({
 			<div className="mb-2">
 				<TimezonesSelect
 					defaultTimezone={defaultTimezone ?? localTimezone.label}
+					labelText="Timezone"
 				/>
 			</div>
 			<div className="mb-2">
