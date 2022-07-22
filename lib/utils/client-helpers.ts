@@ -173,3 +173,19 @@ export const getHoursBetweenRange = (start: Date, end: Date): Date[] => {
 		return [...getHoursBetweenRange(start, prevHour), end];
 	}
 };
+
+export const standardizeHours = (hoursRange: Date[], offset: number) => {
+	return hoursRange.map((hourObject) => {
+		const newHour = new Date(hourObject.getTime());
+		newHour.setMinutes(newHour.getMinutes() - offset);
+		return newHour;
+	});
+};
+
+export const convertHoursToTimezone = (hoursRange: Date[], offset: number) => {
+	return hoursRange.map((hour) => {
+		const newHour = new Date(hour.getTime());
+		newHour.setMinutes(newHour.getMinutes() + offset);
+		return newHour;
+	});
+};
