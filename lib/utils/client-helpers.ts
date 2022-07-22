@@ -110,8 +110,9 @@ export function getHighQualityAvatar(avatar_url: string, provider: string) {
 export const getUserEventsData = async (
 	snapshot: QuerySnapshot<DocumentData>
 ) => {
-	let lastEventSnapshot: undefined | QueryDocumentSnapshot<DocumentData> = undefined;
-	
+	let lastEventSnapshot: undefined | QueryDocumentSnapshot<DocumentData> =
+		undefined;
+
 	let participatingEvents = await Promise.all(
 		snapshot.docs.map(async (eventDoc, index) => {
 			const rawEventData = eventDoc.data() as RawEventDataFromFirestore;
@@ -121,14 +122,12 @@ export const getUserEventsData = async (
 
 			const event = {
 				...rawEventData,
-				date_range: {
-					start_date: rawEventData.date_range.start_date.toDate(),
-					end_date: rawEventData.date_range.end_date.toDate(),
-				},
-				hour_range: {
-					start_hour: rawEventData.hour_range.start_hour.toDate(),
-					end_hour: rawEventData.hour_range.end_hour.toDate(),
-				},
+				date_range: rawEventData.date_range.map((dateTimestamp, i) =>
+					dateTimestamp.toDate()
+				),
+				hour_range: rawEventData.hour_range.map((hourTimestamp, i) =>
+					hourTimestamp.toDate()
+				),
 				organizer_data: organizerData,
 			};
 			if (index === snapshot.docs.length - 1) {
@@ -137,37 +136,40 @@ export const getUserEventsData = async (
 			return event;
 		})
 	);
-	
+
 	return { participatingEvents, lastEventSnapshot };
 };
 
-export const getDatesBetweenRange = (start: Date, end: Date):Date[] => {
+export const getDatesBetweenRange = (start: Date, end: Date): Date[] => {
 	const startDate = start.getDate();
 	const endDate = end.getDate();
-	if  (startDate === endDate) {
-		return [start]
+	if (startDate === endDate) {
+		return [start];
 	} else {
 		const prevDate = new Date(end.getTime());
 		prevDate.setDate(prevDate.getDate() - 1);
-		return [...getDatesBetweenRange(start, prevDate), end]
+		return [...getDatesBetweenRange(start, prevDate), end];
 	}
-}
+};
 
-export const getHoursBetweenRange = (start: Date, end: Date):Date[] => {
+export const getHoursBetweenRange = (start: Date, end: Date): Date[] => {
 	const startTime = {
 		hours: start.getHours(),
 		minutes: start.getMinutes(),
-	}
+	};
 	const endTime = {
 		hours: end.getHours(),
 		minutes: end.getMinutes(),
-	}
-	
-	if (startTime.hours === endTime.hours && startTime.minutes === endTime.minutes) {
-		return [start]
+	};
+
+	if (
+		startTime.hours === endTime.hours &&
+		startTime.minutes === endTime.minutes
+	) {
+		return [start];
 	} else {
-		const prevHour = new Date(end.getTime()); 
+		const prevHour = new Date(end.getTime());
 		prevHour.setMinutes(prevHour.getMinutes() - 30);
-		return [...getHoursBetweenRange(start, prevHour), end]
+		return [...getHoursBetweenRange(start, prevHour), end];
 	}
-}
+};

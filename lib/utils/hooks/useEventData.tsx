@@ -41,13 +41,15 @@ const useEventData = () => {
 	const { allEvents, status: allEventsStatus } = useAllEvents();
 	const { parsedUser } = useParsedUserData();
 	const { status, data, error } = useQuery(
-		["eventData", eventId, allEvents, parsedUser],
+		["eventData", eventId, allEvents, parsedUser, allEventsStatus],
 		async () => {
 			//! We should fetch only if the user is authenticated AND authorized
 			if (!router.isReady) {
 				return;
 			}
-			if (allEventsStatus === 'loading' || allEventsStatus==="idle") return
+			if (allEventsStatus === "loading" || allEventsStatus === "idle") {
+				return;
+			}
 			if (typeof eventId === "string") {
 				let eventAlreadyFetched = allEvents?.find(
 					(event) => event.id === eventId
@@ -56,18 +58,14 @@ const useEventData = () => {
 					// console.log("this event was found in the allUsers array");
 					return eventAlreadyFetched;
 				} else if (parsedUser) {
-					// console.log("this event wasn't found in the allUsers array, and thus had to be fetched individually");
+					// console.log(
+					// 	"this event wasn't found in the allUsers array, and thus had to be fetched individually"
+					// );
 					const data = await fetchEventData(eventId);
 					return {
 						...data,
-						date_range: {
-							start_date: data?.date_range.start_date.toDate(),
-							end_date: data?.date_range.end_date.toDate(),
-						},
-						hour_range: {
-							start_hour: data?.hour_range.start_hour.toDate(),
-							end_hour: data?.hour_range.end_hour.toDate(),
-						},
+						date_range: data?.date_range.map((timestamp) => timestamp.toDate()),
+						hour_range: data?.hour_range.map((timestamp) => timestamp.toDate()),
 					};
 				} else {
 					// console.log("we're not fetching bc we're not authenticated");

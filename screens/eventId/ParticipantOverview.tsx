@@ -25,22 +25,13 @@ export default function ParticipantOverview({
 		"availability" | "scheduling"
 	>("scheduling");
 	const [isTouchDevice, setIsTouchDevice] = React.useState(false);
-	const datesRange = eventData
-		? getDatesBetweenRange(
-				eventData.date_range.start_date,
-				eventData.date_range.end_date
-		  )
-		: undefined;
-
-	const hoursRange = eventData
-		? getHoursBetweenRange(
-				eventData.hour_range.start_hour,
-				eventData.hour_range.end_hour
-		  )
-		: undefined;
 	const [timezoneSelected, setTimezoneSelected] = React.useState<string | null>(
 		localTimezone.label
 	);
+	const datesRange = eventData?.date_range;
+	const hoursRange = eventData?.hour_range;
+	
+	
 
 	if (!eventData) {
 		return <LoadingOverview />;
@@ -153,7 +144,7 @@ export default function ParticipantOverview({
 						)}
 					</Downshift>
 				</div>
-				<div className="mb-4 ">
+				<div className="mb-4 ">	
 					{/* //TODO: add styles */}
 					<button
 						className="p-3 bg-containerGray rounded-sm mr-3"

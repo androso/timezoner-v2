@@ -29,20 +29,8 @@ export default function OrganizerOverview({
 	const [showDeleteWarning, setShowDeleteWarning] = React.useState(false);
 	const closeDialog = () => setShowDialog(false);
 	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
-
-	const datesRange = eventData
-		? getDatesBetweenRange(
-				eventData.date_range.start_date,
-				eventData.date_range.end_date
-		  )
-		: undefined;
-
-	const hoursRange = eventData
-		? getHoursBetweenRange(
-				eventData.hour_range.start_hour,
-				eventData.hour_range.end_hour
-		  )
-		: undefined;
+	const datesRange = eventData?.date_range;
+	const hoursRange = eventData?.hour_range;
 	const { eventId } = router.query;
 
 	const formMethods = useForm<EventFormValues>({
@@ -51,12 +39,12 @@ export default function OrganizerOverview({
 			description: eventData?.description,
 			timezone: eventData?.og_timezone,
 			hour_range: {
-				start_hour: eventData?.hour_range.start_hour,
-				end_hour: eventData?.hour_range.end_hour,
+				start_hour: eventData?.hour_range[0],
+				end_hour: eventData?.hour_range[eventData.hour_range.length - 1],
 			},
 			dateRange: [
-				eventData?.date_range.start_date,
-				eventData?.date_range.end_date,
+				eventData?.date_range[0],
+				eventData?.date_range[eventData.date_range.length - 1],
 			],
 		},
 	});
@@ -74,14 +62,17 @@ export default function OrganizerOverview({
 	const updateEvent = async (data: EventFormValues) => {
 		const { dateRange, hour_range, description, title, timezone } = data;
 
-		if (eventData?.id && parsedUser) {
+		if (eventData?.id && parsedUser && dateRange[0]) {
 			const eventDocRef = doc(firestore, "events", eventData?.id);
 			const dataSentToFirestore = {
-				date_range: {
-					start_date: dateRange[0],
-					end_date: dateRange[1] ?? dateRange[0],
-				},
-				hour_range,
+				date_range: getDatesBetweenRange(
+					dateRange[0],
+					dateRange[1] ?? dateRange[0]
+				),
+				hour_range: getHoursBetweenRange(
+					hour_range.start_hour,
+					hour_range.end_hour
+				),
 				title,
 				description: description,
 				og_timezone: timezone,

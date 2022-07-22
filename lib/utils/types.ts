@@ -79,14 +79,8 @@ type Participant = {
 };
 
 export type EventData = {
-	date_range: {
-		start_date: Date;
-		end_date: Date;
-	};
-	hour_range: {
-		start_hour: Date;
-		end_hour: Date;
-	};
+	date_range: Date[];
+	hour_range: Date[];
 	organizer_data: UserData;
 	title: string;
 	description: string;
@@ -106,14 +100,8 @@ type RawParticipant = {
 };
 
 export type RawEventDataFromFirestore = {
-	date_range: {
-		start_date: Timestamp;
-		end_date: Timestamp;
-	};
-	hour_range: {
-		start_hour: Timestamp;
-		end_hour: Timestamp;
-	};
+	date_range: Timestamp[];
+	hour_range: Timestamp[];
 	title: string;
 	description: string;
 	og_timezone: string;
