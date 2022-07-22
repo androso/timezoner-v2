@@ -1,14 +1,20 @@
 import React from "react";
-import { FormProvider, useForm } from "react-hook-form";
 import EventSchedulingTable from "../../components/EventSchedulingTable";
 import Header from "../../components/Header";
 import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
 import { Container } from "../../components/Layouts";
-import TimezonesSelect from "../../components/TimezonesSelect";
-import { getDatesBetweenRange, getHoursBetweenRange } from "../../lib/utils/client-helpers";
+import {
+	getDatesBetweenRange,
+	getHoursBetweenRange,
+} from "../../lib/utils/client-helpers";
 import { EventData } from "../../lib/utils/types";
-import { defaultTimezone as localTimezone } from "../../lib/timezonesData";
+import {
+	defaultTimezone as localTimezone,
+	timezonesLabels,
+} from "../../lib/timezonesData";
 import { LoadingOverview } from "../../pages/event/[eventId]";
+import Downshift from "downshift";
+import { matchSorter } from "match-sorter";
 
 export default function ParticipantOverview({
 	eventData,
@@ -18,10 +24,7 @@ export default function ParticipantOverview({
 	const [tableView, setTableView] = React.useState<
 		"availability" | "scheduling"
 	>("scheduling");
-
 	const [isTouchDevice, setIsTouchDevice] = React.useState(false);
-	const timezoneFormMethods = useForm();
-
 	const datesRange = eventData
 		? getDatesBetweenRange(
 				eventData.date_range.start_date,
@@ -35,7 +38,9 @@ export default function ParticipantOverview({
 				eventData.hour_range.end_hour
 		  )
 		: undefined;
-
+	const [timezoneSelected, setTimezoneSelected] = React.useState<string | null>(
+		localTimezone.label
+	);
 
 	if (!eventData) {
 		return <LoadingOverview />;
@@ -65,17 +70,88 @@ export default function ParticipantOverview({
 				photoURL={eventData.organizer_data.avatar_url}
 			/>
 			<Container css="pt-4 sm:pt-6">
-				<HomeBreadcrumbs currentPage="Event" css="mb-4"/>
+				<HomeBreadcrumbs currentPage="Event" css="mb-4" />
 				<h1 className="font-bold text-3xl mb-3">
 					Welcome to {eventData.organizer_data.username}'s Event
 				</h1>
 				<p className="mb-4">{eventData.description}</p>
 				<div className="mb-4">
 					{/* We'll have a select timezone that will change the hours displayed on the table */}
-					<span className="text-gray-300 text-base">Your Timezone:</span>
-					<FormProvider {...timezoneFormMethods}>
-						<TimezonesSelect defaultTimezone={localTimezone.label} inputCss="bg-[#2E2E2E]" buttonCss="!bg-[#2E2E2E]" ulCss="!bg-[#2E2E2E]"/>
-					</FormProvider>
+					<Downshift
+						itemToString={(item) => (item ? item : "")}
+						initialSelectedItem={localTimezone.label}
+						onSelect={(tz) => setTimezoneSelected(tz)}
+					>
+						{({
+							getInputProps,
+							getItemProps,
+							getLabelProps,
+							getMenuProps,
+							getToggleButtonProps,
+							isOpen,
+							inputValue,
+							getRootProps,
+							highlightedIndex,
+						}) => (
+							<div className="relative">
+								<label {...getLabelProps()} className="text-gray-300 text-base">
+									Your Timezone:
+								</label>
+
+								<div
+									/* 
+									// @ts-ignore */
+									{...getRootProps({}, { suppressRefError: true })}
+									className="flex w-full"
+								>
+									<input
+										{...getInputProps()}
+										className={`basic-input-field grow rounded-r-none rounded-br-none border-r-0 w-full !bg-[#2E2E2E]`}
+									/>
+									<button
+										aria-label={"toggle menu"}
+										className={`px-3 bg-deepBlack border-solid border-[#4e4e4e] border-[1px] rounded-r-md rounded-br-md !bg-[#2E2E2E] `}
+										type="button"
+										{...getToggleButtonProps()}
+									>
+										{isOpen ? <span>&#8593;</span> : <span>&#8595;</span>}
+									</button>
+								</div>
+								<ul
+									{...getMenuProps()}
+									className={`${
+										isOpen ? "visible" : "invisible"
+									} mt-1 max-h-48 w-full overflow-y-scroll absolute z-10 border-solid border-[#415d95] border-[1px] !bg-[#2E2E2E]`}
+								>
+									{isOpen
+										? (inputValue != "" && inputValue != null
+												? matchSorter(timezonesLabels, inputValue, {
+														threshold: matchSorter.rankings.CONTAINS,
+												  })
+												: timezonesLabels
+										  ).map((item, index) => {
+												//TODO: The value sent to react-hook-forms should be "America/El_Salvador"
+												//TODO: and the value displayed "America/El Salvador"
+												return (
+													<li
+														{...getItemProps({
+															key: item,
+															index,
+															item,
+														})}
+														className={`px-4 py-3 ${
+															highlightedIndex === index ? "bg-[#393d3f]" : null
+														}`}
+													>
+														{item}
+													</li>
+												);
+										  })
+										: null}
+								</ul>
+							</div>
+						)}
+					</Downshift>
 				</div>
 				<div className="mb-4 ">
 					{/* //TODO: add styles */}
@@ -94,7 +170,11 @@ export default function ParticipantOverview({
 				</div>
 				{tableView === "scheduling" ? (
 					<>
-						<EventSchedulingTable eventData={eventData} hoursRange={hoursRange} datesRange={datesRange} />
+						<EventSchedulingTable
+							eventData={eventData}
+							hoursRange={hoursRange}
+							datesRange={datesRange}
+						/>
 						<p>
 							Note:{" "}
 							{isTouchDevice

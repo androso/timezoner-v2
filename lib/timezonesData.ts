@@ -1,4 +1,4 @@
-import { timeZonesNames } from "@vvo/tzdb";
+import { timeZonesNames, getTimeZones } from "@vvo/tzdb";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -7,6 +7,8 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const userTimezoneDefault = dayjs.tz.guess();
+export const timeZones = getTimeZones();
+
 
 export const defaultTimezone = {
 	label: userTimezoneDefault.replace(/_/g, " "),
