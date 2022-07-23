@@ -6,6 +6,7 @@ import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
 import EventThumbnail from "../components/EventThumbnail";
 import {
 	collection,
+	deleteDoc,
 	getDocs,
 	limit,
 	orderBy,
@@ -52,6 +53,7 @@ export default function Dashboard() {
 		reset: resetEvents,
 		setData,
 		refetch,
+		error,
 	} = useAllEvents();
 
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
@@ -68,6 +70,11 @@ export default function Dashboard() {
 		resetEvents();
 		refetch();
 	}, []);
+
+	// React.useEffect(() => {
+	// 	console.log({ currentPageEvents, allEventsStatus, error, allEvents });
+	// 	return () => {};
+	// }, [currentPageEvents, allEventsStatus]);
 
 	const handleNextPage = async () => {
 		if (allEvents) {
@@ -168,8 +175,10 @@ export default function Dashboard() {
 									</li>
 								);
 							})
+						) : error ? (
+							<p>Error: {error.message}</p>
 						) : (
-							<LoadingSpinner css="h-48" />
+							<LoadingSpinner css="!h-48" />
 						)}
 					</ul>
 				</div>

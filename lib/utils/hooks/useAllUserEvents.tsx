@@ -31,7 +31,7 @@ export const fetchEvents = async (
 	const eventsQuery = query(
 		collection(firestore, "events"),
 		where("organizer_id", "==", parsedUser.id),
-		orderBy("date_range.start_date"),
+		orderBy("date_range"),
 		limit(10)
 	);
 	const eventsSnap = await getDocs(eventsQuery);
