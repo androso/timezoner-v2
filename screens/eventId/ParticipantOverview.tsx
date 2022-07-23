@@ -4,8 +4,11 @@ import Header from "../../components/Header";
 import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
 import { Container } from "../../components/Layouts";
 import {
+	convertHoursToTimezone,
 	getDatesBetweenRange,
 	getHoursBetweenRange,
+	getTimezoneMetadata,
+	standardizeHours,
 } from "../../lib/utils/client-helpers";
 import { EventData } from "../../lib/utils/types";
 import {
@@ -15,6 +18,27 @@ import {
 import { LoadingOverview } from "../../pages/event/[eventId]";
 import Downshift from "downshift";
 import { matchSorter } from "match-sorter";
+import { timeZones } from "../../lib/timezonesData";
+
+const useHourRangeBasedOnTimezone = (
+	hoursRange: Date[] | undefined,
+	timezoneSelected: string | null
+) => {
+	if (!hoursRange || !timezoneSelected) return null;
+	const formattedTimezone = timezoneSelected.replace(" ", "_");
+	const timezoneMetadata = getTimezoneMetadata(timezoneSelected);
+
+	if (timezoneMetadata) {
+		const hoursConverted = convertHoursToTimezone(
+			hoursRange,
+			timezoneMetadata.name
+		);
+		console.log(hoursConverted);
+		return hoursConverted;
+	} else {
+		return null;
+	}
+}
 
 export default function ParticipantOverview({
 	eventData,
@@ -29,9 +53,10 @@ export default function ParticipantOverview({
 		localTimezone.label
 	);
 	const datesRange = eventData?.date_range;
-	const hoursRange = eventData?.hour_range;
-	
-	
+	const convertedHours = useHourRangeBasedOnTimezone(
+		eventData?.hour_range,
+		timezoneSelected
+	);
 
 	if (!eventData) {
 		return <LoadingOverview />;
@@ -144,7 +169,7 @@ export default function ParticipantOverview({
 						)}
 					</Downshift>
 				</div>
-				<div className="mb-4 ">	
+				<div className="mb-4 ">
 					{/* //TODO: add styles */}
 					<button
 						className="p-3 bg-containerGray rounded-sm mr-3"
@@ -163,7 +188,7 @@ export default function ParticipantOverview({
 					<>
 						<EventSchedulingTable
 							eventData={eventData}
-							hoursRange={hoursRange}
+							hoursRange={convertedHours}
 							datesRange={datesRange}
 						/>
 						<p>

@@ -126,8 +126,8 @@ export const getUserEventsData = async (
 				date_range: rawEventData.date_range.map((dateTimestamp, i) =>
 					dateTimestamp.toDate()
 				),
-				hour_range: rawEventData.hour_range.map((utcHour, i) =>
-					new Date(utcHour)
+				hour_range: rawEventData.hour_range.map(
+					(utcHour, i) => new Date(utcHour)
 				),
 				organizer_data: organizerData,
 			};
@@ -176,15 +176,21 @@ export const getHoursBetweenRange = (start: Date, end: Date): Date[] => {
 };
 
 export const standardizeHours = (hoursRange: Date[]) => {
-	return hoursRange.map(hourObject => hourObject.toUTCString());
+	return hoursRange.map((hourObject) => hourObject.toUTCString());
 };
 
-export const convertHoursToTimezone = (hoursRange: Date[], offset: number) => {
-	return hoursRange.map((hour) => {
-		const newHour = new Date(hour.getTime());
-		newHour.setMinutes(newHour.getMinutes() + offset);
-		return newHour;
-	});
+export const convertHoursToTimezone = (
+	hoursRange: Date[],
+	timezoneName: string
+) => {
+	return hoursRange.map(
+		(hour) =>
+			new Date(
+				new Date(hour.getTime()).toLocaleString("en-US", {
+					timeZone: timezoneName,
+				})
+			)
+	);
 };
 
 export const getTimezoneMetadata = (timezone: string) => {

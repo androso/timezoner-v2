@@ -22,26 +22,14 @@ import {
 	getHoursBetweenRange,
 } from "../lib/utils/client-helpers";
 import { queryClient } from "../pages/_app";
+import { timeZones } from "../lib/timezonesData";
 
 type PropsTypes = {
-	hoursRange?: Date[] | undefined;
-	datesRange?: Date[] | undefined;
+	hoursRange: Date[] | undefined | null;
+	datesRange: Date[] | undefined;
 	eventData: EventData;
 };
-export default function EventSchedulingTable({ eventData }: PropsTypes) {
-	const datesRange = eventData
-		? getDatesBetweenRange(
-				eventData.date_range.start_date,
-				eventData.date_range.end_date
-		  )
-		: undefined;
-
-	const hoursRange = eventData
-		? getHoursBetweenRange(
-				eventData.hour_range.start_hour,
-				eventData.hour_range.end_hour
-		  )
-		: undefined;
+export default function EventSchedulingTable({ eventData, hoursRange, datesRange }: PropsTypes) {
 	const [dragRoot, setDragRoot] = React.useState<HTMLDivElement | null>(null);
 	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>([]);
 	const router = useRouter();
@@ -49,12 +37,10 @@ export default function EventSchedulingTable({ eventData }: PropsTypes) {
 	const { parsedUser } = useParsedUserData();
 	const $table = React.useRef<HTMLTableElement | null>(null);
 	const selectableItems = React.useRef<Box[]>([]);
-
 	//TODO: make this function be called only when the position of the mouse has exceeded a box(?)
 	const onSelectionChange = React.useCallback(
 		(box: Box) => {
 			//! We update the values of the box that we receive, because those are relative to the viewport, not the document
-			//TODO: Is there a way to make this work with values relative to the viewport?
 			const boxWithAdjustedPosition = {
 				...box,
 				left: box.left + window.scrollX + ($table.current?.scrollLeft ?? 0),
@@ -76,7 +62,7 @@ export default function EventSchedulingTable({ eventData }: PropsTypes) {
 		},
 		[selectableItems, $table]
 	);
-	//! WORKING ON: sending data to firestore
+	//! PAUSED: sending data to firestore
 	const sendToFirestore = async () => {
 		const $selectableItems = Array.from(document.getElementsByTagName("td"));
 		const $selectedItems = $selectableItems.filter(($item) =>
@@ -88,39 +74,47 @@ export default function EventSchedulingTable({ eventData }: PropsTypes) {
 		const elementIndex = td.dataset.tableElementIndex;
 		// Send to firestore
 		if (isSelected && typeof eventId === "string" && parsedUser) {
+			//GUIDE (per click):
+			// if user is not in the participants array for this event
+			// we add a new participant with the data we received to the participants array
+			// else
+			// update user's schedule
+			// how do we do this?
+
 			const date = new Date(td.dataset.date ?? "");
 			const hour = new Date(`${td.dataset.date} ${td.dataset.hour}`);
+
 			const eventRef = doc(firestore, "events", eventId);
 			const dataSent = {
 				user_ref: doc(firestore, "users", parsedUser?.id),
+				dates_available: [
+					{
+						date,
+						hour_range: [hour],
+					},
+				],
 			};
 
-			// //! eventData.participants as a sub-collection
-			// const participantsRef = collection(firestore, "events",eventData.id, "participants");
-			// const participantsSnap = await getDocs(participantsRef)
-			// const participants = participantsSnap.docs.map(doc => doc.data());
-			// console.log(participants)
+			console.log(dataSent);
 
-			//! if eventData.participants as an array
 			// We copy the array from firestore, we update the local copy, then send the updated array to firestore
 			const currentEventParticipants = [...(eventData.participants ?? [])];
 			const userParticipantObject = currentEventParticipants.find(
 				(participant) => participant.user_ref.path === `users/${parsedUser.id}`
 			);
 			if (!userParticipantObject) {
+				// await updateDoc(eventRef, {
+				// 	participants: arrayUnion(dataSent),
+				// });
+				queryClient.invalidateQueries("eventData");
 				console.log("first time we use this event");
-				await updateDoc(eventRef, {
-					participants: arrayUnion(dataSent),
-				});
-				queryClient.invalidateQueries("eventData")
-				console.log("saved!");
 			} else {
 				console.log("user is already in the participants of this event");
 				// update the doc
 			}
-			// we find the participant obj whose userref === ours,
-			// we update that object with the received values,
-			// we send to firestore
+			// // we find the participant obj whose userref === ours,
+			// // we update that object with the received values,
+			// // we send to firestore
 		}
 		// Delete hour from firestore
 	};
@@ -150,6 +144,17 @@ export default function EventSchedulingTable({ eventData }: PropsTypes) {
 		}
 	}, [dragRoot]);
 
+	React.useEffect(() => {
+		const timezoneMetadata = timeZones.find(
+			(tz) => eventData.og_timezone.replace(" ", "_") === tz.name
+		);
+		const timezoneToSave = {
+			name: timezoneMetadata?.name,
+			rawOffsetInMinutes: timezoneMetadata?.rawOffsetInMinutes,
+		};
+		
+	}, []);
+	
 	return (
 		<>
 			<button
