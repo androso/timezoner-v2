@@ -8,6 +8,7 @@ import {
 	setDoc,
 } from "firebase/firestore";
 import { firestore } from "../firebase";
+import { timeZones } from "../timezonesData";
 import { RawEventDataFromFirestore, UserData } from "./types";
 
 const defaultGoogleAvatarSize = 96;
@@ -125,8 +126,8 @@ export const getUserEventsData = async (
 				date_range: rawEventData.date_range.map((dateTimestamp, i) =>
 					dateTimestamp.toDate()
 				),
-				hour_range: rawEventData.hour_range.map((hourTimestamp, i) =>
-					hourTimestamp.toDate()
+				hour_range: rawEventData.hour_range.map((utcHour, i) =>
+					new Date(utcHour)
 				),
 				organizer_data: organizerData,
 			};
@@ -174,12 +175,8 @@ export const getHoursBetweenRange = (start: Date, end: Date): Date[] => {
 	}
 };
 
-export const standardizeHours = (hoursRange: Date[], offset: number) => {
-	return hoursRange.map((hourObject) => {
-		const newHour = new Date(hourObject.getTime());
-		newHour.setMinutes(newHour.getMinutes() - offset);
-		return newHour;
-	});
+export const standardizeHours = (hoursRange: Date[]) => {
+	return hoursRange.map(hourObject => hourObject.toUTCString());
 };
 
 export const convertHoursToTimezone = (hoursRange: Date[], offset: number) => {
@@ -188,4 +185,12 @@ export const convertHoursToTimezone = (hoursRange: Date[], offset: number) => {
 		newHour.setMinutes(newHour.getMinutes() + offset);
 		return newHour;
 	});
+};
+
+export const getTimezoneMetadata = (timezone: string) => {
+	const formattedTimezone = timezone.replace(" ", "_");
+	return timeZones.find(
+		(tz) =>
+			tz.name === formattedTimezone || tz.group.includes(formattedTimezone)
+	);
 };

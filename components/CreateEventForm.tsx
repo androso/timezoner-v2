@@ -10,30 +10,29 @@ import React from "react";
 import {
 	getDatesBetweenRange,
 	getHoursBetweenRange,
+	standardizeHours,
 } from "../lib/utils/client-helpers";
 
-// TODO: abstract form fields into EventFormFields, we should provide this component with action buttons (each one will have its own onclick handler)
-// TODO: and also a form context(?)
 export default function CreateEventForm() {
 	const formMethods = useForm<EventFormValues>();
 	const { parsedUser } = useParsedUserData();
-	const router = useRouter();
-
+	const router = useRouter()
 	const submitForm: SubmitHandler<EventFormValues> = async (data) => {
 		const { dateRange, hour_range, description, title, timezone } = data;
 
 		if (parsedUser) {
 			const eventDocRef = doc(collection(firestore, "events"));
+			const hoursBetweenRange = getHoursBetweenRange(hour_range.start_hour,
+				hour_range.end_hour);
+			const utcHourRange = standardizeHours(hoursBetweenRange);
+			
 			if (dateRange[0]) {
 				const dataSentToFirestore = {
 					date_range: getDatesBetweenRange(
 						dateRange[0],
 						dateRange[1] ?? dateRange[0]
 					),
-					hour_range: getHoursBetweenRange(
-						hour_range.start_hour,
-						hour_range.end_hour
-					),
+					hour_range: utcHourRange,
 					title,
 					description: description,
 					og_timezone: timezone,
@@ -42,6 +41,7 @@ export default function CreateEventForm() {
 					id: eventDocRef.id,
 					participants: [],
 				};
+				
 				await setDoc(eventDocRef, dataSentToFirestore);
 				router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });
 			}

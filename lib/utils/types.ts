@@ -101,7 +101,7 @@ type RawParticipant = {
 
 export type RawEventDataFromFirestore = {
 	date_range: Timestamp[];
-	hour_range: Timestamp[];
+	hour_range: string[];
 	title: string;
 	description: string;
 	og_timezone: string;

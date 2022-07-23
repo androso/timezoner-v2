@@ -65,7 +65,7 @@ const useEventData = () => {
 					return {
 						...data,
 						date_range: data?.date_range.map((timestamp) => timestamp.toDate()),
-						hour_range: data?.hour_range.map((timestamp) => timestamp.toDate()),
+						hour_range: data?.hour_range.map((utcHour) => new Date(utcHour)),
 					};
 				} else {
 					// console.log("we're not fetching bc we're not authenticated");
