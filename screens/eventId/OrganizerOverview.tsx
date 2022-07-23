@@ -13,7 +13,11 @@ import { Container } from "../../components/Layouts";
 import { LightButton } from "../../components/LightButton";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { firestore } from "../../lib/firebase";
-import { getDatesBetweenRange, getHoursBetweenRange } from "../../lib/utils/client-helpers";
+import {
+	getDatesBetweenRange,
+	getHoursBetweenRange,
+	standardizeHours,
+} from "../../lib/utils/client-helpers";
 import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import { EventData, EventFormValues } from "../../lib/utils/types";
 import { LoadingOverview } from "../../pages/event/[eventId]";
@@ -61,7 +65,11 @@ export default function OrganizerOverview({
 
 	const updateEvent = async (data: EventFormValues) => {
 		const { dateRange, hour_range, description, title, timezone } = data;
-
+		const hoursBetweenRange = getHoursBetweenRange(
+			hour_range.start_hour,
+			hour_range.end_hour
+		);
+		const utcHoursRange = standardizeHours(hoursBetweenRange);
 		if (eventData?.id && parsedUser && dateRange[0]) {
 			const eventDocRef = doc(firestore, "events", eventData?.id);
 			const dataSentToFirestore = {
@@ -69,10 +77,7 @@ export default function OrganizerOverview({
 					dateRange[0],
 					dateRange[1] ?? dateRange[0]
 				),
-				hour_range: getHoursBetweenRange(
-					hour_range.start_hour,
-					hour_range.end_hour
-				),
+				hour_range: utcHoursRange,
 				title,
 				description: description,
 				og_timezone: timezone,
