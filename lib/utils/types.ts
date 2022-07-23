@@ -70,11 +70,15 @@ export type HourPickerProps = baseFormFieldProps & {
 	control: Control<EventFormValues, any>;
 	name: "hour_range.start_hour" | "hour_range.end_hour";
 };
+
 type Participant = {
 	user_ref: DocumentReference;
 	dates_available: {
 		date: Date;
-		hours_selected: Date[];
+		hours_selected: {
+			hour: Date;
+			tableElementIndex: number;
+		}[];
 	}[];
 };
 

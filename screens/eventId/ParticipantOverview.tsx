@@ -33,7 +33,6 @@ const useHourRangeBasedOnTimezone = (
 			hoursRange,
 			timezoneMetadata.name
 		);
-		console.log(hoursConverted);
 		return hoursConverted;
 	} else {
 		return null;

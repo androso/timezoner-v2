@@ -23,20 +23,41 @@ import {
 } from "../lib/utils/client-helpers";
 import { queryClient } from "../pages/_app";
 import { timeZones } from "../lib/timezonesData";
+import toast from "react-hot-toast";
 
 type PropsTypes = {
 	hoursRange: Date[] | undefined | null;
 	datesRange: Date[] | undefined;
 	eventData: EventData;
 };
-export default function EventSchedulingTable({ eventData, hoursRange, datesRange }: PropsTypes) {
+export default function EventSchedulingTable({
+	eventData,
+	hoursRange,
+	datesRange,
+}: PropsTypes) {
 	const [dragRoot, setDragRoot] = React.useState<HTMLDivElement | null>(null);
-	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>([]);
 	const router = useRouter();
 	const { eventId } = router.query;
 	const { parsedUser } = useParsedUserData();
 	const $table = React.useRef<HTMLTableElement | null>(null);
 	const selectableItems = React.useRef<Box[]>([]);
+	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>(() => {
+		const userParticipantObject = eventData.participants.find(
+			(participant) => participant.user_ref.path === `users/${parsedUser?.id}`
+		);
+		if (userParticipantObject) {
+			let hoursSelectedIndexes: number[] = [];
+			userParticipantObject.dates_available.forEach((dateObj) => {
+				hoursSelectedIndexes = dateObj.hours_selected.map(
+					(hourObj) => hourObj.tableElementIndex
+				);
+			});
+			return hoursSelectedIndexes;
+		}
+		return [];
+	});
+	const [selectedHours, setSelectedHours] = React.useState();
+
 	//TODO: make this function be called only when the position of the mouse has exceeded a box(?)
 	const onSelectionChange = React.useCallback(
 		(box: Box) => {
@@ -62,61 +83,68 @@ export default function EventSchedulingTable({ eventData, hoursRange, datesRange
 		},
 		[selectableItems, $table]
 	);
-	//! PAUSED: sending data to firestore
+	//! WORKING ON: sending data to firestore
 	const sendToFirestore = async () => {
 		const $selectableItems = Array.from(document.getElementsByTagName("td"));
 		const $selectedItems = $selectableItems.filter(($item) =>
 			selectedIndexes.includes(Number($item.dataset.tableDataIndex))
 		);
 	};
-	const sendIndividualSchedule = async (td: HTMLTableCellElement) => {
-		const isSelected = td.classList.contains("selected");
-		const elementIndex = td.dataset.tableElementIndex;
-		// Send to firestore
-		if (isSelected && typeof eventId === "string" && parsedUser) {
-			//GUIDE (per click):
-			// if user is not in the participants array for this event
-			// we add a new participant with the data we received to the participants array
-			// else
-			// update user's schedule
-			// how do we do this?
 
-			const date = new Date(td.dataset.date ?? "");
-			const hour = new Date(`${td.dataset.date} ${td.dataset.hour}`);
-
-			const eventRef = doc(firestore, "events", eventId);
-			const dataSent = {
-				user_ref: doc(firestore, "users", parsedUser?.id),
-				dates_available: [
-					{
-						date,
-						hour_range: [hour],
-					},
-				],
-			};
-
-			console.log(dataSent);
-
-			// We copy the array from firestore, we update the local copy, then send the updated array to firestore
-			const currentEventParticipants = [...(eventData.participants ?? [])];
-			const userParticipantObject = currentEventParticipants.find(
-				(participant) => participant.user_ref.path === `users/${parsedUser.id}`
-			);
-			if (!userParticipantObject) {
-				// await updateDoc(eventRef, {
-				// 	participants: arrayUnion(dataSent),
-				// });
-				queryClient.invalidateQueries("eventData");
-				console.log("first time we use this event");
+	const toggleIndividualSchedule = async ($td: HTMLTableCellElement) => {
+		const globalItemIndex = Number($td.dataset.tableElementIndex);
+		setSelectedIndexes((prevIndexes) => {
+			if (prevIndexes.includes(globalItemIndex)) {
+				return prevIndexes.filter(
+					(selectedIndex) => selectedIndex !== globalItemIndex
+				);
 			} else {
-				console.log("user is already in the participants of this event");
-				// update the doc
+				return [...prevIndexes, globalItemIndex];
 			}
-			// // we find the participant obj whose userref === ours,
-			// // we update that object with the received values,
-			// // we send to firestore
+		});
+
+		const isSelecting = $td.classList.contains("selected");
+		if (parsedUser && typeof eventId === "string") {
+			if (isSelecting) {
+				// we want to send to firestore
+				const date = new Date($td.dataset.date ?? "");
+				const hour = new Date(`${$td.dataset.date} ${$td.dataset.hour}`);
+				const utcHour = hour.toUTCString();
+				const currentParticipant = eventData.participants.find(
+					(participant) => participant.user_ref.id === parsedUser.id
+				);
+				if (currentParticipant) {
+				} else {
+					const dataSent = {
+						user_ref: doc(firestore, "users", parsedUser?.id ?? ""),
+						dates_available: [
+							{
+								date,
+								hours_selected: [
+									{
+										utcHour,
+										tableElementIndex: globalItemIndex,
+									},
+								],
+							},
+						],
+					};
+					try {
+						const eventRef = doc(firestore, "events", eventId);
+						await updateDoc(eventRef, {
+							participants: [dataSent],
+						});
+						queryClient.invalidateQueries("eventData");
+						console.log("saved!");
+					} catch (e) {
+						console.error(e);
+						toast.error("Something wrong happend when saving to database");
+					}
+				}
+			} else {
+				// we want to delete from firestore
+			}
 		}
-		// Delete hour from firestore
 	};
 
 	const { DragSelection } = useSelectionContainer({
@@ -144,17 +172,6 @@ export default function EventSchedulingTable({ eventData, hoursRange, datesRange
 		}
 	}, [dragRoot]);
 
-	React.useEffect(() => {
-		const timezoneMetadata = timeZones.find(
-			(tz) => eventData.og_timezone.replace(" ", "_") === tz.name
-		);
-		const timezoneToSave = {
-			name: timezoneMetadata?.name,
-			rawOffsetInMinutes: timezoneMetadata?.rawOffsetInMinutes,
-		};
-		
-	}, []);
-	
 	return (
 		<>
 			<button
@@ -214,17 +231,7 @@ export default function EventSchedulingTable({ eventData, hoursRange, datesRange
 											}`}
 											key={tableDataIndex}
 											onClick={(e) => {
-												setSelectedIndexes((prevIndexes) => {
-													if (prevIndexes.includes(globalItemIndex)) {
-														return prevIndexes.filter(
-															(selectedIndex) =>
-																selectedIndex !== globalItemIndex
-														);
-													} else {
-														return [...prevIndexes, globalItemIndex];
-													}
-												});
-												sendIndividualSchedule(
+												toggleIndividualSchedule(
 													e.target as HTMLTableCellElement
 												);
 											}}
@@ -242,3 +249,62 @@ export default function EventSchedulingTable({ eventData, hoursRange, datesRange
 		</>
 	);
 }
+
+// const sendIndividualSchedule = async (td: HTMLTableCellElement) => {
+// 	const isSelected = td.classList.contains("selected");
+// 	const elementIndex = Number(td.dataset.tableElementIndex);
+// 	if (typeof eventId === "string" && parsedUser) {
+// 		const eventRef = doc(firestore, "events", eventId);
+// 		const currentEventParticipants = [...(eventData.participants ?? [])];
+// 		const userParticipantObject = currentEventParticipants.find(
+// 			(participant) => participant.user_ref.path === `users/${parsedUser.id}`
+// 		);
+
+// 		if (isSelected) {
+// 			const date = new Date(td.dataset.date ?? "");
+// 			const hour = new Date(`${td.dataset.date} ${td.dataset.hour}`);
+// 			const utcHour = hour.toUTCString();
+
+// 			if (!userParticipantObject) {
+// 				const dataSent = {
+// 					user_ref: doc(firestore, "users", parsedUser?.id),
+// 					dates_available: [
+// 						{
+// 							date,
+// 							hours_selected: [
+// 								{ hour: utcHour, tableElementIndex: elementIndex },
+// 							],
+// 						},
+// 					],
+// 				};
+
+// 				await updateDoc(eventRef, {
+// 					participants: arrayUnion(dataSent),
+// 				});
+// 				queryClient.invalidateQueries("eventData");
+// 				console.log("first time we use this event");
+// 			} else {
+// 			}
+// 		} else {
+// 			// Delete hour from firestore
+// 			const date = new Date(td.dataset.date ?? "");
+// 			const hour = new Date(`${td.dataset.date} ${td.dataset.hour}`);
+// 			const utcHour = hour.toUTCString();
+// 			if (
+// 				userParticipantObject?.dates_available.length === 1 &&
+// 				userParticipantObject.dates_available[0].hours_selected.length === 1
+// 			) {
+// 				// deleting the only hour selected overall
+// 				try {
+// 					await updateDoc(eventRef, {
+// 						participants: [],
+// 					});
+// 					queryClient.invalidateQueries("eventData");
+// 					console.log("deleted succesfully!");
+// 				} catch (e) {
+// 					toast.error("There was an error while selecting hours :(");
+// 				}
+// 			}
+// 		}
+// 	}
+// };
