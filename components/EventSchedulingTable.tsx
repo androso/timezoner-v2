@@ -99,13 +99,10 @@ export default function EventSchedulingTable({
 		);
 	};
 	React.useEffect(() => {
-		console.log(
-			eventData.participants.find(
-				(participant) => participant.user_ref.id === parsedUser?.id
-			)
-		);
+		console.log(eventData.participants);
 	}, [eventData]);
 	const toggleIndividualSchedule = async ($td: HTMLTableCellElement) => {
+		
 		const tableElementIndex = Number($td.dataset.tableElementIndex);
 		setSelectedIndexes((prevIndexes) => {
 			if (prevIndexes.includes(tableElementIndex)) {
@@ -167,7 +164,13 @@ export default function EventSchedulingTable({
 					try {
 						const eventRef = doc(firestore, "events", eventId);
 						await updateDoc(eventRef, {
-							participants: [dataSent],
+							participants: [
+								...eventData.participants.filter(
+									(participant) =>
+										participant.user_ref.path !== `users/${parsedUser.id}`
+								),
+								dataSent,
+							],
 						});
 						queryClient.invalidateQueries("eventData");
 						console.log("saved!");
@@ -190,10 +193,11 @@ export default function EventSchedulingTable({
 							},
 						],
 					};
+
 					try {
 						const eventRef = doc(firestore, "events", eventId);
 						await updateDoc(eventRef, {
-							participants: [dataSent],
+							participants: arrayUnion(dataSent),
 						});
 						queryClient.invalidateQueries("eventData");
 						console.log("saved!");
@@ -225,7 +229,13 @@ export default function EventSchedulingTable({
 					if (dataSent.dates_available.length >= 1) {
 						try {
 							await updateDoc(eventRef, {
-								participants: [dataSent],
+								participants: [
+									...eventData.participants.filter(
+										(participant) =>
+											participant.user_ref.path !== `users/${parsedUser.id}`
+									),
+									dataSent,
+								],
 							});
 							queryClient.invalidateQueries("eventData");
 							console.log("deleted!");
