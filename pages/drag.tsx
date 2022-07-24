@@ -17,7 +17,6 @@ export default function Drag() {
 
 			selectableItems.current.forEach((item, index) => {
 				if (boxesIntersect(box, item)) {
-					console.log("boxes intersect!");
 					indexesToSelect.push(index);
 				}
 			});
@@ -28,6 +27,7 @@ export default function Drag() {
 
 	const { DragSelection } = useSelectionContainer({
 		onSelectionChange,
+		onSelectionEnd: () => console.log("end"),
 		eventsElement: dragRoot,
 		selectionProps: {
 			style: {},

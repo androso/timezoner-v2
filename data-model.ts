@@ -17,23 +17,33 @@ const participantsModel = [
 const eventModel = {
 	organizer_ref: "users/GZXeW7Yj0mmHAG53v1Ht",
 	title: "my event title",
-	og_timezone: "America/El Salvador",	
+	og_timezone: "America/El Salvador",
 	id: "3aBKtwKysEpDrPxa0D6J",
 	description: "random description",
 	date_range: [
+		new Date("jul 15, 2022"), //Timestamp
+		new Date("jul 15, 2022"), //Timestamp
+	],
+	hours_range: [
+		"Sat, 23 Jul 2022 15:30:00 GMT",
+		"Sat, 23 Jul 2022 16:30:00 GMT",
+	],
+	time_range: [
 		{
-			start_date: new Date("jul 15, 2022"), //Timestamp
-			end_date: new Date("jul 15, 2022"), //Timestamp
+			date: "Jul 23 2022",
+			hours_range: [
+				"Sat, 23 Jul 2022 15:30:00 GMT",
+				"Sat, 23 Jul 2022 16:30:00 GMT",
+			],
 		},
 		{
-			start_date: new Date("jul 17, 2022"), //Timestamp
-			end_date: new Date("jul 20, 2022"), //Timestamp
+			date: "Jul 24 2022",
+			hours_range: [
+				"Sat, 23 Jul 2022 15:30:00 GMT",
+				"Sat, 23 Jul 2022 16:30:00 GMT",
+			],
 		},
 	],
-	hours_range: {
-		start_hour: new Date(), // TIMESTAMP => DATE => get hours
-		end_hour: new Date(), // eg 15-20
-	},
 	participants: [
 		{
 			user_ref: "users/iWB2KBrzkIcGZSd2LMebVL7IwLi2", //reference to the participant document, where we get the username, photo, etc
