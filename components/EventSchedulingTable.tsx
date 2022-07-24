@@ -16,7 +16,7 @@ import {
 import { firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
-import { EventData } from "../lib/utils/types";
+import { EventData, RawParticipant } from "../lib/utils/types";
 import {
 	getDatesBetweenRange,
 	getHoursBetweenRange,
@@ -48,15 +48,16 @@ export default function EventSchedulingTable({
 		if (userParticipantObject) {
 			let hoursSelectedIndexes: number[] = [];
 			userParticipantObject.dates_available.forEach((dateObj) => {
-				hoursSelectedIndexes = dateObj.hours_selected.map(
-					(hourObj) => hourObj.tableElementIndex
-				);
+				hoursSelectedIndexes = [
+					...hoursSelectedIndexes,
+					...dateObj.hours_selected.map((hourObj) => hourObj.tableElementIndex),
+				];
 			});
+
 			return hoursSelectedIndexes;
 		}
 		return [];
 	});
-	const [selectedHours, setSelectedHours] = React.useState();
 
 	//TODO: make this function be called only when the position of the mouse has exceeded a box(?)
 	const onSelectionChange = React.useCallback(
@@ -114,15 +115,61 @@ export default function EventSchedulingTable({
 					(participant) => participant.user_ref.id === parsedUser.id
 				);
 				if (currentParticipant) {
+					// if it's the second hour we add
+					const dateIsAlreadySaved =
+						currentParticipant.dates_available.findIndex(
+							(date_available) => date_available.date === date.toUTCString()
+						);
+					let dataSent = {
+						user_ref: currentParticipant.user_ref,
+						dates_available: [...currentParticipant.dates_available],
+					} as unknown as RawParticipant;
+
+					if (dateIsAlreadySaved !== -1) {
+						console.log("second onwards hour that we add to the same day");
+						dataSent.dates_available[dateIsAlreadySaved] = {
+							date: date.toUTCString(),
+							hours_selected: [
+								...dataSent.dates_available[dateIsAlreadySaved].hours_selected,
+								{ hour: utcHour, tableElementIndex: globalItemIndex },
+							],
+						};
+					} else {
+						console.log("we're adding an hour from a different day");
+						dataSent.dates_available = [
+							...dataSent.dates_available,
+							{
+								date: date.toUTCString(),
+								hours_selected: [
+									{
+										hour: utcHour,
+										tableElementIndex: globalItemIndex,
+									},
+								],
+							},
+						];
+					}
+
+					try {
+						const eventRef = doc(firestore, "events", eventId);
+						await updateDoc(eventRef, {
+							participants: [dataSent],
+						});
+						queryClient.invalidateQueries("eventData");
+						console.log("saved!");
+					} catch (e) {
+						console.error(e);
+						toast.error("Something wrong happend when saving to database");
+					}
 				} else {
 					const dataSent = {
 						user_ref: doc(firestore, "users", parsedUser?.id ?? ""),
 						dates_available: [
 							{
-								date,
+								date: date.toUTCString(),
 								hours_selected: [
 									{
-										utcHour,
+										hour: utcHour,
 										tableElementIndex: globalItemIndex,
 									},
 								],
@@ -146,6 +193,10 @@ export default function EventSchedulingTable({
 			}
 		}
 	};
+
+	React.useEffect(() => {
+		console.log(selectedIndexes);
+	}, [selectedIndexes]);
 
 	const { DragSelection } = useSelectionContainer({
 		onSelectionChange,
