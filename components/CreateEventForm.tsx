@@ -16,17 +16,22 @@ import {
 export default function CreateEventForm() {
 	const formMethods = useForm<EventFormValues>();
 	const { parsedUser } = useParsedUserData();
-	const router = useRouter()
+	const router = useRouter();
 	const submitForm: SubmitHandler<EventFormValues> = async (data) => {
 		const { dateRange, hour_range, description, title, timezone } = data;
 
 		if (parsedUser) {
 			const eventDocRef = doc(collection(firestore, "events"));
-			const hoursBetweenRange = getHoursBetweenRange(hour_range.start_hour,
-				hour_range.end_hour);
+			const hoursBetweenRange = getHoursBetweenRange(
+				hour_range.start_hour,
+				hour_range.end_hour
+			);
 			const utcHourRange = standardizeHours(hoursBetweenRange);
-			
 			if (dateRange[0]) {
+				const datesBetweenRange = getDatesBetweenRange(
+					dateRange[0],
+					dateRange[1] ?? dateRange[0]
+				);
 				const dataSentToFirestore = {
 					date_range: getDatesBetweenRange(
 						dateRange[0],
@@ -40,8 +45,15 @@ export default function CreateEventForm() {
 					organizer_id: parsedUser.id,
 					id: eventDocRef.id,
 					participants: [],
+					participants_schedules: datesBetweenRange.map((dateObj) => ({
+						date: dateObj.toUTCString(),
+						hours_range: hoursBetweenRange.map((hourObj) => ({
+							hour: hourObj.toUTCString(),
+							participants: [],
+						})),
+					})),
 				};
-				
+
 				await setDoc(eventDocRef, dataSentToFirestore);
 				router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });
 			}

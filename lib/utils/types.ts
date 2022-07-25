@@ -81,7 +81,13 @@ type Participant = {
 		}[];
 	}[];
 };
-
+type Schedule = {
+	date: Date;
+	hours_range: {
+		hour: Date;
+		participants: DocumentReference[];
+	}[];
+};
 export type EventData = {
 	date_range: Date[];
 	hour_range: Date[];
@@ -93,8 +99,10 @@ export type EventData = {
 	organizer_id: string;
 	id: string;
 	participants: Participant[];
+	participants_schedules: Schedule[];
 };
 
+//TODO: DELETE
 export type RawParticipant = {
 	user_ref: DocumentReference;
 	dates_available: {
@@ -103,6 +111,14 @@ export type RawParticipant = {
 			hour: string;
 			tableElementIndex: number;
 		}[];
+	}[];
+};
+	
+type RawSchedule = {
+	date: string;
+	hours_range: {
+		hour: string;
+		participants: DocumentReference[];
 	}[];
 };
 
@@ -115,6 +131,7 @@ export type RawEventDataFromFirestore = {
 	organizer_ref: DocumentReference;
 	organizer_data: UserData;
 	organizer_id: string;
-	participants: RawParticipant[] | [2];
+	participants: RawParticipant[];
+	participants_schedules: RawSchedule[];
 	id: string;
 };
