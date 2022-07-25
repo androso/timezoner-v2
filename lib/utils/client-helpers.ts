@@ -117,28 +117,48 @@ export const getUserEventsData = async (
 	let participatingEvents = await Promise.all(
 		snapshot.docs.map(async (eventDoc, index) => {
 			const rawEventData = eventDoc.data() as RawEventDataFromFirestore;
-			const organizerData = (
-				await getDoc(rawEventData.organizer_ref)
-			).data() as UserData;
-
-			const event = {
-				...rawEventData,
-				date_range: rawEventData.date_range.map((dateTimestamp, i) =>
-					dateTimestamp.toDate()
-				),
-				hour_range: rawEventData.hour_range.map(
-					(utcHour, i) => new Date(utcHour)
-				),
-				organizer_data: organizerData,
-			};
+			const eventFormatted = await formatRawEventData(rawEventData);
 			if (index === snapshot.docs.length - 1) {
 				lastEventSnapshot = eventDoc;
 			}
-			return event;
+			return eventFormatted;
 		})
 	);
-
 	return { participatingEvents, lastEventSnapshot };
+};
+
+export const formatRawEventData = async (
+	rawEventData: RawEventDataFromFirestore
+) => {
+	const organizerSnap = await getDoc(rawEventData.organizer_ref);
+	if (organizerSnap.exists()) {
+		const organizerData = organizerSnap.data() as UserData;
+		return {
+			...rawEventData,
+			date_range: rawEventData.date_range.map((dateTimestamp, i) =>
+				dateTimestamp.toDate()
+			),
+			hour_range: rawEventData.hour_range.map(
+				(utcHour, i) => new Date(utcHour)
+			),
+			organizer_data: organizerData,
+			participants_schedules: rawEventData.participants_schedules.map(
+				(schedule) => {
+					return {
+						date: new Date(schedule.date),
+						hours_range: schedule.hours_range.map((hourObj) => ({
+							hour: new Date(hourObj.hour),
+							participants: hourObj.participants,
+						})),
+					};
+				}
+			),
+		};
+	} else {
+		return Promise.reject(
+			new Error("Document is corrupt :( no valid Organizer Data")
+		);
+	}
 };
 
 export const getDatesBetweenRange = (start: Date, end: Date): Date[] => {

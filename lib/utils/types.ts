@@ -129,7 +129,6 @@ export type RawEventDataFromFirestore = {
 	description: string;
 	og_timezone: string;
 	organizer_ref: DocumentReference;
-	organizer_data: UserData;
 	organizer_id: string;
 	participants: RawParticipant[];
 	participants_schedules: RawSchedule[];

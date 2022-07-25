@@ -5,10 +5,11 @@ import { EventData, RawEventDataFromFirestore, UserData } from "../types";
 import { useQuery } from "react-query";
 import { useAllEvents } from "../../context/allUserEvents";
 import useParsedUserData from "./useParsedUserData";
+import { formatRawEventData } from "../client-helpers";
 
 const fetchEventData = async (
 	eventId: string
-): Promise<RawEventDataFromFirestore | undefined> => {
+): Promise<RawEventDataFromFirestore> => {
 	/*
 	 * fetchData should be returning
 	 * a single object with the eventData and organizerData, if succesful
@@ -17,19 +18,8 @@ const fetchEventData = async (
 	const docRef = doc(firestore, "events", eventId);
 	const docSnap = await getDoc(docRef);
 	if (docSnap.exists()) {
-		const eventData = docSnap.data() as RawEventDataFromFirestore;
-		const organizerSnap = await getDoc(eventData.organizer_ref);
-		if (organizerSnap.exists()) {
-			const organizerData = organizerSnap.data() as UserData;
-			return {
-				...eventData,
-				organizer_data: organizerData,
-			};
-		} else {
-			return Promise.reject(
-				new Error("Document is corrupt :( no valid Organizer Data")
-			);
-		}
+		const rawEventData = docSnap.data() as RawEventDataFromFirestore;
+		return rawEventData;
 	} else {
 		return Promise.reject(new Error("Event not found :("));
 	}
@@ -61,18 +51,20 @@ const useEventData = () => {
 					// console.log(
 					// 	"this event wasn't found in the allUsers array, and thus had to be fetched individually"
 					// );
-					const data = await fetchEventData(eventId);
-					return {
-						...data,
-						date_range: data?.date_range.map((timestamp) => timestamp.toDate()),
-						hour_range: data?.hour_range.map((utcHour) => new Date(utcHour)),
-					};
+					try {
+						const rawData = await fetchEventData(eventId);
+						const formattedEvent = await formatRawEventData(rawData);
+						return formattedEvent;
+					} catch (e) {
+						return e;
+					}
 				} else {
 					// console.log("we're not fetching bc we're not authenticated");
-					return;
+					return new Error("unauthenticated request");
 				}
 				// console.log("what is this weird edge-case?")
 			} else {
+				return new Error("event id is not valid");
 				// console.log("typeof eventId is not string", eventId);
 			}
 		},
