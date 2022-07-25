@@ -2,7 +2,7 @@ import ReactDatePicker from "react-datepicker";
 import { useController } from "react-hook-form";
 import { HourPickerProps } from "../lib/utils/types";
 import { useFormContext } from "react-hook-form";
-import type { hourRange } from "../lib/utils/types";
+import type { hoursRange } from "../lib/utils/types";
 export default function Hourpicker({
 	label,
 	placeholder,
@@ -21,7 +21,7 @@ export default function Hourpicker({
 			validate: (value: unknown) => {
 				// checking that the start hour is not later than the end hour
 				const { start_hour: startHour, end_hour: endHour } = getValues()
-					.hour_range as hourRange;
+					.hours_range as hoursRange;
 				if (!startHour || !endHour) {
 					return true;
 				}

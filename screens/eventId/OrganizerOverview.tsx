@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DialogContent, DialogOverlay } from "@reach/dialog";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import EventFormFields from "../../components/EventFormFields";
@@ -34,7 +34,7 @@ export default function OrganizerOverview({
 	const closeDialog = () => setShowDialog(false);
 	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
 	const datesRange = eventData?.date_range;
-	const hoursRange = eventData?.hour_range;
+	const hoursRange = eventData?.hours_range;
 	const { eventId } = router.query;
 
 	const formMethods = useForm<EventFormValues>({
@@ -42,9 +42,9 @@ export default function OrganizerOverview({
 			title: eventData?.title,
 			description: eventData?.description,
 			timezone: eventData?.og_timezone,
-			hour_range: {
-				start_hour: eventData?.hour_range[0],
-				end_hour: eventData?.hour_range[eventData.hour_range.length - 1],
+			hours_range: {
+				start_hour: eventData?.hours_range[0],
+				end_hour: eventData?.hours_range[eventData.hours_range.length - 1],
 			},
 			dateRange: [
 				eventData?.date_range[0],
@@ -63,28 +63,45 @@ export default function OrganizerOverview({
 		}
 	};
 
+	useEffect(() => {
+	  console.log(eventData?.participants_schedules);
+	
+	}, [eventData])
+	
 	const updateEvent = async (data: EventFormValues) => {
-		const { dateRange, hour_range, description, title, timezone } = data;
+		const { dateRange, hours_range, description, title, timezone } = data;
 		const hoursBetweenRange = getHoursBetweenRange(
-			hour_range.start_hour,
-			hour_range.end_hour
+			hours_range.start_hour,
+			hours_range.end_hour
 		);
 		const utcHoursRange = standardizeHours(hoursBetweenRange);
 		if (eventData?.id && parsedUser && dateRange[0]) {
 			const eventDocRef = doc(firestore, "events", eventData?.id);
+			const newDateRange = getDatesBetweenRange(
+				dateRange[0],
+				dateRange[1] ?? dateRange[0]
+			);
 			const dataSentToFirestore = {
-				date_range: getDatesBetweenRange(
-					dateRange[0],
-					dateRange[1] ?? dateRange[0]
-				),
-				hour_range: utcHoursRange,
+				date_range: newDateRange,
+				hours_range: utcHoursRange,
 				title,
 				description: description,
 				og_timezone: timezone,
+				participants_schedules: newDateRange.map((newDateObj, dateIndex) => ({
+					date: newDateObj.toUTCString(),
+					hours_range: utcHoursRange.map((utcHourOBj, hourIndex) => ({
+						hour: utcHourOBj,
+						participants:
+							eventData.participants_schedules[dateIndex].hours_range[hourIndex]
+								.participants,
+					})),
+				})),
 			};
+			console.log(dataSentToFirestore);
+
 			try {
-				await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
-				closeDialog();
+				// await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
+				// closeDialog();
 				toast.success("Event updated succesfully");
 			} catch (e) {
 				toast.error("There was an error while updating the event");

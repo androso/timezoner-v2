@@ -112,7 +112,7 @@ export default function EventFormFields({
 							placeholder="Start"
 							required
 							control={formMethods.control}
-							name="hour_range.start_hour"
+							name="hours_range.start_hour"
 						/>
 					</div>
 					<div>
@@ -121,18 +121,18 @@ export default function EventFormFields({
 							placeholder="End"
 							required
 							control={formMethods.control}
-							name="hour_range.end_hour"
+							name="hours_range.end_hour"
 						/>
 					</div>
 				</div>
 				<p
 					className={`${
-						formMethods.formState.errors.hour_range?.end_hour
+						formMethods.formState.errors.hours_range?.end_hour
 							? "visible"
 							: "invisible"
 					} text-red-500 font-medium text-lg`}
 				>
-					{formMethods.formState.errors.hour_range?.end_hour?.message}
+					{formMethods.formState.errors.hours_range?.end_hour?.message}
 				</p>
 			</div>
 		</>

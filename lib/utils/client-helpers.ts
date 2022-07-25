@@ -133,12 +133,13 @@ export const formatRawEventData = async (
 	const organizerSnap = await getDoc(rawEventData.organizer_ref);
 	if (organizerSnap.exists()) {
 		const organizerData = organizerSnap.data() as UserData;
-		return {
+		
+		const formatted =  {
 			...rawEventData,
 			date_range: rawEventData.date_range.map((dateTimestamp, i) =>
 				dateTimestamp.toDate()
 			),
-			hour_range: rawEventData.hour_range.map(
+			hours_range: rawEventData.hours_range.map(
 				(utcHour, i) => new Date(utcHour)
 			),
 			organizer_data: organizerData,
@@ -154,6 +155,8 @@ export const formatRawEventData = async (
 				}
 			),
 		};
+		console.log(formatted);
+		return formatted;
 	} else {
 		return Promise.reject(
 			new Error("Document is corrupt :( no valid Organizer Data")

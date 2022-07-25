@@ -54,7 +54,7 @@ export default function ParticipantOverview({
 	);
 	const datesRange = eventData?.date_range;
 	const convertedHours = useHourRangeBasedOnTimezone(
-		eventData?.hour_range,
+		eventData?.hours_range,
 		timezoneSelected
 	);
 

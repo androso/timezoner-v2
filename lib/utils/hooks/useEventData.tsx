@@ -34,6 +34,7 @@ const useEventData = () => {
 		["eventData", eventId, allEvents, parsedUser, allEventsStatus],
 		async () => {
 			//! We should fetch only if the user is authenticated AND authorized
+			
 			if (!router.isReady) {
 				return;
 			}
@@ -41,6 +42,7 @@ const useEventData = () => {
 				return;
 			}
 			if (typeof eventId === "string") {
+				
 				let eventAlreadyFetched = allEvents?.find(
 					(event) => event.id === eventId
 				);
@@ -54,6 +56,7 @@ const useEventData = () => {
 					try {
 						const rawData = await fetchEventData(eventId);
 						const formattedEvent = await formatRawEventData(rawData);
+						
 						return formattedEvent;
 					} catch (e) {
 						return e;

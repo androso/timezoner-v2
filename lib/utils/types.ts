@@ -37,7 +37,7 @@ export type UserData = {
 
 export type dateRange = [Date | null, Date | null];
 
-export type hourRange = {
+export type hoursRange = {
 	start_hour: Date | null;
 	end_hour: Date | null;
 };
@@ -49,7 +49,7 @@ export type EventFormValues = {
 	dateRange: dateRange;
 	startHour: Date;
 	endHour: Date;
-	hour_range: {
+	hours_range: {
 		start_hour: Date;
 		end_hour: Date;
 	};
@@ -68,7 +68,7 @@ export type inputProps = baseFormFieldProps & {
 
 export type HourPickerProps = baseFormFieldProps & {
 	control: Control<EventFormValues, any>;
-	name: "hour_range.start_hour" | "hour_range.end_hour";
+	name: "hours_range.start_hour" | "hours_range.end_hour";
 };
 
 type Participant = {
@@ -90,7 +90,7 @@ type Schedule = {
 };
 export type EventData = {
 	date_range: Date[];
-	hour_range: Date[];
+	hours_range: Date[];
 	organizer_data: UserData;
 	title: string;
 	description: string;
@@ -124,7 +124,7 @@ type RawSchedule = {
 
 export type RawEventDataFromFirestore = {
 	date_range: Timestamp[];
-	hour_range: string[];
+	hours_range: string[];
 	title: string;
 	description: string;
 	og_timezone: string;

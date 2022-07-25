@@ -1,4 +1,4 @@
-import type { EventFormValues } from "../lib/utils/types";
+import type { EventFormValues, RawEventDataFromFirestore } from "../lib/utils/types";
 import { LightButton } from "./LightButton";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import { collection, doc, setDoc } from "firebase/firestore";
@@ -18,13 +18,13 @@ export default function CreateEventForm() {
 	const { parsedUser } = useParsedUserData();
 	const router = useRouter();
 	const submitForm: SubmitHandler<EventFormValues> = async (data) => {
-		const { dateRange, hour_range, description, title, timezone } = data;
+		const { dateRange, hours_range, description, title, timezone } = data;
 
 		if (parsedUser) {
 			const eventDocRef = doc(collection(firestore, "events"));
 			const hoursBetweenRange = getHoursBetweenRange(
-				hour_range.start_hour,
-				hour_range.end_hour
+				hours_range.start_hour,
+				hours_range.end_hour
 			);
 			const utcHourRange = standardizeHours(hoursBetweenRange);
 			if (dateRange[0]) {
@@ -37,7 +37,7 @@ export default function CreateEventForm() {
 						dateRange[0],
 						dateRange[1] ?? dateRange[0]
 					),
-					hour_range: utcHourRange,
+					hours_range: utcHourRange,
 					title,
 					description: description,
 					og_timezone: timezone,
