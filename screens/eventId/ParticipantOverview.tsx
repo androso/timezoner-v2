@@ -19,6 +19,7 @@ import { LoadingOverview } from "../../pages/event/[eventId]";
 import Downshift from "downshift";
 import { matchSorter } from "match-sorter";
 import { timeZones } from "../../lib/timezonesData";
+import EventAvailabilityTable from "../../components/EventAvailabilityTable";
 
 const useHourRangeBasedOnTimezone = (
 	hoursRange: Date[] | undefined,
@@ -37,7 +38,7 @@ const useHourRangeBasedOnTimezone = (
 	} else {
 		return null;
 	}
-}
+};
 
 export default function ParticipantOverview({
 	eventData,
@@ -171,13 +172,17 @@ export default function ParticipantOverview({
 				<div className="mb-4 ">
 					{/* //TODO: add styles */}
 					<button
-						className="p-3 bg-containerGray rounded-sm mr-3"
+						className={`p-3 rounded-sm mr-3 ${
+							tableView === "scheduling" ? "bg-[#2E2E2E]" : "bg-[#404040] "
+						}`}
 						onClick={() => setTableView("scheduling")}
 					>
 						Scheduling
 					</button>
 					<button
-						className="p-3 bg-containerGray rounded-sm"
+						className={`p-3 rounded-sm mr-3 ${
+							tableView === "availability" ? "bg-[#2E2E2E]" : "bg-[#404040]"
+						}`}
 						onClick={() => setTableView("availability")}
 					>
 						Availability
@@ -198,7 +203,11 @@ export default function ParticipantOverview({
 						</p>
 					</>
 				) : (
-					<p>availability</p>
+					<EventAvailabilityTable
+						eventData={eventData}
+						hoursRange={convertedHours}
+						datesRange={datesRange}
+					/>
 				)}
 			</Container>
 		</>
