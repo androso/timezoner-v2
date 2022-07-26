@@ -1,4 +1,7 @@
-import type { EventFormValues, RawEventDataFromFirestore } from "../lib/utils/types";
+import type {
+	EventFormValues,
+	RawEventDataFromFirestore,
+} from "../lib/utils/types";
 import { LightButton } from "./LightButton";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import { collection, doc, setDoc } from "firebase/firestore";
@@ -48,7 +51,11 @@ export default function CreateEventForm() {
 					participants_schedules: datesBetweenRange.map((dateObj) => ({
 						date: dateObj.toUTCString(),
 						hours_range: hoursBetweenRange.map((hourObj) => ({
-							hour: hourObj.toUTCString(),
+							hour: new Date(
+								`${
+									dateObj.getMonth() + 1
+								}/${dateObj.getDate()}/${dateObj.getFullYear()} ${hourObj.getHours()}:${hourObj.getMinutes()}`
+							).toUTCString(),
 							participants: [],
 						})),
 					})),
