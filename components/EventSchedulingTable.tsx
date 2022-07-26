@@ -30,21 +30,23 @@ const getInitialSelectedIndexes = (
 	eventData: EventData,
 	parsedUser: UserData | null
 ) => {
-	const userParticipantObject = eventData.participants.find(
-		(participant) => participant.user_ref.path === `users/${parsedUser?.id}`
-	);
-	if (userParticipantObject) {
-		let hoursSelectedIndexes: number[] = [];
-		userParticipantObject.dates_available.forEach((dateObj) => {
-			hoursSelectedIndexes = [
-				...hoursSelectedIndexes,
-				...dateObj.hours_selected.map((hourObj) => hourObj.tableElementIndex),
-			];
+	let userSelectedHoursIndexes: number[] = [];
+	eventData.participants_schedules.forEach((schedule) => {
+		schedule.hours_range.forEach((hourObj) => {
+			hourObj.participants.forEach((participantRef) => {
+				if (
+					participantRef.path === `users/${parsedUser?.id}` &&
+					hourObj.tableElementIndex
+				) {
+					userSelectedHoursIndexes = [
+						...userSelectedHoursIndexes,
+						hourObj.tableElementIndex,
+					];
+				}
+			});
 		});
-
-		return hoursSelectedIndexes;
-	}
-	return [];
+	});
+	return userSelectedHoursIndexes;
 };
 
 type PropsTypes = {
@@ -67,11 +69,6 @@ export default function EventSchedulingTable({
 	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>(() =>
 		getInitialSelectedIndexes(eventData, parsedUser)
 	);
-	// const [dragToSelectWasUsed, setDragToSelectWasUsed] = React.useState(false);
-	// make this function be called only when the position of the mouse has exceeded a box(?)
-	// const onSelectionChange = React.useCallback(
-	// 	async (box: Box) => {
-	// 		//! We update the values of the box that we receive, because those are relative to the viewport, not the document
 	// 		const boxWithAdjustedPosition = {
 	// 			...box,
 	// 			left: box.left + window.scrollX + ($table.current?.scrollLeft ?? 0),
@@ -121,13 +118,59 @@ export default function EventSchedulingTable({
 	// };
 
 	const updateParticipantScheduleInDB = async ($td: HTMLTableCellElement) => {
+		// we're updating the participants' schedules client-side, so that we just send an update doc request to firestore
 		const tableElementIndex = Number($td.dataset.tableElementIndex);
 
 		const isSelecting = !$td.classList.contains("selected");
-		if (parsedUser && typeof eventId === "string") {
-			const date = new Date($td.dataset.date ?? "");
-			const hour = new Date(`${$td.dataset.date} ${$td.dataset.hour}`);
-			const utcHour = hour.toUTCString();
+		if (
+			parsedUser &&
+			typeof eventId === "string" &&
+			typeof tableElementIndex === "number"
+		) {
+			const dateSelected = new Date($td.dataset.date ?? "");
+			const hourSelected = new Date(`${$td.dataset.date} ${$td.dataset.hour}`);
+			const formattedHourSelected = `${hourSelected.getHours()}:${hourSelected.getMinutes()}`;
+			const userRef = doc(firestore, "users", parsedUser.id);
+			//todo: send tableElementIndex?
+			const newParticipantsSchedules = eventData.participants_schedules.map(
+				(schedule) => {
+					return {
+						date: schedule.date.toUTCString(),
+						hours_range: schedule.hours_range.map((hourObj) => {
+							const formattedHourFromDB = `${hourObj.hour.getHours()}:${hourObj.hour.getMinutes()}`;
+							if (hourObj.hour.toUTCString() === hourSelected.toUTCString()) {
+								// hourObj already has the correct date
+								return {
+									hour: hourObj.hour.toUTCString(),
+									participants: isSelecting
+										? [...hourObj.participants, userRef]
+										: hourObj.participants.filter(
+												(participant) => participant.path !== userRef.path
+										  ),
+									tableElementIndex,
+								};
+							}
+							return {
+								...hourObj,
+								hour: hourObj.hour.toUTCString(),
+							};
+						}),
+					};
+				}
+			);
+
+			try {
+				const eventRef = doc(firestore, "events", eventId);
+				await updateDoc(eventRef, {
+					participants_schedules: newParticipantsSchedules,
+				});
+				queryClient.invalidateQueries("eventData");
+			} catch (e) {
+				console.error(e);
+				toast.error("something wrong happened when saving your selection");
+			}
+
+			return;
 			const currentParticipant = eventData.participants.find(
 				(participant) => participant.user_ref.id === parsedUser.id
 			);
@@ -275,14 +318,13 @@ export default function EventSchedulingTable({
 		}
 	};
 
-	const { DragSelection } = useSelectionContainer({
-		onSelectionChange: () => console.log("selection changed !"),
-		selectionProps: {
-			style: { display: "none" },
-		},
-		onSelectionEnd: () => console.log("selection ended"),
-		eventsElement: dragRoot,
-	});
+	// const { DragSelection } = useSelectionContainer({
+	// 	onSelectionChange: () => console.log("selection changed !"),
+	// 	selectionProps: {
+	// 		style: { display: "none" },
+	// 	},
+	// 	eventsElement: dragRoot,
+	// });
 
 	React.useEffect(() => {
 		if (dragRoot && window) {
@@ -308,7 +350,7 @@ export default function EventSchedulingTable({
 			>
 				Log selected Indexes
 			</button>
-			<DragSelection />
+			{/* <DragSelection /> */}
 			<table className="block overflow-x-auto rounded-xl" ref={$table}>
 				<thead>
 					<tr>
