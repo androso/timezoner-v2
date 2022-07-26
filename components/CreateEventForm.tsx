@@ -57,6 +57,7 @@ export default function CreateEventForm() {
 								}/${dateObj.getDate()}/${dateObj.getFullYear()} ${hourObj.getHours()}:${hourObj.getMinutes()}`
 							).toUTCString(),
 							participants: [],
+							tableElementIndex: null,
 						})),
 					})),
 				};

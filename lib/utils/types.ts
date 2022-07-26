@@ -85,6 +85,7 @@ type Schedule = {
 	date: Date;
 	hours_range: {
 		hour: Date;
+		tableElementIndex: number | null;
 		participants: DocumentReference[];
 	}[];
 };
@@ -118,6 +119,7 @@ type RawSchedule = {
 	date: string;
 	hours_range: {
 		hour: string;
+		tableElementIndex: number | null;
 		participants: DocumentReference[];
 	}[];
 };

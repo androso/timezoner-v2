@@ -133,8 +133,8 @@ export const formatRawEventData = async (
 	const organizerSnap = await getDoc(rawEventData.organizer_ref);
 	if (organizerSnap.exists()) {
 		const organizerData = organizerSnap.data() as UserData;
-		
-		const formatted =  {
+
+		const formatted = {
 			...rawEventData,
 			date_range: rawEventData.date_range.map((dateTimestamp, i) =>
 				dateTimestamp.toDate()
@@ -150,12 +150,12 @@ export const formatRawEventData = async (
 						hours_range: schedule.hours_range.map((hourObj) => ({
 							hour: new Date(hourObj.hour),
 							participants: hourObj.participants,
+							tableElementIndex: hourObj.tableElementIndex,
 						})),
 					};
 				}
 			),
 		};
-		console.log(formatted);
 		return formatted;
 	} else {
 		return Promise.reject(
