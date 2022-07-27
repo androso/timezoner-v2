@@ -20,7 +20,8 @@
 # misc
 .DS_Store
 *.pem
-*.json
+timezoner-v2-firebase-adminsdk.json
+.vscode
 
 # debug
 npm-debug.log*
