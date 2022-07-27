@@ -9,6 +9,9 @@
 /firebase-export-*
 # testing
 /coverage
+cypress.env.json
+/cypress/videos
+/crypess/screenshots
 
 # next.js
 /.next/

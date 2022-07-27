@@ -10,7 +10,8 @@
 		"start": "next start",
 		"lint": "next lint",
 		"cypress:open": "cypress open",
-		"analyze": "cross-env ANALYZE=true next build"
+		"analyze": "cross-env ANALYZE=true next build",
+		"cypress:run": "cypress run"
 	},
 	"author": "",
 	"license": "",
@@ -28,6 +29,7 @@
 		"downshift": "^6.1.7",
 		"firebase": "^9.6.11",
 		"firebase-admin": "^11.0.0",
+		"gradstop": "^2.2.3",
 		"lodash.escaperegexp": "^4.1.2",
 		"lodash.isequal": "^4.5.0",
 		"match-sorter": "^6.3.1",
