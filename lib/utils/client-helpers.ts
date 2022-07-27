@@ -7,6 +7,7 @@ import {
 	QuerySnapshot,
 	setDoc,
 } from "firebase/firestore";
+import gradstop from "gradstop";
 import { firestore } from "../firebase";
 import { timeZones } from "../timezonesData";
 import { RawEventDataFromFirestore, UserData } from "./types";
@@ -222,4 +223,59 @@ export const getTimezoneMetadata = (timezone: string) => {
 		(tz) =>
 			tz.name === formattedTimezone || tz.group.includes(formattedTimezone)
 	);
+};
+
+// how many participants do we have in total? == 2
+// array of hours sorted by numberOfParticipants i.e, doesn't include hours with numberOfParticipants === 0 || null
+// [{hour: '7:00am', numberOfParticipants: 2}, {hour: '7:30am', numberOfParticipants: 2} ,  {hour: '8:00am', numberOfParticipants: 1}]
+// we loop over this array, finding the hours that have different number of participants
+// we create a color palette based on that
+// return [
+// 	{color: 'hsl(100, 100%, 30%, )', numberOfParticipants: 2},
+// 	{color: 'hsl(100, 43%,  70%)', numberOfParticipants: 1}
+// ]
+// in EventEventAvailabilityTable, we loop over this returned value
+// we search for the hours where returned.numberOfParticipants === hour.numberOfParticipants
+// we add to them a background color of returned.color
+
+export const getColorsBasedOnNumberOfParticipants = (
+	eventParticipants: number[]
+) => {
+	const strongestGreen = "100, 100%, 30%";
+	const lightestGreen = "100, 43%,  70%";
+	let differentParticipantsTotal: number[] = [];
+	const eventsParticipantsSorted = [...eventParticipants].sort((a, b) => b - a);
+
+	const hoursWithDifferentParticipants = eventsParticipantsSorted.filter(
+		(hourParticipants) => {
+			const participantsAlreadySaved = differentParticipantsTotal.find(
+				(saved) => saved === hourParticipants
+			);
+			if (!participantsAlreadySaved) {
+				differentParticipantsTotal.push(hourParticipants);
+				return true;
+			} else {
+				return false;
+			}
+		}
+	);
+
+	const gradient = gradstop({
+		stops: hoursWithDifferentParticipants.length,
+		inputFormat: "hsl",
+		colorArray:
+			hoursWithDifferentParticipants.length < 2
+				? [strongestGreen]
+				: [strongestGreen, lightestGreen],
+	});
+	
+	return hoursWithDifferentParticipants.map((hourParticipants, i) => {
+		return {
+			color:
+				hoursWithDifferentParticipants.length < 2
+					? `hsl(${strongestGreen})`
+					: gradient[i],
+			numberOfParticipants: hourParticipants,
+		};
+	});
 };
