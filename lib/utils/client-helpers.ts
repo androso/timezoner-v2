@@ -250,7 +250,7 @@ export const getColorsBasedOnNumberOfParticipants = (
 	const strongestGreen = "100, 100%, 30%";
 	const lightestGreen = "100, 43%,  70%";
 
-	let eventParticipants = [...hoursHaveParticipants];
+	let eventParticipants = hoursHaveParticipants;
 	let differentParticipantsTotal: HourHaveParticipants[] = [];
 	const eventsParticipantsSorted = [...eventParticipants].sort(
 		(a, b) => b.numberOfParticipants - a.numberOfParticipants
@@ -259,7 +259,8 @@ export const getColorsBasedOnNumberOfParticipants = (
 	const hoursWithDifferentParticipants = eventsParticipantsSorted.filter(
 		(hourParticipants) => {
 			const participantsAlreadySaved = differentParticipantsTotal.find(
-				(saved) => saved.numberOfParticipants === hourParticipants.numberOfParticipants
+				(saved) =>
+					saved.numberOfParticipants === hourParticipants.numberOfParticipants
 			);
 			if (!participantsAlreadySaved) {
 				differentParticipantsTotal.push(hourParticipants);
@@ -280,12 +281,19 @@ export const getColorsBasedOnNumberOfParticipants = (
 	});
 
 	return hoursWithDifferentParticipants.map((hourParticipants, i) => {
+		const tableElementIndexes = eventsParticipantsSorted
+			.filter(
+				(obj) =>
+					obj.numberOfParticipants === hourParticipants.numberOfParticipants
+			)
+			.map((obj) => obj.tableElementIndex);
 		return {
 			color:
 				hoursWithDifferentParticipants.length < 2
 					? `hsl(${strongestGreen})`
 					: gradient[i],
 			numberOfParticipants: hourParticipants.numberOfParticipants,
+			tableElementIndexes,
 		};
 	});
 };
