@@ -32,15 +32,15 @@ const getInitialSelectedIndexes = (
 ) => {
 	let userSelectedHoursIndexes: number[] = [];
 	eventData.participants_schedules.forEach((schedule) => {
-		schedule.hours_range.forEach((hourObj) => {
-			hourObj.participants.forEach((participantRef) => {
+		schedule.hours_range.forEach((hourRange) => {
+			hourRange.participants.forEach((participantRef) => {
 				if (
 					participantRef.path === `users/${parsedUser?.id}` &&
-					hourObj.tableElementIndex
+					typeof hourRange.tableElementIndex === 'number'
 				) {
 					userSelectedHoursIndexes = [
 						...userSelectedHoursIndexes,
-						hourObj.tableElementIndex,
+						hourRange.tableElementIndex,
 					];
 				}
 			});
@@ -69,6 +69,7 @@ export default function EventSchedulingTable({
 	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>(() =>
 		getInitialSelectedIndexes(eventData, parsedUser)
 	);
+	
 	// 		const boxWithAdjustedPosition = {
 	// 			...box,
 	// 			left: box.left + window.scrollX + ($table.current?.scrollLeft ?? 0),
@@ -127,32 +128,31 @@ export default function EventSchedulingTable({
 			typeof eventId === "string" &&
 			typeof tableElementIndex === "number"
 		) {
-			const dateSelected = new Date($td.dataset.date ?? "");
+
 			const hourSelected = new Date(`${$td.dataset.date} ${$td.dataset.hour}`);
-			const formattedHourSelected = `${hourSelected.getHours()}:${hourSelected.getMinutes()}`;
 			const userRef = doc(firestore, "users", parsedUser.id);
 			//todo: send tableElementIndex?
 			const newParticipantsSchedules = eventData.participants_schedules.map(
 				(schedule) => {
 					return {
 						date: schedule.date.toUTCString(),
-						hours_range: schedule.hours_range.map((hourObj) => {
-							const formattedHourFromDB = `${hourObj.hour.getHours()}:${hourObj.hour.getMinutes()}`;
-							if (hourObj.hour.toUTCString() === hourSelected.toUTCString()) {
-								// hourObj already has the correct date
+						hours_range: schedule.hours_range.map((hourRange) => {
+							const formattedHourFromDB = `${hourRange.hour.getHours()}:${hourRange.hour.getMinutes()}`;
+							if (hourRange.hour.toUTCString() === hourSelected.toUTCString()) {
+								// hourRange already has the correct date
 								return {
-									hour: hourObj.hour.toUTCString(),
+									hour: hourRange.hour.toUTCString(),
 									participants: isSelecting
-										? [...hourObj.participants, userRef]
-										: hourObj.participants.filter(
+										? [...hourRange.participants, userRef]
+										: hourRange.participants.filter(
 												(participant) => participant.path !== userRef.path
 										  ),
 									tableElementIndex,
 								};
 							}
 							return {
-								...hourObj,
-								hour: hourObj.hour.toUTCString(),
+								...hourRange,
+								hour: hourRange.hour.toUTCString(),
 							};
 						}),
 					};
@@ -231,7 +231,7 @@ export default function EventSchedulingTable({
 					</tr>
 				</thead>
 				<tbody ref={(newRef) => setDragRoot(newRef)}>
-					{hoursRange?.map((hourObj, tableRowIndex) => {
+					{hoursRange?.map((hourRange, tableRowIndex) => {
 						return (
 							<tr key={tableRowIndex}>
 								{datesRange?.map((date, tableDataIndex) => {
@@ -244,7 +244,7 @@ export default function EventSchedulingTable({
 											data-date={`${
 												date.getMonth() + 1
 											}/${date.getDate()}/${date.getFullYear()}`}
-											data-hour={`${hourObj.getHours()}:${hourObj.getMinutes()}`}
+											data-hour={`${hourRange.getHours()}:${hourRange.getMinutes()}`}
 											className={`px-6 py-4 ${
 												selectedIndexes.includes(tableElementIndex)
 													? "bg-green-600 selected"
@@ -276,8 +276,8 @@ export default function EventSchedulingTable({
 												);
 											}}
 										>
-											{hourObj.getHours()}:
-											{hourObj.getMinutes() === 0 ? "00" : hourObj.getMinutes()}
+											{hourRange.getHours()}:
+											{hourRange.getMinutes() === 0 ? "00" : hourRange.getMinutes()}
 										</td>
 									);
 								})}
