@@ -2,6 +2,7 @@ import { User } from "firebase/auth";
 import {
 	doc,
 	DocumentData,
+	DocumentReference,
 	getDoc,
 	QueryDocumentSnapshot,
 	QuerySnapshot,
@@ -237,19 +238,28 @@ export const getTimezoneMetadata = (timezone: string) => {
 // in EventEventAvailabilityTable, we loop over this returned value
 // we search for the hours where returned.numberOfParticipants === hour.numberOfParticipants
 // we add to them a background color of returned.color
+type HourHaveParticipants = {
+	hour: Date;
+	tableElementIndex: number | null;
+	numberOfParticipants: number;
+};
 
 export const getColorsBasedOnNumberOfParticipants = (
-	eventParticipants: number[]
+	hoursHaveParticipants: HourHaveParticipants[]
 ) => {
 	const strongestGreen = "100, 100%, 30%";
 	const lightestGreen = "100, 43%,  70%";
-	let differentParticipantsTotal: number[] = [];
-	const eventsParticipantsSorted = [...eventParticipants].sort((a, b) => b - a);
+
+	let eventParticipants = [...hoursHaveParticipants];
+	let differentParticipantsTotal: HourHaveParticipants[] = [];
+	const eventsParticipantsSorted = [...eventParticipants].sort(
+		(a, b) => b.numberOfParticipants - a.numberOfParticipants
+	);
 
 	const hoursWithDifferentParticipants = eventsParticipantsSorted.filter(
 		(hourParticipants) => {
 			const participantsAlreadySaved = differentParticipantsTotal.find(
-				(saved) => saved === hourParticipants
+				(saved) => saved.numberOfParticipants === hourParticipants.numberOfParticipants
 			);
 			if (!participantsAlreadySaved) {
 				differentParticipantsTotal.push(hourParticipants);
@@ -268,14 +278,14 @@ export const getColorsBasedOnNumberOfParticipants = (
 				? [strongestGreen]
 				: [strongestGreen, lightestGreen],
 	});
-	
+
 	return hoursWithDifferentParticipants.map((hourParticipants, i) => {
 		return {
 			color:
 				hoursWithDifferentParticipants.length < 2
 					? `hsl(${strongestGreen})`
 					: gradient[i],
-			numberOfParticipants: hourParticipants,
+			numberOfParticipants: hourParticipants.numberOfParticipants,
 		};
 	});
 };
