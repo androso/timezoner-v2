@@ -247,8 +247,8 @@ type HourHaveParticipants = {
 export const getColorsBasedOnNumberOfParticipants = (
 	hoursHaveParticipants: HourHaveParticipants[]
 ) => {
-	const strongestGreen = "100, 100%, 30%";
-	const lightestGreen = "100, 43%,  70%";
+	const strongestGreen = "142, 99%, 29%";
+	const lightestGreen = "109, 62%, 70%";
 
 	let eventParticipants = hoursHaveParticipants;
 	let differentParticipantsTotal: HourHaveParticipants[] = [];
