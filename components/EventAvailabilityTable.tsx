@@ -55,11 +55,20 @@ export default function EventAvailabilityTable({
 		// getting the position of $td relative to the top of the table
 
 		const thPosition = document
-			.querySelector("th")
+			.querySelector("th:last-child")
 			?.getBoundingClientRect() as DOMRect;
-
+		const $tablePosition = document
+			.querySelector("table")
+			?.getBoundingClientRect() as DOMRect;
 		const $tdPosition = $td.getBoundingClientRect();
 		const tableElementIndex = $td.dataset.tableElementIndex;
+
+		if (selectedHour?.tableElementIndex === Number(tableElementIndex)) {
+			setselectedHour(null);
+			setShowDialog(false);
+			return;
+		}
+
 		const dateSelected = new Date($td.dataset.date ?? ""); // Fri Jul 29 2022 00:00:00 GMT-0600 (Central Standard Time)
 		const scheduleSelected = eventData.participants_schedules.find(
 			(schedule) => schedule.date.toUTCString() === dateSelected.toUTCString()
@@ -67,7 +76,7 @@ export default function EventAvailabilityTable({
 		const hourSelected = scheduleSelected?.hours_range.find(
 			(hourObj) => hourObj.tableElementIndex === Number(tableElementIndex)
 		);
-
+		console.log($tablePosition.width);
 		if (hourSelected && hourSelected.participants.length >= 1) {
 			try {
 				const participants = (await Promise.all(
@@ -81,7 +90,7 @@ export default function EventAvailabilityTable({
 				setselectedHour({
 					participants,
 					position: {
-						x: $tdPosition.left + window.scrollX,
+						x: $tablePosition.width,
 						y:
 							$tdPosition.top +
 							window.scrollY -
@@ -99,7 +108,7 @@ export default function EventAvailabilityTable({
 			setselectedHour({
 				participants: null,
 				position: {
-					x: $tdPosition.left + window.scrollX,
+					x: $tablePosition.width,
 					y:
 						$tdPosition.top +
 						window.scrollY -
@@ -109,7 +118,9 @@ export default function EventAvailabilityTable({
 			});
 		}
 	};
-
+	useEffect(() => {
+		console.log(selectedHour?.position);
+	}, [selectedHour]);
 	return (
 		<div id="availability-container" className="relative w-full flex">
 			<table className="block overflow-x-auto rounded-xl max-w-[219px] sm:max-w-[70%]">
@@ -191,9 +202,10 @@ export default function EventAvailabilityTable({
 			</table>
 			{showDialog && (
 				<div
-					className={`w-[140px] absolute left-[190px] sm:left-[68%] shadow-lg border border-[#4B7573] rounded-t-md`}
+					className={`w-[140px] absolute left-[190px]  shadow-lg border border-[#4B7573] rounded-t-md`}
 					style={{
 						top: selectedHour?.position.y,
+						left: selectedHour ? selectedHour.position.x + 10 : 0,
 					}}
 				>
 					<div className="flex justify-between bg-gradient-to-b from-[#484E51]  to-[#2D3439] px-4 py-3 rounded-t-md">

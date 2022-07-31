@@ -36,7 +36,7 @@ const getInitialSelectedIndexes = (
 			hourRange.participants.forEach((participantRef) => {
 				if (
 					participantRef.path === `users/${parsedUser?.id}` &&
-					typeof hourRange.tableElementIndex === 'number'
+					typeof hourRange.tableElementIndex === "number"
 				) {
 					userSelectedHoursIndexes = [
 						...userSelectedHoursIndexes,
@@ -69,7 +69,7 @@ export default function EventSchedulingTable({
 	const [selectedIndexes, setSelectedIndexes] = React.useState<number[]>(() =>
 		getInitialSelectedIndexes(eventData, parsedUser)
 	);
-	
+
 	// 		const boxWithAdjustedPosition = {
 	// 			...box,
 	// 			left: box.left + window.scrollX + ($table.current?.scrollLeft ?? 0),
@@ -128,7 +128,6 @@ export default function EventSchedulingTable({
 			typeof eventId === "string" &&
 			typeof tableElementIndex === "number"
 		) {
-
 			const hourSelected = new Date(`${$td.dataset.date} ${$td.dataset.hour}`);
 			const userRef = doc(firestore, "users", parsedUser.id);
 			//todo: send tableElementIndex?
@@ -158,7 +157,7 @@ export default function EventSchedulingTable({
 					};
 				}
 			);
-
+			console.log(newParticipantsSchedules);
 			try {
 				const eventRef = doc(firestore, "events", eventId);
 				await updateDoc(eventRef, {
@@ -199,12 +198,6 @@ export default function EventSchedulingTable({
 
 	return (
 		<>
-			<button
-				onClick={() => console.log(selectedIndexes)}
-				className="bg-gray-800 p-3 mb-4 rounded-md"
-			>
-				Log selected Indexes
-			</button>
 			{/* <DragSelection /> */}
 			<table className="block overflow-x-auto rounded-xl" ref={$table}>
 				<thead>
@@ -277,7 +270,9 @@ export default function EventSchedulingTable({
 											}}
 										>
 											{hourRange.getHours()}:
-											{hourRange.getMinutes() === 0 ? "00" : hourRange.getMinutes()}
+											{hourRange.getMinutes() === 0
+												? "00"
+												: hourRange.getMinutes()}
 										</td>
 									);
 								})}
