@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { getColorsBasedOnNumberOfParticipants } from "../lib/utils/client-helpers";
 import { EventData, UserData } from "../lib/utils/types";
-import ReactModal from "react-modal";
 import { getDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
-
-ReactModal.setAppElement("body");
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 type PropsTypes = {
 	hoursRange: Date[] | undefined | null;
@@ -41,11 +40,16 @@ export default function EventAvailabilityTable({
 	});
 	const [showDialog, setShowDialog] = useState(false);
 	const open = () => setShowDialog(true);
-	const close = () => setShowDialog(false);
+
 	const [selectedHour, setselectedHour] = useState<{
 		participants: UserData[] | null;
 		position: { x: number; y: number };
+		tableElementIndex?: number;
 	} | null>(null);
+	const closeDialog = () => {
+		setShowDialog(false);
+		setselectedHour(null);
+	};
 	const updateParticipantsList = async (event: React.MouseEvent) => {
 		const $td = event.target as HTMLTableCellElement;
 		// getting the position of $td relative to the top of the table
@@ -55,10 +59,6 @@ export default function EventAvailabilityTable({
 			?.getBoundingClientRect() as DOMRect;
 
 		const $tdPosition = $td.getBoundingClientRect();
-		// get absolute position of th
-		// get absolute position of td
-		// td - th == top
-
 		const tableElementIndex = $td.dataset.tableElementIndex;
 		const dateSelected = new Date($td.dataset.date ?? ""); // Fri Jul 29 2022 00:00:00 GMT-0600 (Central Standard Time)
 		const scheduleSelected = eventData.participants_schedules.find(
@@ -87,6 +87,7 @@ export default function EventAvailabilityTable({
 							window.scrollY -
 							(thPosition.top + window.scrollY),
 					},
+					tableElementIndex: Number(tableElementIndex),
 				});
 				setShowDialog(true);
 			} catch (e) {
@@ -104,6 +105,7 @@ export default function EventAvailabilityTable({
 						window.scrollY -
 						(thPosition.top + window.scrollY),
 				},
+				tableElementIndex: Number(tableElementIndex),
 			});
 		}
 	};
@@ -111,6 +113,7 @@ export default function EventAvailabilityTable({
 	useEffect(() => {
 		console.log(selectedHour);
 	}, [selectedHour]);
+
 	return (
 		<div id="availability-container" className="relative w-full flex">
 			<table className="block overflow-x-auto rounded-xl max-w-[219px]">
@@ -160,9 +163,13 @@ export default function EventAvailabilityTable({
 												date.getMonth() + 1
 											}/${date.getDate()}/${date.getFullYear()}`}
 											data-hour={`${hourObj.getHours()}:${hourObj.getMinutes()}`}
-											className={`px-6 py-4 ${
+											className={`px-6 py-4 transition-colors duration-150 ${
 												tableRowIndex === hoursRange.length - 1
 													? "last:rounded-br-xl first:rounded-bl-xl"
+													: ""
+											} ${
+												selectedHour?.tableElementIndex === tableElementIndex
+													? "!bg-[#393F43]"
 													: ""
 											}`}
 											style={{
@@ -188,27 +195,29 @@ export default function EventAvailabilityTable({
 			</table>
 			{showDialog && (
 				<div
-					className={`bg-black w-[140px] h-[286px] rounded-md px-3 py-2 absolute left-[190px] `}
+					className={`w-[140px] absolute left-[190px] shadow-lg border border-[#4B7573] rounded-t-md`}
 					style={{
 						top: selectedHour?.position.y,
 					}}
 				>
-					<div className="flex justify-between border-b border-white">
+					<div className="flex justify-between bg-gradient-to-b from-[#484E51]  to-[#2D3439] px-4 py-3 rounded-t-md">
 						<p>Available</p>
-						<button onClick={() => setShowDialog(false)}>X</button>
+						<button onClick={closeDialog} title="close">
+							<FontAwesomeIcon icon={faXmark} />
+						</button>
 					</div>
-					<ul>
+					<ul className="">
 						{selectedHour?.participants == null ? (
-							<li>No participants found</li>
+							<li className="bg-[#383E42] px-4 py-4">No participants found</li>
 						) : (
 							selectedHour.participants.map((participant, i) => {
 								return (
 									<li
 										key={participant.id}
 										className={`${
-											selectedHour.participants?.length === i + 1 &&
-											"border-b border-white"
-										}`}
+											selectedHour.participants?.length !== i + 1 &&
+											"border-b border-[#596269]"
+										} bg-[#383E42]  px-4 py-4`}
 									>
 										{participant.username.split(" ")[0]}
 									</li>
