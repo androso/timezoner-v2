@@ -110,13 +110,9 @@ export default function EventAvailabilityTable({
 		}
 	};
 
-	useEffect(() => {
-		console.log(selectedHour);
-	}, [selectedHour]);
-
 	return (
 		<div id="availability-container" className="relative w-full flex">
-			<table className="block overflow-x-auto rounded-xl max-w-[219px]">
+			<table className="block overflow-x-auto rounded-xl max-w-[219px] sm:max-w-[70%]">
 				<thead>
 					<tr>
 						{datesRange &&
@@ -195,7 +191,7 @@ export default function EventAvailabilityTable({
 			</table>
 			{showDialog && (
 				<div
-					className={`w-[140px] absolute left-[190px] shadow-lg border border-[#4B7573] rounded-t-md`}
+					className={`w-[140px] absolute left-[190px] sm:left-[68%] shadow-lg border border-[#4B7573] rounded-t-md`}
 					style={{
 						top: selectedHour?.position.y,
 					}}
@@ -203,7 +199,7 @@ export default function EventAvailabilityTable({
 					<div className="flex justify-between bg-gradient-to-b from-[#484E51]  to-[#2D3439] px-4 py-3 rounded-t-md">
 						<p>Available</p>
 						<button onClick={closeDialog} title="close">
-							<FontAwesomeIcon icon={faXmark} />
+							X
 						</button>
 					</div>
 					<ul className="">

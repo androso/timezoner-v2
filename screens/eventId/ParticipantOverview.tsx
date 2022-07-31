@@ -20,6 +20,7 @@ import Downshift from "downshift";
 import { matchSorter } from "match-sorter";
 import { timeZones } from "../../lib/timezonesData";
 import EventAvailabilityTable from "../../components/EventAvailabilityTable";
+import toast from "react-hot-toast";
 
 const useHourRangeBasedOnTimezone = (
 	hoursRange: Date[] | undefined,
@@ -61,6 +62,7 @@ export default function ParticipantOverview({
 	if (!eventData) {
 		return <LoadingOverview />;
 	}
+
 
 	React.useEffect(() => {
 		let check = false;
@@ -188,27 +190,81 @@ export default function ParticipantOverview({
 						Availability
 					</button>
 				</div>
-				{tableView === "scheduling" ? (
-					<>
-						<EventSchedulingTable
-							eventData={eventData}
-							hoursRange={convertedHours}
-							datesRange={datesRange}
-						/>
-						<p>
-							Note:{" "}
-							{isTouchDevice
-								? "Press on an hour to toggle select"
-								: "click and drag to select schedules, click on an hour to unselect"}
-						</p>
-					</>
-				) : (
-					<EventAvailabilityTable
-						eventData={eventData}
-						hoursRange={convertedHours}
-						datesRange={datesRange}
-					/>
-				)}
+				<div className="relative" id="table-container">
+					{tableView === "scheduling" ? (
+						<>
+							<EventSchedulingTable
+								eventData={eventData}
+								hoursRange={convertedHours}
+								datesRange={datesRange}
+							/>
+							<p className="mt-4 font-medium text-shadowWhite max-w-[290px] text-center m-auto">
+								Note:{" "}
+								{isTouchDevice
+									? "Press on an hour to toggle select"
+									: "click and drag to select schedules, click on an hour to unselect"}
+							</p>
+						</>
+					) : (
+						<>
+							<EventAvailabilityTable
+								eventData={eventData}
+								hoursRange={convertedHours}
+								datesRange={datesRange}
+							/>
+							<p className="mt-4 font-medium text-shadowWhite max-w-[190px] text-center m-auto">
+								Note: Click on an hour to see availability
+							</p>
+						</>
+					)}
+					<h4 className="mb-3 mt-8  font-bold text-lg text-center">
+						Share with Friends
+					</h4>
+					<div className="flex justify-center">
+						<button
+							className="py-3 px-4 bg-gradient-to-b from-[#48808E] to-[#2B4C55] rounded-md mr-6 "
+							onClick={async () => {
+								const { state } = await navigator.permissions.query({
+									name: "clipboard-write",
+								});
+
+								if (state == "granted" || state == "prompt") {
+									/* write to the clipboard now */
+									try {
+										navigator.clipboard.writeText(eventData.id);
+										toast.success("Copied succesfully");
+									} catch (e) {
+										toast.error("failed to copy to clipboard");
+										console.error(e);
+									}
+								}
+							}}
+						>
+							Copy Code
+						</button>
+						<button
+							className="py-3 px-4 bg-gradient-to-b from-[#48808E] to-[#2B4C55] rounded-md "
+							onClick={async () => {
+								const { state } = await navigator.permissions.query({
+									name: "clipboard-write",
+								});
+
+								if (state == "granted" || state == "prompt") {
+									/* write to the clipboard now */
+									try {
+										navigator.clipboard.writeText(window.location.href);
+										toast.success("Copied succesfully");
+									} catch (e) {
+										toast.error("failed to copy to clipboard");
+										console.error(e);
+									}
+								}
+							}}
+						>
+							Copy Link
+						</button>
+					</div>
+				</div>
 			</Container>
 		</>
 	);
