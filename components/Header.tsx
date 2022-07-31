@@ -11,15 +11,14 @@ type props = {
 	screenName: string;
 };
 
-
 export default function Header({
 	title = "...",
 	photoURL = avatarPlaceholder,
 	screenName,
 }: props) {
 	return (
-		<div className="bg-gradient-to-t from-headerBottom to-headerTop flex items-end relative h-56 sm:h-60 shadow-md">
-			<Container css="relative flex items-end">
+		<div className="bg-gradient-to-t from-headerBottom to-headerTop flex items-end relative sm:h-60 shadow-md py-4">
+			<Container css="relative flex items-end min-h-[224px]">
 				<LogoutButton />
 				<div className="flex items-center">
 					<div className="avatar w-avatar-sm-w sm:w-40 md:w-44 relative mb-4 mr-3 ">
