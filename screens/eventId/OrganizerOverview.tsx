@@ -64,10 +64,9 @@ export default function OrganizerOverview({
 	};
 
 	useEffect(() => {
-	  console.log(eventData?.participants_schedules);
-	
-	}, [eventData])
-	
+		// console.log(eventData?.participants_schedules);
+	}, [eventData]);
+
 	const updateEvent = async (data: EventFormValues) => {
 		const { dateRange, hours_range, description, title, timezone } = data;
 		const hoursBetweenRange = getHoursBetweenRange(
@@ -81,6 +80,7 @@ export default function OrganizerOverview({
 				dateRange[0],
 				dateRange[1] ?? dateRange[0]
 			);
+
 			const dataSentToFirestore = {
 				date_range: newDateRange,
 				hours_range: utcHoursRange,
@@ -89,19 +89,30 @@ export default function OrganizerOverview({
 				og_timezone: timezone,
 				participants_schedules: newDateRange.map((newDateObj, dateIndex) => ({
 					date: newDateObj.toUTCString(),
-					hours_range: utcHoursRange.map((utcHourOBj, hourIndex) => ({
-						hour: utcHourOBj,
-						participants:
-							eventData.participants_schedules[dateIndex].hours_range[hourIndex]
-								.participants,
-					})),
+					hours_range: utcHoursRange.map((utcHourOBj, hourIndex) => {
+						return {
+							hour: new Date(
+								`${
+									newDateObj.getMonth() + 1
+								}/${newDateObj.getDate()}/${newDateObj.getFullYear()} ${new Date(
+									utcHourOBj
+								).getHours()}:${new Date(utcHourOBj).getMinutes()}`
+							).toUTCString(),
+							participants:
+								eventData.participants_schedules[dateIndex]?.hours_range[
+									hourIndex
+								].participants ?? [],
+							tableElementIndex:
+								eventData.participants_schedules[dateIndex]?.hours_range[
+									hourIndex
+								].tableElementIndex ?? null,
+						};
+					}),
 				})),
 			};
-			console.log(dataSentToFirestore);
-
 			try {
-				// await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
-				// closeDialog();
+				await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
+				closeDialog();
 				toast.success("Event updated succesfully");
 			} catch (e) {
 				toast.error("There was an error while updating the event");
