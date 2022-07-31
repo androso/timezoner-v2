@@ -8,6 +8,7 @@ import {
 	arrayUnion,
 	collection,
 	doc,
+	DocumentReference,
 	getDoc,
 	getDocs,
 	setDoc,
@@ -136,7 +137,6 @@ export default function EventSchedulingTable({
 					return {
 						date: schedule.date.toUTCString(),
 						hours_range: schedule.hours_range.map((hourRange) => {
-							const formattedHourFromDB = `${hourRange.hour.getHours()}:${hourRange.hour.getMinutes()}`;
 							if (hourRange.hour.toUTCString() === hourSelected.toUTCString()) {
 								// hourRange already has the correct date
 								return {
@@ -157,11 +157,21 @@ export default function EventSchedulingTable({
 					};
 				}
 			);
-			console.log(newParticipantsSchedules);
+
+			let newParticipantsRefs: DocumentReference[] = [];
+			if (!isSelecting && selectedIndexes.length === 1) {
+				newParticipantsRefs = newParticipantsRefs.filter(
+					(participant) => participant.path !== userRef.path
+				);
+			} else {
+				newParticipantsRefs = [...newParticipantsRefs, userRef];
+			}
+
 			try {
 				const eventRef = doc(firestore, "events", eventId);
 				await updateDoc(eventRef, {
 					participants_schedules: newParticipantsSchedules,
+					participants: newParticipantsRefs,
 				});
 				queryClient.invalidateQueries("eventData");
 			} catch (e) {

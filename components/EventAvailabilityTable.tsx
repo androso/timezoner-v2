@@ -76,7 +76,6 @@ export default function EventAvailabilityTable({
 		const hourSelected = scheduleSelected?.hours_range.find(
 			(hourObj) => hourObj.tableElementIndex === Number(tableElementIndex)
 		);
-		console.log($tablePosition.width);
 		if (hourSelected && hourSelected.participants.length >= 1) {
 			try {
 				const participants = (await Promise.all(
@@ -118,9 +117,7 @@ export default function EventAvailabilityTable({
 			});
 		}
 	};
-	useEffect(() => {
-		console.log(selectedHour?.position);
-	}, [selectedHour]);
+	
 	return (
 		<div id="availability-container" className="relative w-full flex">
 			<table className="block overflow-x-auto rounded-xl max-w-[219px] sm:max-w-[70%] md:max-w-[80%]">
