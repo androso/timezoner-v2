@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import EventAvailabilityTable from "../../components/EventAvailabilityTable";
 import EventFormFields from "../../components/EventFormFields";
 import Header from "../../components/Header";
 import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
@@ -18,9 +19,14 @@ import {
 	getHoursBetweenRange,
 	standardizeHours,
 } from "../../lib/utils/client-helpers";
+import useHourRangeBasedOnTimezone from "../../lib/utils/hooks/useHourRangeBasedOnTimezone";
 import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import { EventData, EventFormValues } from "../../lib/utils/types";
 import { LoadingOverview } from "../../pages/event/[eventId]";
+import {
+	defaultTimezone as localTimezone,
+	timezonesLabels,
+} from "../../lib/timezonesData";
 
 export default function OrganizerOverview({
 	eventData,
@@ -34,7 +40,13 @@ export default function OrganizerOverview({
 	const closeDialog = () => setShowDialog(false);
 	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
 	const datesRange = eventData?.date_range;
-	const hoursRange = eventData?.hours_range;
+	const [timezoneSelected, setTimezoneSelected] = React.useState<string | null>(
+		localTimezone.label
+	);
+	const convertedHours = useHourRangeBasedOnTimezone(
+		eventData?.hours_range,
+		timezoneSelected
+	);
 	const { eventId } = router.query;
 
 	const formMethods = useForm<EventFormValues>({
@@ -139,7 +151,7 @@ export default function OrganizerOverview({
 				screenName="EVENT"
 				photoURL={eventData.organizer_data.avatar_url}
 			/>
-			<Container css="pt-4 sm:pt-6 relative mb-72">
+			<Container css="pt-4 sm:pt-6 relative">
 				<HomeBreadcrumbs currentPage="Event Overview" />
 				<h2>Event availability</h2>
 				<div className=" mb-4">
@@ -154,9 +166,9 @@ export default function OrganizerOverview({
 					<div
 						id="dialog"
 						onClick={(event) => event.stopPropagation()}
-						className={`dialog-content bg-[#333] mt-2 absolute ${
+						className={`dialog-content mt-2 absolute ${
 							showDialog ? "block" : "hidden"
-						} sm:min-w-[460px]`}
+						} sm:min-w-[460px] bg-[#333] z-10`}
 					>
 						{/* Update event form */}
 						<FormProvider {...formMethods}>
@@ -175,6 +187,7 @@ export default function OrganizerOverview({
 									className="h-7 absolute top-0 right-0 mr-5 mt-6"
 									onClick={closeDialog}
 									type="button"
+									title="close"
 								>
 									<FontAwesomeIcon icon={faXmark} className="h-full" />
 								</button>
@@ -215,6 +228,7 @@ export default function OrganizerOverview({
 								Delete Event
 							</span>
 							<button
+								title="Close"
 								className="h-7 absolute top-0 right-0 mr-5 mt-6"
 								onClick={() => {
 									setShowDeleteWarning(false);
@@ -241,7 +255,62 @@ export default function OrganizerOverview({
 						</DialogContent>
 					</DialogOverlay>
 				</div>
-				{/* //TODO: ADD TABLE HERE */}
+
+				<EventAvailabilityTable
+					eventData={eventData}
+					datesRange={datesRange}
+					hoursRange={convertedHours}
+				/>
+				<p className="mt-4 font-medium text-shadowWhite max-w-[190px] text-center m-auto">
+					Note: Click on an hour to see availability
+				</p>
+				<h4 className="mb-3 mt-8  font-bold text-lg text-center">
+					Share with Friends
+				</h4>
+				<div className="flex justify-center">
+					<button
+						className="py-3 px-4 bg-gradient-to-b from-[#48808E] to-[#2B4C55] rounded-md mr-6 "
+						onClick={async () => {
+							const { state } = await navigator.permissions.query({
+								name: "clipboard-write",
+							});
+
+							if (state == "granted" || state == "prompt") {
+								/* write to the clipboard now */
+								try {
+									navigator.clipboard.writeText(eventData.id);
+									toast.success("Copied succesfully");
+								} catch (e) {
+									toast.error("failed to copy to clipboard");
+									console.error(e);
+								}
+							}
+						}}
+					>
+						Copy Code
+					</button>
+					<button
+						className="py-3 px-4 bg-gradient-to-b from-[#48808E] to-[#2B4C55] rounded-md "
+						onClick={async () => {
+							const { state } = await navigator.permissions.query({
+								name: "clipboard-write",
+							});
+
+							if (state == "granted" || state == "prompt") {
+								/* write to the clipboard now */
+								try {
+									navigator.clipboard.writeText(window.location.href);
+									toast.success("Copied succesfully");
+								} catch (e) {
+									toast.error("failed to copy to clipboard");
+									console.error(e);
+								}
+							}
+						}}
+					>
+						Copy Link
+					</button>
+				</div>
 			</Container>
 		</div>
 	);
