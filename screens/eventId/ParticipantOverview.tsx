@@ -21,25 +21,7 @@ import { matchSorter } from "match-sorter";
 import { timeZones } from "../../lib/timezonesData";
 import EventAvailabilityTable from "../../components/EventAvailabilityTable";
 import toast from "react-hot-toast";
-
-const useHourRangeBasedOnTimezone = (
-	hoursRange: Date[] | undefined,
-	timezoneSelected: string | null
-) => {
-	if (!hoursRange || !timezoneSelected) return null;
-	const formattedTimezone = timezoneSelected.replace(" ", "_");
-	const timezoneMetadata = getTimezoneMetadata(timezoneSelected);
-
-	if (timezoneMetadata) {
-		const hoursConverted = convertHoursToTimezone(
-			hoursRange,
-			timezoneMetadata.name
-		);
-		return hoursConverted;
-	} else {
-		return null;
-	}
-};
+import useHourRangeBasedOnTimezone from "../../lib/utils/hooks/useHourRangeBasedOnTimezone";
 
 export default function ParticipantOverview({
 	eventData,
@@ -62,7 +44,6 @@ export default function ParticipantOverview({
 	if (!eventData) {
 		return <LoadingOverview />;
 	}
-
 
 	React.useEffect(() => {
 		let check = false;
