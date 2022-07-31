@@ -32,7 +32,9 @@ function EventThumbnail({
 	css?: string;
 }) {
 	const startDate = getFormattedDate(eventData.date_range[0]);
-	const endDate = getFormattedDate(eventData.date_range[eventData.date_range.length - 1]);
+	const endDate = getFormattedDate(
+		eventData.date_range[eventData.date_range.length - 1]
+	);
 	return (
 		<Link href={`/event/${eventData.id}`}>
 			<a className={`${css} event-btn-transition`}>
@@ -48,6 +50,9 @@ function EventThumbnail({
 						<h6 className="font-semibold text-xl">{eventData.title}</h6>
 						<p className="font-medium text-secondaryWhite">
 							{startDate === endDate ? startDate : `${startDate} - ${endDate}`}
+						</p>
+						<p className="font-medium text-secondaryWhite">
+							By {eventData.organizer_data.username.split(" ")[0]}
 						</p>
 					</div>
 					<span className="self-center mr-2 text-secondaryWhite">

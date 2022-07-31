@@ -1,21 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import dynamic from "next/dynamic";
 import type { BtnLinkProps, BtnProps } from "../components/LightButton";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
-// import useAllUserEvents from "../lib/utils/hooks/useAllUserEvents";
 import EventThumbnail from "../components/EventThumbnail";
-import {
-	collection,
-	deleteDoc,
-	getDocs,
-	limit,
-	orderBy,
-	query,
-	startAfter,
-	where,
-} from "firebase/firestore";
-import { firestore } from "../lib/firebase";
-import { getUserEventsData } from "../lib/utils/client-helpers";
+
 import { useAllEvents } from "../lib/context/allUserEvents";
 import LoginForm from "../components/LoginForm";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -25,10 +13,6 @@ const Container = dynamic(() => import("../components/Layouts/Container"), {
 });
 
 const Header = dynamic(() => import("../components/Header"), { ssr: false });
-
-const ProtectedRoute = dynamic(() => import("../components/ProtectedRoute"), {
-	ssr: false,
-});
 
 const LightButtonLink = dynamic<BtnLinkProps>(
 	() => import("../components/LightButton").then((md) => md.LightButtonLink),
@@ -42,16 +26,11 @@ const LightButton = dynamic<BtnProps>(
 );
 
 export default function Dashboard() {
-	//! use collection of events where the user is either the organizer of the event or a participant.
-	// currently we're only fetching events organized
-
 	const { parsedUser, loading: userIsLoading } = useParsedUserData();
 	const {
 		allEvents,
 		status: allEventsStatus,
-		lastDocSnap,
 		reset: resetEvents,
-		setData,
 		refetch,
 		error,
 	} = useAllEvents();
@@ -61,7 +40,6 @@ export default function Dashboard() {
 		eventsPageIndex * 5,
 		eventsPageIndex * 5 + 5
 	);
-
 	const handlePreviousPage = () =>
 		setEventsPageIndex((prevIndex) => prevIndex - 1);
 
@@ -71,48 +49,17 @@ export default function Dashboard() {
 		refetch();
 	}, []);
 
-	// React.useEffect(() => {
-	// 	console.log({ currentPageEvents, allEventsStatus, error, allEvents });
-	// 	return () => {};
-	// }, [currentPageEvents, allEventsStatus]);
+	useEffect(() => {
+		setEventsPageIndex(0);
+	}, [parsedUser]);
 
 	const handleNextPage = async () => {
 		if (allEvents) {
 			const currentIndex = eventsPageIndex + 1; // so that we start from 1 instead of 0
 			const numberOfPagesAvailable = Math.ceil(allEvents.length / 5);
-			const isPageSecondToLast = numberOfPagesAvailable - 1 === currentIndex;
-
-			if (!lastDocSnap && currentIndex === numberOfPagesAvailable) {
-				console.log("button next should be disabled, find a way");
+			if (currentIndex === numberOfPagesAvailable) {
 				return;
 			}
-
-			if (isPageSecondToLast && lastDocSnap) {
-				// we fetch
-				if (parsedUser) {
-					const eventsQuery = query(
-						collection(firestore, "events"),
-						where("organizer_id", "==", parsedUser.id),
-						orderBy("date_range.start_date"),
-						startAfter(lastDocSnap),
-						limit(10)
-					);
-					const snapshot = await getDocs(eventsQuery);
-					const { participatingEvents: nextBatchOfEvents, lastEventSnapshot } =
-						await getUserEventsData(snapshot);
-					const newEventsArray = [...allEvents, ...nextBatchOfEvents];
-					const nextDocSnapshot = !nextBatchOfEvents[0]
-						? undefined
-						: lastEventSnapshot;
-					setEventsPageIndex((prevIndex) => prevIndex + 1);
-					setData({
-						participatingEvents: newEventsArray,
-						lastEventSnapshot: nextDocSnapshot,
-					});
-					return;
-				}
-			}
-			// we update the index by default
 			setEventsPageIndex((prevIndex) => prevIndex + 1);
 		}
 	};

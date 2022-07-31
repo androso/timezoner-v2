@@ -99,7 +99,7 @@ export type EventData = {
 	organizer_ref: DocumentReference;
 	organizer_id: string;
 	id: string;
-	participants: Participant[];
+	participants: DocumentReference[] | [];
 	participants_schedules: Schedule[];
 };
 
@@ -132,7 +132,7 @@ export type RawEventDataFromFirestore = {
 	og_timezone: string;
 	organizer_ref: DocumentReference;
 	organizer_id: string;
-	participants: RawParticipant[];
+	participants: DocumentReference[] | [];
 	participants_schedules: RawSchedule[];
 	id: string;
 };

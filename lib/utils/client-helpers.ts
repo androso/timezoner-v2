@@ -11,7 +11,7 @@ import {
 import gradstop from "gradstop";
 import { firestore } from "../firebase";
 import { timeZones } from "../timezonesData";
-import { RawEventDataFromFirestore, UserData } from "./types";
+import { EventData, RawEventDataFromFirestore, UserData } from "./types";
 
 const defaultGoogleAvatarSize = 96;
 
@@ -110,25 +110,68 @@ export function getHighQualityAvatar(avatar_url: string, provider: string) {
 	}
 }
 
-export const getUserEventsData = async (
-	snapshot: QuerySnapshot<DocumentData>
-) => {
-	let lastEventSnapshot: undefined | QueryDocumentSnapshot<DocumentData> =
-		undefined;
+// export const getEventDataFromSnap = async (
+// 	snapshot: QuerySnapshot<DocumentData>
+// ) => {
+// 	// gets the events user is organizing and those they're participating in
+// 	let lastEventSnapshot: undefined | QueryDocumentSnapshot<DocumentData> =
+// 		undefined;
 
-	let participatingEvents = await Promise.all(
-		snapshot.docs.map(async (eventDoc, index) => {
+// 	let participatingEvents = await Promise.all(
+// 		snapshot.docs.map(async (eventDoc, index) => {
+// 			const rawEventData = eventDoc.data() as RawEventDataFromFirestore;
+// 			const eventFormatted = await formatRawEventData(rawEventData);
+// 			if (index === snapshot.docs.length - 1) {
+// 				lastEventSnapshot = eventDoc;
+// 			}
+// 			return eventFormatted;
+// 		})
+// 	);
+// 	return { participatingEvents, lastEventSnapshot };
+// };
+export const getUserEventsData = async (
+	participatingSnap: QuerySnapshot<DocumentData>,
+	organizingSnap: QuerySnapshot<DocumentData>
+) => {
+	let lastEvent: undefined | EventData = undefined;
+
+	const organizedEvents = await Promise.all(
+		organizingSnap.docs.map(async (eventDoc, index) => {
 			const rawEventData = eventDoc.data() as RawEventDataFromFirestore;
 			const eventFormatted = await formatRawEventData(rawEventData);
-			if (index === snapshot.docs.length - 1) {
-				lastEventSnapshot = eventDoc;
+			if (index === organizingSnap.docs.length - 1) {
+				lastEvent = eventFormatted;
 			}
 			return eventFormatted;
 		})
 	);
-	return { participatingEvents, lastEventSnapshot };
+	const participantEvents = await Promise.all(
+		participatingSnap.docs.map(async (eventDoc, index) => {
+			const rawEventData = eventDoc.data() as RawEventDataFromFirestore;
+			const eventFormatted = await formatRawEventData(rawEventData);
+			if (index === participatingSnap.docs.length - 1 && lastEvent) {
+				if (
+					eventFormatted.date_range[0].getTime() >
+					lastEvent.date_range[0].getTime()
+				) {
+					lastEvent = eventFormatted;
+				}
+			}
+			return eventFormatted;
+		})
+	);
+	const participatingEvents = [...organizedEvents, ...participantEvents].sort(
+		(a, b) => {
+			if (a.date_range[0].getTime() < b.date_range[0].getTime()) {
+				return -1;
+			} else if (a.date_range[0].getTime() > b.date_range[0].getTime()) {
+				return 1;
+			}
+			return 0;
+		}
+	);
+	return participatingEvents;
 };
-
 export const formatRawEventData = async (
 	rawEventData: RawEventDataFromFirestore
 ) => {
