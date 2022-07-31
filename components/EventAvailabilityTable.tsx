@@ -123,7 +123,7 @@ export default function EventAvailabilityTable({
 	}, [selectedHour]);
 	return (
 		<div id="availability-container" className="relative w-full flex">
-			<table className="block overflow-x-auto rounded-xl max-w-[219px] sm:max-w-[70%]">
+			<table className="block overflow-x-auto rounded-xl max-w-[219px] sm:max-w-[70%] md:max-w-[80%]">
 				<thead>
 					<tr>
 						{datesRange &&
@@ -176,7 +176,7 @@ export default function EventAvailabilityTable({
 													: ""
 											} ${
 												selectedHour?.tableElementIndex === tableElementIndex
-													? "!bg-[#393F43]"
+													? "!bg-[#393F43] !text-white"
 													: ""
 											}`}
 											style={{

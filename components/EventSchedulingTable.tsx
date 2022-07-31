@@ -197,7 +197,7 @@ export default function EventSchedulingTable({
 	}, [dragRoot]);
 
 	return (
-		<>
+		<div className="flex justify-center">
 			{/* <DragSelection /> */}
 			<table className="block overflow-x-auto rounded-xl" ref={$table}>
 				<thead>
@@ -281,6 +281,6 @@ export default function EventSchedulingTable({
 					})}
 				</tbody>
 			</table>
-		</>
+		</div>
 	);
 }
