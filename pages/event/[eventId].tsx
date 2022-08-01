@@ -15,13 +15,7 @@ export default function EventId() {
 	const { parsedUser } = useParsedUserData();
 	// we have to check if eventStatus is success and also if eventData is not null
 	// because for useQuery, the action was succesful as long as it didn't throw an error
-	// console.log(eventData);
 	if (eventStatus === "success" && parsedUser && eventData) {
-		// if (parsedUser?.id === eventData?.organizer_data.id) {
-		// 	return <OrganizerOverview eventData={eventData} />;
-		// } else {
-		// 	return <ParticipantOverview eventData={eventData} />;
-		// }
 		return (
 			<>
 				{parsedUser?.id === eventData?.organizer_data.id ? (
