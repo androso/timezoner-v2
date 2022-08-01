@@ -46,9 +46,8 @@ export type EventFormValues = {
 	title: string;
 	description: string;
 	timezone: string;
-	dateRange: dateRange;
-	startHour: Date;
-	endHour: Date;
+	dateRange: [Date | null, Date | null];
+
 	hours_range: {
 		start_hour: Date;
 		end_hour: Date;
@@ -114,7 +113,7 @@ export type RawParticipant = {
 		}[];
 	}[];
 };
-	
+
 type RawSchedule = {
 	date: string;
 	hours_range: {
@@ -125,7 +124,7 @@ type RawSchedule = {
 };
 
 export type RawEventDataFromFirestore = {
-	date_range: Timestamp[];
+	date_range: string[];
 	hours_range: string[];
 	title: string;
 	description: string;

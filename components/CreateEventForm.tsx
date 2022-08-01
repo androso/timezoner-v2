@@ -13,8 +13,13 @@ import React from "react";
 import {
 	getDatesBetweenRange,
 	getHoursBetweenRange,
+	getTimezoneMetadata,
 	standardizeHours,
 } from "../lib/utils/client-helpers";
+import useHourRangeBasedOnTimezone from "../lib/utils/hooks/useHourRangeBasedOnTimezone";
+import { defaultTimezone } from "../lib/timezonesData";
+import { timeZones } from "../lib/timezonesData";
+import { TimeZone } from "@vvo/tzdb";
 
 export default function CreateEventForm() {
 	const formMethods = useForm<EventFormValues>();
@@ -29,17 +34,39 @@ export default function CreateEventForm() {
 				hours_range.start_hour,
 				hours_range.end_hour
 			);
-			const utcHourRange = standardizeHours(hoursBetweenRange);
+
+			//todo convert hours_range depending on the timezone selected to host timezone, then to utc
+			//todo if host is el salvador and timezone selected Istanbul, then convert hours selected to El Salvador, then to utc
+			// i could get the host timezone and the timezone selected
+			const timezoneSelectedMeta = getTimezoneMetadata(timezone) as TimeZone;
+			const localTimezoneMeta = timeZones.find(
+				(tz) =>
+					defaultTimezone.value === tz.name ||
+					tz.group.includes(defaultTimezone.value)
+			) as TimeZone;
+
+			const totalOffsetInMinutes =
+				timezoneSelectedMeta?.currentTimeOffsetInMinutes -
+				localTimezoneMeta?.currentTimeOffsetInMinutes;
+
+			const hoursConvertedToLocal = hoursBetweenRange.map(
+				(hour) =>
+					new Date(hour.setMinutes(hour.getMinutes() - totalOffsetInMinutes))
+			);
+
+			const utcHourRange = standardizeHours(hoursConvertedToLocal);
 			if (dateRange[0]) {
-				const datesBetweenRange = getDatesBetweenRange(
-					dateRange[0],
-					dateRange[1] ?? dateRange[0]
-				);
+				// the hours object have the right date in them, so we get the date from them
+				const utcDateRange = utcHourRange
+					.map((utcHour) => {
+						const localHour = new Date(utcHour);
+						return `${
+							localHour.getUTCMonth() + 1
+						}/${localHour.getUTCDate()}/${localHour.getUTCFullYear()}`;
+					})
+					.filter((utcDate, index, self) => self.indexOf(utcDate) === index);
 				const dataSentToFirestore = {
-					date_range: getDatesBetweenRange(
-						dateRange[0],
-						dateRange[1] ?? dateRange[0]
-					),
+					date_range: utcDateRange,
 					hours_range: utcHourRange,
 					title,
 					description: description,
@@ -48,20 +75,25 @@ export default function CreateEventForm() {
 					organizer_id: parsedUser.id,
 					id: eventDocRef.id,
 					participants: [],
-					participants_schedules: datesBetweenRange.map((dateObj) => ({
-						date: dateObj.toUTCString(),
-						hours_range: hoursBetweenRange.map((hourObj) => ({
-							hour: new Date(
-								`${
-									dateObj.getMonth() + 1
-								}/${dateObj.getDate()}/${dateObj.getFullYear()} ${hourObj.getHours()}:${hourObj.getMinutes()}`
-							).toUTCString(),
-							participants: [],
-							tableElementIndex: null,
-						})),
+					participants_schedules: utcDateRange.map((utcDate) => ({
+						date: utcDate,
+						hours_range: utcHourRange
+							.map((utcHour) => {
+								// console.log(hourObj);
+								return {
+									hour: utcHour,
+									participants: [],
+									tableElementIndex: null,
+								};
+							})
+							.filter((item) => {
+								const currentDate = new Date(utcDate);
+								// console.log(currentDate);
+								const localHour = new Date(item.hour);
+								return localHour.getUTCDate() === currentDate.getUTCDate();
+							}),
 					})),
 				};
-
 				await setDoc(eventDocRef, dataSentToFirestore);
 				router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });
 			}
