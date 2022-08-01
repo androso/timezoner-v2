@@ -28,7 +28,7 @@
 		"dayjs": "^1.11.2",
 		"downshift": "^6.1.7",
 		"firebase": "^9.6.11",
-		"firebase-admin": "^11.0.0",
+		"firebase-admin": "^11.0.1",
 		"gradstop": "^2.2.3",
 		"lodash.escaperegexp": "^4.1.2",
 		"lodash.isequal": "^4.5.0",
