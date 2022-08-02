@@ -1,5 +1,7 @@
+import { TimeZone } from "@vvo/tzdb";
 import { User } from "firebase/auth";
 import {
+	collection,
 	doc,
 	DocumentData,
 	DocumentReference,
@@ -10,8 +12,14 @@ import {
 } from "firebase/firestore";
 import gradstop from "gradstop";
 import { firestore } from "../firebase";
-import { timeZones } from "../timezonesData";
-import { EventData, RawEventDataFromFirestore, UserData } from "./types";
+import { defaultTimezone, timeZones } from "../timezonesData";
+import {
+	EventData,
+	EventFormValues,
+	RawEventDataFromFirestore,
+	Schedule,
+	UserData,
+} from "./types";
 
 const defaultGoogleAvatarSize = 96;
 
@@ -172,42 +180,6 @@ export const getUserEventsData = async (
 	);
 	return participatingEvents;
 };
-export const formatRawEventData = async (
-	rawEventData: RawEventDataFromFirestore
-) => {
-	const organizerSnap = await getDoc(rawEventData.organizer_ref);
-	if (organizerSnap.exists()) {
-		const organizerData = organizerSnap.data() as UserData;
-
-		const formatted = {
-			...rawEventData,
-			date_range: rawEventData.date_range.map((dateTimestamp, i) =>
-				dateTimestamp.toDate()
-			),
-			hours_range: rawEventData.hours_range.map(
-				(utcHour, i) => new Date(utcHour)
-			),
-			organizer_data: organizerData,
-			participants_schedules: rawEventData.participants_schedules.map(
-				(schedule) => {
-					return {
-						date: new Date(schedule.date),
-						hours_range: schedule.hours_range.map((hourObj) => ({
-							hour: new Date(hourObj.hour),
-							participants: hourObj.participants,
-							tableElementIndex: hourObj.tableElementIndex,
-						})),
-					};
-				}
-			),
-		};
-		return formatted;
-	} else {
-		return Promise.reject(
-			new Error("Document is corrupt :( no valid Organizer Data")
-		);
-	}
-};
 
 export const getDatesBetweenRange = (start: Date, end: Date): Date[] => {
 	const startDate = start.getDate();
@@ -339,4 +311,183 @@ export const getColorsBasedOnNumberOfParticipants = (
 			tableElementIndexes,
 		};
 	});
+};
+
+// Currently being tested
+export const getFormattedFormData = (
+	formData: EventFormValues,
+	userId: string,
+	eventId: string
+) => {
+	const hoursBetweenRange = getHoursBetweenRange(
+		formData.hours_range.start_hour,
+		formData.hours_range.end_hour
+	);
+
+	const timezoneSelectedMeta = getTimezoneMetadata(
+		formData.timezone
+	) as TimeZone;
+	const localTimezoneMeta = timeZones.find(
+		(tz) =>
+			defaultTimezone.value === tz.name ||
+			tz.group.includes(defaultTimezone.value)
+	) as TimeZone;
+
+	const totalOffsetInMinutes =
+		timezoneSelectedMeta?.currentTimeOffsetInMinutes -
+		localTimezoneMeta?.currentTimeOffsetInMinutes;
+	const hoursConvertedToLocal = [...hoursBetweenRange];
+	// const hoursConvertedToLocal = hoursBetweenRange.map((hour) => {
+	// 	console.log(
+	// 		new Date(hour.setMinutes(hour.getMinutes() - totalOffsetInMinutes))
+	// 	);
+	// 	debugger;
+	// 	return new Date(hour.setMinutes(hour.getMinutes() - totalOffsetInMinutes));
+	// });
+
+	const utcHourRange = standardizeHours(hoursConvertedToLocal);
+	const utcDateRange = utcHourRange
+		.map((utcHour) => {
+			const localHour = new Date(utcHour);
+			return `${
+				localHour.getUTCMonth() + 1
+			}/${localHour.getUTCDate()}/${localHour.getUTCFullYear()}`;
+		})
+		.filter((utcDate, index, self) => self.indexOf(utcDate) === index);
+
+	return {
+		date_range: utcDateRange,
+		hours_range: utcHourRange,
+	};
+};
+
+export const useEventDataBasedOnTimezone = (
+	eventData: EventData,
+	timezone: string
+) => {
+	// see if eventData.hours_range doesn't have the same date for all.
+	// if it doesn't, it means that it is a fragmented date?
+
+	debugger;
+
+	return {
+		participants_schedules: [
+			{
+				date: new Date(
+					"Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"
+				),
+				hours_range: [
+					{
+						hour: new Date(
+							"Sun Jul 31 2022 17:30:00 GMT-0600 (Central Standard Time)"
+						),
+						participants: [],
+						tableElementIndex: null,
+					},
+					{
+						hour: new Date(
+							"Sun Jul 31 2022 18:00:00 GMT-0600 (Central Standard Time)"
+						),
+						participants: [],
+						tableElementIndex: null,
+					},
+					{
+						hour: new Date(
+							"Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"
+						),
+						participants: [],
+						tableElementIndex: null,
+					},
+				],
+			},
+		],
+	};
+};
+
+export const formatRawEventData = async (
+	rawEventData: RawEventDataFromFirestore
+) => {
+	const organizerSnap = await getDoc(rawEventData.organizer_ref);
+	if (organizerSnap.exists()) {
+		const organizerData = organizerSnap.data() as UserData;
+
+		const formatted = {
+			...rawEventData,
+			date_range: rawEventData.date_range.map(
+				(dateTimestamp, i) => new Date(dateTimestamp)
+			),
+			hours_range: rawEventData.hours_range.map(
+				(utcHour, i) => new Date(utcHour)
+			),
+			organizer_data: organizerData,
+			participants_schedules: rawEventData.participants_schedules.map(
+				(schedule) => {
+					return {
+						date: new Date(schedule.date),
+						hours_range: schedule.hours_range.map((hourObj) => ({
+							hour: new Date(hourObj.hour),
+							participants: hourObj.participants,
+							tableElementIndex: hourObj.tableElementIndex,
+						})),
+					};
+				}
+			),
+		};
+		console.log({ formatted });
+		return formatted;
+	} else {
+		return Promise.reject(
+			new Error("Document is corrupt :( no valid Organizer Data")
+		);
+	}
+};
+
+export const formatRawEventDataTest = (
+	rawEventData: RawEventDataFromFirestore
+) => {
+	// check if hours_range fits into a single day (it is not [23:30pm, 00:00am, 00:30am])
+	let shouldBeSingleDay = true;
+	const newHoursRange = rawEventData.hours_range.map(
+		(hourStr) => new Date(hourStr)
+	);
+	newHoursRange.forEach((hour) => {
+		newHoursRange.forEach((hourJ) => {
+			if (hour.getDate() !== hourJ.getDate()) {
+				shouldBeSingleDay = false;
+				return;
+			}
+		});
+	});
+	let newDateRange: Date[] = [];
+	let newParticipantsSchedules: Schedule[] = [];
+
+	if (shouldBeSingleDay) {
+		newDateRange = [new Date(rawEventData.date_range[0])];
+		newParticipantsSchedules = newDateRange.map((date, i) => {
+			return {
+				date: new Date(date),
+				hours_range: rawEventData.participants_schedules
+					.map((schedule) => {
+						// one loop over participants_schedules
+						// second loop over participants_schedules.hours_range
+						// return all
+						return schedule.hours_range.map((hourObj) => {
+							return {
+								...hourObj,
+								hour: new Date(hourObj.hour),
+							};
+						});
+					})
+					.flat(),
+			};
+		});
+	}
+
+	const formatted = {
+		...rawEventData,
+		hours_range: newHoursRange,
+		date_range: newDateRange,
+		participants_schedules: newParticipantsSchedules,
+	};
+	return formatted;
 };
