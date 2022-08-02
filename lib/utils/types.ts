@@ -80,7 +80,7 @@ type Participant = {
 		}[];
 	}[];
 };
-type Schedule = {
+export type Schedule = {
 	date: Date;
 	hours_range: {
 		hour: Date;
