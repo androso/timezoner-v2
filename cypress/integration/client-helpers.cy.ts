@@ -432,48 +432,178 @@ describe("useEventDataBasedOnTimezone", async () => {
 	// will update all time-related stuff to match the timezone selected
 	//todo find a data model that will allow us to make this operation
 	// this would be the data received from calling formatRawEventData
-	// describe("CASE A", () => {
-	// 	const eventData = {
-	// 		hours_range: [
-	// 			new Date("Sun Jul 31 2022 17:30:00 GMT-0600 (Central Standard Time)"),
-	// 			new Date("Sun Jul 31 2022 18:00:00 GMT-0600 (Central Standard Time)"),
-	// 			new Date("Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"),
-	// 		],
-	// 		date_range: [
-	// 			new Date("Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"),
-	// 		],
-	// 		participants_schedules: [
-	// 			{
-	// 				date: new Date(
-	// 					"Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"
-	// 				),
-	// 				hours_range: [
-	// 					{
-	// 						hour: new Date(
-	// 							"Sun Jul 31 2022 17:30:00 GMT-0600 (Central Standard Time)"
-	// 						),
-	// 						participants: [],
-	// 						tableElementIndex: null,
-	// 					},
-	// 					{
-	// 						hour: new Date(
-	// 							"Sun Jul 31 2022 18:00:00 GMT-0600 (Central Standard Time)"
-	// 						),
-	// 						participants: [],
-	// 						tableElementIndex: null,
-	// 					},
-	// 					{
-	// 						hour: new Date(
-	// 							"Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"
-	// 						),
-	// 						participants: [],
-	// 						tableElementIndex: null,
-	// 					},
-	// 				],
-	// 			},
-	// 		],
-	// 	};
-	// 	it ('converts date_range from SV to Istanbul', () => {
-	// 	})
-	// })
+	describe("CASE A", () => {
+		const eventData = {
+			hours_range: [
+				new Date("Sun Jul 31 2022 17:30:00 GMT-0600 (Central Standard Time)"),
+				new Date("Sun Jul 31 2022 18:00:00 GMT-0600 (Central Standard Time)"),
+				new Date("Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"),
+			],
+			date_range: [
+				new Date("Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"),
+			],
+			participants_schedules: [
+				{
+					date: new Date(
+						"Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"
+					),
+					hours_range: [
+						{
+							hour: new Date(
+								"Sun Jul 31 2022 17:30:00 GMT-0600 (Central Standard Time)"
+							),
+							participants: [],
+							tableElementIndex: null,
+						},
+						{
+							hour: new Date(
+								"Sun Jul 31 2022 18:00:00 GMT-0600 (Central Standard Time)"
+							),
+							participants: [],
+							tableElementIndex: null,
+						},
+						{
+							hour: new Date(
+								"Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"
+							),
+							participants: [],
+							tableElementIndex: null,
+						},
+					],
+				},
+			],
+		};
+		describe("America/El Salvador => Europe/Istanbul", () => {
+			const expectedEventData = {
+				date_range: [
+					new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
+				],
+				hours_range: [
+					new Date("Mon Aug 01 2022 02:30:00 GMT-0600 (Central Standard Time)"), // mocking istanbul timezone
+					new Date("Mon Aug 01 2022 03:00:00 GMT-0600 (Central Standard Time)"),
+					new Date("Mon Aug 01 2022 03:30:00 GMT-0600 (Central Standard Time)"),
+				],
+				participants_schedules: [
+					{
+						date: new Date(
+							"Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"
+						),
+						hours_range: [
+							{
+								hour: new Date(
+									"Mon Aug 01 2022 02:30:00 GMT-0600 (Central Standard Time)"
+								),
+								participants: [],
+								tableElementIndex: null,
+							},
+							{
+								hour: new Date(
+									"Mon Aug 01 2022 03:00:00 GMT-0600 (Central Standard Time)"
+								),
+								participants: [],
+								tableElementIndex: null,
+							},
+							{
+								hour: new Date(
+									"Mon Aug 01 2022 03:30:00 GMT-0600 (Central Standard Time)"
+								),
+								participants: [],
+								tableElementIndex: null,
+							},
+						],
+					},
+				],
+			};
+			const resultEventData = useEventDataBasedOnTimezone(
+				eventData as unknown as EventData,
+				"Europe/Istanbul"
+			);
+
+			it("converts hours_range from SV to Istanbul", () => {
+				expect(resultEventData?.hours_range).to.deep.equal(
+					expectedEventData.hours_range
+				);
+			});
+			it("converts date_range from SV to istanbul", () => {
+				expect(resultEventData?.date_range).to.deep.equal(
+					expectedEventData.date_range
+				);
+			});
+			it("converts correctly participants_schedules", () => {
+				expect(resultEventData?.participants_schedules).to.deep.equal(
+					expectedEventData.participants_schedules
+				);
+			});
+		});
+		// describe("America/El Salvador => GMT-0", () => {
+		// 	const expectedEventData = {
+		// 		date_range: [
+		// 			new Date("Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"),
+		// 			new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
+		// 		],
+		// 		hours_range: [
+		// 			new Date(
+		// 				"Sun, 31 Jul 2022 23:30:00 GMT-0600 (Central Standard Time)"
+		// 			), // mocking istanbul timezone
+		// 			new Date(
+		// 				"Mon, 01 Aug 2022 00:00:00 GMT-0600 (Central Standard Time)"
+		// 			),
+		// 			new Date(
+		// 				"Mon, 01 Aug 2022 00:30:00 GMT-0600 (Central Standard Time)"
+		// 			),
+		// 		],
+		// 		participants_schedules: [
+		// 			{
+		// 				date: new Date(
+		// 					"Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"
+		// 				),
+		// 				hours_range: [
+		// 					{
+		// 						hour: new Date(
+		// 							"Sun, 31 Jul 2022 23:30:00 GMT-0600 (Central Standard Time)"
+		// 						),
+		// 						participants: [],
+		// 						tableElementIndex: null,
+		// 					},
+		// 				],
+		// 			},
+		// 			{
+		// 				date: new Date(
+		// 					"Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"
+		// 				),
+		// 				hours_range: [
+		// 					{
+		// 						hour: new Date(
+		// 							"Mon, 01 Aug 2022 00:00:00 GMT-0600 (Central Standard Time)"
+		// 						),
+		// 						participants: [],
+		// 						tableElementIndex: null,
+		// 					},
+		// 					{
+		// 						hour: new Date(
+		// 							"Mon, 01 Aug 2022 00:30:00 GMT-0600 (Central Standard Time)"
+		// 						),
+		// 						participants: [],
+		// 						tableElementIndex: null,
+		// 					},
+		// 				],
+		// 			},
+		// 		],
+		// 	};
+		// 	const resultEventData = useEventDataBasedOnTimezone(
+		// 		eventData as unknown as EventData,
+		// 		"Atlantic/Azores"
+		// 	);
+		// 	it("converts correctly hours_range", () => {
+		// 		expect(resultEventData.hours_range).to.deep.equal(
+		// 			expectedEventData.hours_range
+		// 		);
+		// 	});
+		// 	it("converts correctly date_range", () => {
+		// 		expect(resultEventData.date_range).to.deep.equal(
+		// 			expectedEventData.date_range
+		// 		);
+		// 	});
+		// });
+	});
 });

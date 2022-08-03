@@ -400,43 +400,44 @@ export const getFormattedFormData = (
 };
 
 export const useEventDataBasedOnTimezone = (
-	eventData: EventData,
-	timezone: string
-) => {
-	// see if eventData.hours_range doesn't have the same date for all.
-	// if it doesn't, it means that it is a fragmented date?
+	eventData: EventData | undefined,
+	timezone: string | undefined
+): EventData | undefined => {
+	if (!eventData || !timezone) return;
+	// convert hour to utc, then to timezone?
+	const newHoursRange = convertHoursToTimezone(eventData.hours_range, timezone);
 
+	const newDateRange = newHoursRange
+		.map((hour) => {
+			const localHour = new Date(hour);
+			return `${
+				localHour.getUTCMonth() + 1
+			}/${localHour.getUTCDate()}/${localHour.getUTCFullYear()}`;
+		})
+		.filter((utcDate, index, self) => self.indexOf(utcDate) === index)
+		.map((hour) => new Date(hour));
 	return {
-		participants_schedules: [
-			{
-				date: new Date(
-					"Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"
-				),
-				hours_range: [
-					{
-						hour: new Date(
-							"Sun Jul 31 2022 17:30:00 GMT-0600 (Central Standard Time)"
-						),
-						participants: [],
-						tableElementIndex: null,
-					},
-					{
-						hour: new Date(
-							"Sun Jul 31 2022 18:00:00 GMT-0600 (Central Standard Time)"
-						),
-						participants: [],
-						tableElementIndex: null,
-					},
-					{
-						hour: new Date(
-							"Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"
-						),
-						participants: [],
-						tableElementIndex: null,
-					},
-				],
-			},
-		],
+		...eventData,
+		date_range: newDateRange,
+		hours_range: newHoursRange,
+		participants_schedules: newDateRange.map((date) => {
+			return {
+				date,
+				hours_range: eventData.participants_schedules
+					.map((schedule) => {
+						// one loop over participants_schedules
+						// second loop over participants_schedules.hours_range
+						// return all
+						return schedule.hours_range.map((hourObj) => {
+							return {
+								...hourObj,
+								hour: convertHoursToTimezone([hourObj.hour], timezone)[0],
+							};
+						});
+					})
+					.flat(),
+			};
+		}),
 	};
 };
 

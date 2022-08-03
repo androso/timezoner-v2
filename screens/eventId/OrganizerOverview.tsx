@@ -20,6 +20,7 @@ import {
 	getHoursBetweenRange,
 	getTimezoneMetadata,
 	standardizeHours,
+	useEventDataBasedOnTimezone,
 } from "../../lib/utils/client-helpers";
 import useHourRangeBasedOnTimezone from "../../lib/utils/hooks/useHourRangeBasedOnTimezone";
 import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
@@ -44,30 +45,33 @@ export default function OrganizerOverview({
 	const [showDeleteWarning, setShowDeleteWarning] = React.useState(false);
 	const closeDialog = () => setShowDialog(false);
 	const toggleDialog = () => setShowDialog((prevValue) => !prevValue);
-	const datesRange = eventData?.date_range;
+
 	const [timezoneSelected, setTimezoneSelected] = React.useState<string | null>(
 		localTimezone.label
 	);
-	const convertedHours = useHourRangeBasedOnTimezone(
-		eventData?.hours_range,
-		timezoneSelected
+	const convertedEventData = useEventDataBasedOnTimezone(
+		eventData,
+		eventData?.og_timezone
 	);
+	const datesRange = convertedEventData?.date_range;
+	// const convertedHours = useHourRangeBasedOnTimezone(
+	// 	eventData?.hours_range,
+	// 	timezoneSelected
+	// );
+	const convertedHours = convertedEventData?.hours_range;
 	const { eventId } = router.query;
 
-	useEffect(() => {
-		console.log(eventData);
-	}, [eventData]);
-	
 	const formMethods = useForm<EventFormValues>({
 		defaultValues: {
 			title: eventData?.title,
 			description: eventData?.description,
 			timezone: eventData?.og_timezone,
 			hours_range: {
-				start_hour: eventData?.hours_range[0],
-				end_hour: eventData?.hours_range[eventData.hours_range.length - 1],
+				start_hour: convertedEventData?.hours_range[0],
+				end_hour:
+					convertedEventData?.hours_range[convertedEventData.hours_range.length - 1],
 			},
-			date: eventData?.date_range[0],
+			date: convertedEventData?.date_range[0],
 		},
 	});
 
@@ -80,10 +84,6 @@ export default function OrganizerOverview({
 			toast.error("There was an error deleting the event");
 		}
 	};
-
-	useEffect(() => {
-		// console.log(eventData?.participants_schedules);
-	}, [eventData]);
 
 	const updateEvent = async (data: EventFormValues) => {
 		const { date, hours_range, description, title, timezone } = data;
@@ -130,44 +130,19 @@ export default function OrganizerOverview({
 				parsedUser.id,
 				eventDocRef.id
 			);
+			// if the user has changed the date or an hour from hours_range, we alert that this data will be deleted, "do you want to continue?"
+			// if the user has only changed stuff like title, description, etc, we just put the previous data;
+			
+			dataSentToFirestore.participants_schedules = [{}];
+			dataSentToFirestore.participants = [];
 
-			// const dataSentToFirestore = {
-			// 	date_range: newDateRange,
-			// 	hours_range: utcHoursRange,
-			// 	title,
-			// 	description: description,
-			// 	og_timezone: timezone,
-			// 	participants_schedules: newDateRange.map((newDateObj, dateIndex) => ({
-			// 		date: newDateObj.toUTCString(),
-			// 		hours_range: utcHoursRange.map((utcHourOBj, hourIndex) => {
-			// 			return {
-			// 				hour: new Date(
-			// 					`${
-			// 						newDateObj.getMonth() + 1
-			// 					}/${newDateObj.getDate()}/${newDateObj.getFullYear()} ${new Date(
-			// 						utcHourOBj
-			// 					).getHours()}:${new Date(utcHourOBj).getMinutes()}`
-			// 				).toUTCString(),
-			// 				participants:
-			// 					eventData.participants_schedules[dateIndex]?.hours_range[
-			// 						hourIndex
-			// 					].participants ?? [],
-			// 				tableElementIndex:
-			// 					eventData.participants_schedules[dateIndex]?.hours_range[
-			// 						hourIndex
-			// 					].tableElementIndex ?? null,
-			// 			};
-			// 		}),
-			// 	})),
-			// };
-			console.log(dataSentToFirestore);
-			// try {
-			// 	await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
-			// 	closeDialog();
-			// 	toast.success("Event updated succesfully");
-			// } catch (e) {
-			// 	toast.error("There was an error while updating the event");
-			// }
+			try {
+				// await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
+				// closeDialog();
+				// toast.success("Event updated succesfully");
+			} catch (e) {
+				toast.error("There was an error while updating the event");
+			}
 		}
 	};
 
@@ -295,7 +270,7 @@ export default function OrganizerOverview({
 				</div>
 
 				<EventAvailabilityTable
-					eventData={eventData}
+					eventData={convertedEventData}
 					datesRange={datesRange}
 					hoursRange={convertedHours}
 				/>
