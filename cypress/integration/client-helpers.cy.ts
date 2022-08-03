@@ -272,6 +272,70 @@ describe("formatRawEventData", () => {
 			);
 		});
 	});
+	describe("CASE C", () => {
+		const rawEventData = {
+			date_range: ["8/2/2022"],
+			hours_range: ["Tues, 02 Aug 2022 05:00:00 GMT", "Tues, 02 Aug 2022 05:30:00 GMT"],
+			participants_schedules: [
+				{
+					date: "8/2/2022",
+					hours_range: [
+						{
+							hour: "Tues, 02 Aug 2022 05:00:00 GMT",
+							participants: [],
+							tableElementIndex: null,
+						},
+						{
+							hour: "Tues, 02 Aug 2022 05:30:00 GMT",
+							participants: [],
+							tableElementIndex: null,
+						},
+					],
+				},
+			],
+		}
+		const expectedEventData = {
+			date_range: [
+				new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
+			],
+			hours_range: [
+				new Date("Mon Aug 01 2022 23:00:00 GMT-0600 (Central Standard Time)"),
+				new Date("Mon Aug 01 2022 23:30:00 GMT-0600 (Central Standard Time)"),
+			],
+			participants_schedules: [
+				{
+					date: new Date(
+						"Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"
+					),
+					hours_range: [
+						{
+							hour: new Date(
+								"Mon Aug 01 2022 23:00:00 GMT-0600 (Central Standard Time)"
+							),
+							participants: [],
+							tableElementIndex: null,
+						},
+						{
+							hour: new Date(
+								"Mon Aug 01 2022 23:30:00 GMT-0600 (Central Standard Time)"
+							),
+							participants: [],
+							tableElementIndex: null,
+						},
+					],
+				},
+			],
+		}
+		const resultEventData = formatRawEventDataTest(
+			rawEventData as unknown as RawEventDataFromFirestore
+		);
+		it ("returns correct hours_range", () => {
+			expect(resultEventData.hours_range).to.deep.equal(expectedEventData.hours_range)
+		})
+		it ("returns correct date_range", () => {
+			expect(resultEventData.date_range).to.deep.equal(expectedEventData.date_range);
+		})
+	})
 });
 
 // describe("useEventDataBasedOnTimezone", async () => {

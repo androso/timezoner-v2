@@ -446,48 +446,59 @@ export const formatRawEventDataTest = (
 	rawEventData: RawEventDataFromFirestore
 ) => {
 	// check if hours_range fits into a single day (it is not [23:30pm, 00:00am, 00:30am])
-	let shouldBeSingleDay = true;
+	let hourRangeFitsSingleDay = true;
+	let hourRangeCrossesTwoDates = false;
 	const newHoursRange = rawEventData.hours_range.map(
 		(hourStr) => new Date(hourStr)
 	);
+
 	newHoursRange.forEach((hour) => {
 		newHoursRange.forEach((hourJ) => {
-			if (hour.getDate() !== hourJ.getDate()) {
-				shouldBeSingleDay = false;
+			if (
+				hour.getDate() !== hourJ.getDate() &&
+				hour.getUTCDate() !== hourJ.getUTCDate()
+			) {
+				hourRangeFitsSingleDay = false;
+				hourRangeCrossesTwoDates = true;
 				return;
 			}
 		});
 	});
+
 	let newDateRange: Date[] = [];
 	let newParticipantsSchedules: Schedule[] = [];
 
-	if (shouldBeSingleDay) {
+	if (hourRangeFitsSingleDay && rawEventData.date_range.length == 2) {
 		newDateRange = [new Date(rawEventData.date_range[0])];
-		newParticipantsSchedules = newDateRange.map((date, i) => {
-			return {
-				date: new Date(date),
-				hours_range: rawEventData.participants_schedules
-					.map((schedule) => {
-						// one loop over participants_schedules
-						// second loop over participants_schedules.hours_range
-						// return all
-						return schedule.hours_range.map((hourObj) => {
-							return {
-								...hourObj,
-								hour: new Date(hourObj.hour),
-							};
-						});
-					})
-					.flat(),
-			};
-		});
+	} else if (!hourRangeCrossesTwoDates && rawEventData.date_range.length === 1) {
+		const newDate = new Date(newHoursRange[0]);
+		newDateRange = [new Date(`${newDate.getMonth() + 1}/${newDate.getDate()}/${newDate.getFullYear()}`)];
 	}
-
+	newParticipantsSchedules = newDateRange.map((date, i) => {
+		return {
+			date: new Date(date),
+			hours_range: rawEventData.participants_schedules
+				.map((schedule) => {
+					// one loop over participants_schedules
+					// second loop over participants_schedules.hours_range
+					// return all
+					return schedule.hours_range.map((hourObj) => {
+						return {
+							...hourObj,
+							hour: new Date(hourObj.hour),
+						};
+					});
+				})
+				.flat(),
+		};
+	});
+	
 	const formatted = {
 		...rawEventData,
 		hours_range: newHoursRange,
 		date_range: newDateRange,
 		participants_schedules: newParticipantsSchedules,
 	};
+	
 	return formatted;
 };
