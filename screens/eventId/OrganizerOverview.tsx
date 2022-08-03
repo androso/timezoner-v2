@@ -218,6 +218,7 @@ export default function OrganizerOverview({
 							setShowDeleteWarning(false);
 							closeDialog();
 						}}
+						className="z-20"
 						style={{ background: "hsla(0, 0%, 0%, 0.5)" }}
 					>
 						<DialogContent
