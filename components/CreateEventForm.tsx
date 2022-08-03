@@ -12,6 +12,7 @@ import EventFormFields from "./EventFormFields";
 import React from "react";
 import {
 	getDatesBetweenRange,
+	getFormattedFormData,
 	getHoursBetweenRange,
 	getTimezoneMetadata,
 	standardizeHours,
@@ -27,17 +28,13 @@ export default function CreateEventForm() {
 	const router = useRouter();
 	const submitForm: SubmitHandler<EventFormValues> = async (data) => {
 		const { dateRange, hours_range, description, title, timezone } = data;
-
+		console.log(hours_range)
 		if (parsedUser) {
 			const eventDocRef = doc(collection(firestore, "events"));
 			const hoursBetweenRange = getHoursBetweenRange(
 				hours_range.start_hour,
 				hours_range.end_hour
 			);
-
-			//todo convert hours_range depending on the timezone selected to host timezone, then to utc
-			//todo if host is el salvador and timezone selected Istanbul, then convert hours selected to El Salvador, then to utc
-			// i could get the host timezone and the timezone selected
 			const timezoneSelectedMeta = getTimezoneMetadata(timezone) as TimeZone;
 			const localTimezoneMeta = timeZones.find(
 				(tz) =>
@@ -49,51 +46,29 @@ export default function CreateEventForm() {
 				timezoneSelectedMeta?.currentTimeOffsetInMinutes -
 				localTimezoneMeta?.currentTimeOffsetInMinutes;
 
-			const hoursConvertedToLocal = hoursBetweenRange.map(
-				(hour) =>
-					new Date(hour.setMinutes(hour.getMinutes() - totalOffsetInMinutes))
-			);
-
-			const utcHourRange = standardizeHours(hoursConvertedToLocal);
 			if (dateRange[0]) {
-				// the hours object have the right date in them, so we get the date from them
-				const utcDateRange = utcHourRange
-					.map((utcHour) => {
-						const localHour = new Date(utcHour);
-						return `${
-							localHour.getUTCMonth() + 1
-						}/${localHour.getUTCDate()}/${localHour.getUTCFullYear()}`;
-					})
-					.filter((utcDate, index, self) => self.indexOf(utcDate) === index);
-				const dataSentToFirestore = {
-					date_range: utcDateRange,
-					hours_range: utcHourRange,
-					title,
-					description: description,
-					og_timezone: timezone,
-					organizer_ref: doc(firestore, "users", parsedUser.id),
-					organizer_id: parsedUser.id,
-					id: eventDocRef.id,
-					participants: [],
-					participants_schedules: utcDateRange.map((utcDate) => ({
-						date: utcDate,
-						hours_range: utcHourRange
-							.map((utcHour) => {
-								// console.log(hourObj);
-								return {
-									hour: utcHour,
-									participants: [],
-									tableElementIndex: null,
-								};
-							})
-							.filter((item) => {
-								const currentDate = new Date(utcDate);
-								// console.log(currentDate);
-								const localHour = new Date(item.hour);
-								return localHour.getUTCDate() === currentDate.getUTCDate();
-							}),
-					})),
-				};
+				const hoursConvertedToLocal = hoursBetweenRange.map((hour) => {
+					// convert first to aug 1 then jul 31
+					const formDate = dateRange[0] ?? new Date();
+					const newHour = new Date(
+						`${
+							formDate.getMonth() + 1
+						}/${formDate.getDate()}/${formDate.getFullYear()} ${hour.getHours()}:${hour.getMinutes()}`
+					);
+					newHour.setMinutes(hour.getMinutes() - totalOffsetInMinutes);
+					return newHour;
+				});
+				const dataSentToFirestore = getFormattedFormData(
+					{
+						...data,
+						hours_range: {
+							start_hour: hoursConvertedToLocal[0],
+							end_hour: hoursConvertedToLocal[hoursConvertedToLocal.length - 1],
+						},
+					},
+					parsedUser.id,
+					eventDocRef.id
+				);
 				await setDoc(eventDocRef, dataSentToFirestore);
 				router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });
 			}
