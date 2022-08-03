@@ -75,8 +75,9 @@ export default function ParticipantOverview({
 				</h1>
 				<p className="mb-4">{eventData.description}</p>
 				<div className="mb-4">
+					<p className="text-gray-300 text-base">Your Timezone: {localTimezone.label}</p>
 					{/* We'll have a select timezone that will change the hours displayed on the table */}
-					<Downshift
+					{/* <Downshift
 						itemToString={(item) => (item ? item : "")}
 						initialSelectedItem={localTimezone.label}
 						onSelect={(tz) => setTimezoneSelected(tz)}
@@ -98,8 +99,8 @@ export default function ParticipantOverview({
 								</label>
 
 								<div
-									/* 
-									// @ts-ignore */
+									
+									// @ts-ignore 
 									{...getRootProps({}, { suppressRefError: true })}
 									className="flex w-full"
 								>
@@ -150,7 +151,7 @@ export default function ParticipantOverview({
 								</ul>
 							</div>
 						)}
-					</Downshift>
+					</Downshift> */}
 				</div>
 				<div className="mb-4 ">
 					{/* //TODO: add styles */}
