@@ -100,81 +100,104 @@ import {
 // 	});
 // });
 
-// describe("getFormattedFormData", () => {
-// 	// returns data ready to be sent to firestore
-// 	//todo: change the name
-// 	const baseData = {
-// 		description: "hey description",
-// 		title: "Event title",
-// 	};
-// 	// CASE A:
-// 	// timezone: Istanbul
-// 	// Date: aug 1 => aug 1
-// 	// start_hour: 2:30am
-// 	// end_hour: 3:30am
+describe("getFormattedFormData", () => {
+	// returns data ready to be sent to firestore
+	//todo: change the name
+	const baseData = {
+		description: "hey description",
+		title: "Event title",
+	};
+	// CASE A:
+	// timezone: Istanbul
+	// Date: aug 1 => aug 1
+	// start_hour: 2:30am
+	// end_hour: 3:30am
 
-// 	// CASE B:
-// 	// timezone: Istanbul
-// 	// Date: aug 1 => aug 3
-// 	// start_hour: 2:30am
-// 	// end_hour: 3:30am
+	// CASE B:
+	// timezone: Istanbul
+	// Date: aug 1 => aug 3
+	// start_hour: 2:30am
+	// end_hour: 3:30am
 
-// 	// CASE C:
-// 	// timezone: El Salvador
-// 	// Date: aug 1 =>debugger; aug 1
-// 	// start_hour: 11:00pm
-// 	// end_hour: 11:30pm
+	// CASE C:
+	// timezone: El Salvador
+	// Date: aug 1 =>debugger; aug 1
+	// start_hour: 11:00pm
+	// end_hour: 11:30pm
 
-// 	// CASE D:
-// 	// timezone: El Salvador
-// 	// Date: aug 1 => aug 3
-// 	// start_hour: 11:00pm
-// 	// end_hour: 11:30pm
+	// CASE D:
+	// timezone: El Salvador
+	// Date: aug 1 => aug 3
+	// start_hour: 11:00pm
+	// end_hour: 11:30pm
 
-// 	describe("CASE A", () => {
-// 		// hours are based in el salvador timezone (local)
-// 		const data = {
-// 			...baseData,
-// 			timezone: "Europe/Istanbul",
-// 			hours_range: {
-// 				start_hour: new Date(
-// 					"Sun Jul 31 2022 17:30:00 GMT-0600 (Central Standard Time)"
-// 				),
-// 				end_hour: new Date(
-// 					"Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"
-// 				),
-// 			},
-// 			dateRange: [
-// 				new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
-// 				new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
-// 			] as [Date, Date],
-// 		};
-// 		it("returns correct date_range when provided with case A", () => {
-// 			const expected = {
-// 				date_range: ["7/31/2022", "8/1/2022"],
-// 			};
-// 			const result = getFormattedFormData(data, "23", "890");
-// 			expect(result.date_range).to.deep.equal(expected.date_range);
-// 		});
-// 		it("returns correct hours_range when provided with case A", () => {
-// 			const expected = {
-// 				hours_range: [
-// 					"Sun, 31 Jul 2022 23:30:00 GMT",
-// 					"Mon, 01 Aug 2022 00:00:00 GMT",
-// 					"Mon, 01 Aug 2022 00:30:00 GMT",
-// 				],
-// 			};
-// 			const result = getFormattedFormData(data, "23", "890");
-// 			expect(result.hours_range).to.deep.equal(expected.hours_range);
-// 		});
-// 	});
+	describe("CASE A", () => {
+		// hours are based in el salvador timezone (local)
+		const data = {
+			...baseData,
+			timezone: "Europe/Istanbul",
+			hours_range: {
+				start_hour: new Date(
+					"Sun Jul 31 2022 17:30:00 GMT-0600 (Central Standard Time)"
+				),
+				end_hour: new Date(
+					"Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"
+				),
+			},
+			dateRange: [
+				new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
+				new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
+			] as [Date, Date],
+		};
+		it("returns correct date_range when provided with case A", () => {
+			const expected = {
+				date_range: ["7/31/2022", "8/1/2022"],
+			};
+			const result = getFormattedFormData(data, "23", "890");
+			expect(result.date_range).to.deep.equal(expected.date_range);
+		});
+		it("returns correct hours_range when provided with case A", () => {
+			const expected = {
+				hours_range: [
+					"Sun, 31 Jul 2022 23:30:00 GMT",
+					"Mon, 01 Aug 2022 00:00:00 GMT",
+					"Mon, 01 Aug 2022 00:30:00 GMT",
+				],
+			};
+			const result = getFormattedFormData(data, "23", "890");
+			expect(result.hours_range).to.deep.equal(expected.hours_range);
+		});
+	});
 
-// 	describe("CASE B", () => {
-// 		it("returns correct date_range when provided with case B", () => {
-// 			//todo write this
-// 		});
-// 	});
-// });
+	describe("CASE C", () => {
+		const formData = {
+			...baseData,
+			timezone: "America/El Salvador",
+			hours_range: {
+				start_hour: new Date("Aug 01 2022 23:00:00 GMT-0600 (Central Standard Time)"), 
+				end_hour: new Date("Aug 01 2022 23:30:00 GMT-0600 (Central Standard Time)")
+			},
+			dateRange: [
+				new Date("Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
+				new Date("Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)")
+			] as [Date, Date]
+		}
+		const expectedData = {
+			date_range: ['8/2/2022'],
+			hours_range: [
+				'Tue, 02 Aug 2022 05:00:00 GMT',
+				'Tue, 02 Aug 2022 05:30:00 GMT',
+			]
+		}
+		const resultData = getFormattedFormData(formData, "23", "890");
+		it ("returns correct date_range when provided with case C", () => {
+			expect(resultData.date_range).to.deep.equal(expectedData.date_range);
+		})
+		it ("returns correct hours_range when provided with case C", () => {
+			expect(resultData.hours_range).to.deep.equal(expectedData.hours_range);
+		})
+	})
+});
 
 describe("formatRawEventData", () => {
 	describe("CASE A", () => {
@@ -338,10 +361,57 @@ describe("formatRawEventData", () => {
 	})
 });
 
-// describe("useEventDataBasedOnTimezone", async () => {
-// 	// the function will receive an eventData (queried and formatted from firestore)
-// 	// and will output a eventData based on the timezone
-// 	// will update all time-related stuff to match the timezone selected
-// 	//todo find a data model that will allow us to make this operation
-// 	// this would be the data received from calling formatRawEventData
-// });
+describe("useEventDataBasedOnTimezone", async () => {
+	// the function will receive an eventData (queried and formatted from firestore)
+	// and will output a eventData based on the timezone
+	// will update all time-related stuff to match the timezone selected
+	//todo find a data model that will allow us to make this operation
+	// this would be the data received from calling formatRawEventData
+
+	// describe("CASE A", () => {
+	// 	const eventData = {
+	// 		hours_range: [
+	// 			new Date("Sun Jul 31 2022 17:30:00 GMT-0600 (Central Standard Time)"),
+	// 			new Date("Sun Jul 31 2022 18:00:00 GMT-0600 (Central Standard Time)"),
+	// 			new Date("Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"),
+	// 		],
+	// 		date_range: [
+	// 			new Date("Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"),
+	// 		],
+	// 		participants_schedules: [
+	// 			{
+	// 				date: new Date(
+	// 					"Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"
+	// 				),
+	// 				hours_range: [
+	// 					{
+	// 						hour: new Date(
+	// 							"Sun Jul 31 2022 17:30:00 GMT-0600 (Central Standard Time)"
+	// 						),
+	// 						participants: [],
+	// 						tableElementIndex: null,
+	// 					},
+	// 					{
+	// 						hour: new Date(
+	// 							"Sun Jul 31 2022 18:00:00 GMT-0600 (Central Standard Time)"
+	// 						),
+	// 						participants: [],
+	// 						tableElementIndex: null,
+	// 					},
+	// 					{
+	// 						hour: new Date(
+	// 							"Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"
+	// 						),
+	// 						participants: [],
+	// 						tableElementIndex: null,
+	// 					},
+	// 				],
+	// 			},
+	// 		],
+	// 	};
+	// 	it ('converts date_range from SV to Istanbul', () => {
+			
+	// 	})
+		
+	// })
+});

@@ -319,10 +319,36 @@ export const getFormattedFormData = (
 	userId: string,
 	eventId: string
 ) => {
+	// we can add a condition to check if it crosses days forwards or backwards
+	let hourRangeCrossesTwoDatesForward = false;
+	let hourRangeCrossesTwoDatesBackwards = false;
+	if (formData.dateRange[0]) {
+		if (
+			formData.hours_range.start_hour.getDate() <
+				formData.dateRange[0]?.getDate() ||
+			formData.hours_range.start_hour.getMonth() <
+				formData.dateRange[0].getMonth()
+		) {
+			hourRangeCrossesTwoDatesBackwards = true;
+			hourRangeCrossesTwoDatesForward = false;
+		} else {
+			hourRangeCrossesTwoDatesBackwards = false;
+			hourRangeCrossesTwoDatesForward = true;
+		}
+	}
+
 	const hoursBetweenRange = getHoursBetweenRange(
 		formData.hours_range.start_hour,
 		formData.hours_range.end_hour
-	);
+	).map((hour) => {
+		if (hourRangeCrossesTwoDatesForward) {
+			const newHour = new Date(hour.getTime());
+			newHour.setDate(formData.dateRange[0]?.getDate() ?? new Date().getDate());
+			return newHour;
+		} else {
+			return hour;
+		}
+	});
 
 	const timezoneSelectedMeta = getTimezoneMetadata(
 		formData.timezone
@@ -337,15 +363,9 @@ export const getFormattedFormData = (
 		timezoneSelectedMeta?.currentTimeOffsetInMinutes -
 		localTimezoneMeta?.currentTimeOffsetInMinutes;
 	const hoursConvertedToLocal = [...hoursBetweenRange];
-	// const hoursConvertedToLocal = hoursBetweenRange.map((hour) => {
-	// 	console.log(
-	// 		new Date(hour.setMinutes(hour.getMinutes() - totalOffsetInMinutes))
-	// 	);
-	// 	debugger;
-	// 	return new Date(hour.setMinutes(hour.getMinutes() - totalOffsetInMinutes));
-	// });
 
 	const utcHourRange = standardizeHours(hoursConvertedToLocal);
+
 	const utcDateRange = utcHourRange
 		.map((utcHour) => {
 			const localHour = new Date(utcHour);
@@ -354,7 +374,7 @@ export const getFormattedFormData = (
 			}/${localHour.getUTCDate()}/${localHour.getUTCFullYear()}`;
 		})
 		.filter((utcDate, index, self) => self.indexOf(utcDate) === index);
-
+	// console.log(utcDateRange);
 	return {
 		date_range: utcDateRange,
 		hours_range: utcHourRange,
@@ -367,8 +387,6 @@ export const useEventDataBasedOnTimezone = (
 ) => {
 	// see if eventData.hours_range doesn't have the same date for all.
 	// if it doesn't, it means that it is a fragmented date?
-
-	debugger;
 
 	return {
 		participants_schedules: [
@@ -470,9 +488,18 @@ export const formatRawEventDataTest = (
 
 	if (hourRangeFitsSingleDay && rawEventData.date_range.length == 2) {
 		newDateRange = [new Date(rawEventData.date_range[0])];
-	} else if (!hourRangeCrossesTwoDates && rawEventData.date_range.length === 1) {
+	} else if (
+		!hourRangeCrossesTwoDates &&
+		rawEventData.date_range.length === 1
+	) {
 		const newDate = new Date(newHoursRange[0]);
-		newDateRange = [new Date(`${newDate.getMonth() + 1}/${newDate.getDate()}/${newDate.getFullYear()}`)];
+		newDateRange = [
+			new Date(
+				`${
+					newDate.getMonth() + 1
+				}/${newDate.getDate()}/${newDate.getFullYear()}`
+			),
+		];
 	}
 	newParticipantsSchedules = newDateRange.map((date, i) => {
 		return {
@@ -492,13 +519,13 @@ export const formatRawEventDataTest = (
 				.flat(),
 		};
 	});
-	
+
 	const formatted = {
 		...rawEventData,
 		hours_range: newHoursRange,
 		date_range: newDateRange,
 		participants_schedules: newParticipantsSchedules,
 	};
-	
+
 	return formatted;
 };
