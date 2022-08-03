@@ -167,6 +167,42 @@ describe("getFormattedFormData", () => {
 			const result = getFormattedFormData(data, "23", "890");
 			expect(result.hours_range).to.deep.equal(expected.hours_range);
 		});
+		it("returns correct participants_schedule", () => {
+			const expected = {
+				participants_schedules: [
+					{
+						date: "7/31/2022",
+						hours_range: [
+							{
+								hour: "Sun, 31 Jul 2022 23:30:00 GMT",
+								participants: [],
+								tableElementIndex: null,
+							},
+						],
+					},
+					{
+						date: "8/1/2022",
+						hours_range: [
+							{
+								hour: "Mon, 01 Aug 2022 00:00:00 GMT",
+								participants: [],
+								tableElementIndex: null,
+							},
+							{
+								hour: "Mon, 01 Aug 2022 00:30:00 GMT",
+								participants: [],
+								tableElementIndex: null,
+							},
+						],
+					},
+				],
+			};
+
+			const result = getFormattedFormData(data, "23", "890 ");
+			expect(result.participants_schedules).to.deep.equal(
+				expected.participants_schedules
+			);
+		});
 	});
 
 	describe("CASE C", () => {
@@ -174,29 +210,53 @@ describe("getFormattedFormData", () => {
 			...baseData,
 			timezone: "America/El Salvador",
 			hours_range: {
-				start_hour: new Date("Aug 01 2022 23:00:00 GMT-0600 (Central Standard Time)"), 
-				end_hour: new Date("Aug 01 2022 23:30:00 GMT-0600 (Central Standard Time)")
+				start_hour: new Date(
+					"Aug 01 2022 23:00:00 GMT-0600 (Central Standard Time)"
+				),
+				end_hour: new Date(
+					"Aug 01 2022 23:30:00 GMT-0600 (Central Standard Time)"
+				),
 			},
 			dateRange: [
 				new Date("Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
-				new Date("Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)")
-			] as [Date, Date]
-		}
+				new Date("Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
+			] as [Date, Date],
+		};
 		const expectedData = {
-			date_range: ['8/2/2022'],
+			date_range: ["8/2/2022"],
 			hours_range: [
-				'Tue, 02 Aug 2022 05:00:00 GMT',
-				'Tue, 02 Aug 2022 05:30:00 GMT',
-			]
-		}
+				"Tue, 02 Aug 2022 05:00:00 GMT",
+				"Tue, 02 Aug 2022 05:30:00 GMT",
+			],
+			participants_schedules: [
+				{
+					date: "8/2/2022",
+					hours_range: [
+						{
+							hour: "Tue, 02 Aug 2022 05:00:00 GMT",
+							participants: [],
+							tableElementIndex: null,
+						},
+						{
+							hour: "Tue, 02 Aug 2022 05:30:00 GMT",
+							participants: [],
+							tableElementIndex: null,
+						},
+					],
+				},
+			],
+		};
 		const resultData = getFormattedFormData(formData, "23", "890");
-		it ("returns correct date_range when provided with case C", () => {
+		it("returns correct date_range when provided with case C", () => {
 			expect(resultData.date_range).to.deep.equal(expectedData.date_range);
-		})
-		it ("returns correct hours_range when provided with case C", () => {
+		});
+		it("returns correct hours_range when provided with case C", () => {
 			expect(resultData.hours_range).to.deep.equal(expectedData.hours_range);
+		});
+		it("returns correct participants_schedules", () => {
+			expect(resultData.participants_schedules).to.deep.equal(expectedData.participants_schedules);
 		})
-	})
+	});
 });
 
 describe("formatRawEventData", () => {
@@ -298,7 +358,10 @@ describe("formatRawEventData", () => {
 	describe("CASE C", () => {
 		const rawEventData = {
 			date_range: ["8/2/2022"],
-			hours_range: ["Tues, 02 Aug 2022 05:00:00 GMT", "Tues, 02 Aug 2022 05:30:00 GMT"],
+			hours_range: [
+				"Tues, 02 Aug 2022 05:00:00 GMT",
+				"Tues, 02 Aug 2022 05:30:00 GMT",
+			],
 			participants_schedules: [
 				{
 					date: "8/2/2022",
@@ -316,7 +379,7 @@ describe("formatRawEventData", () => {
 					],
 				},
 			],
-		}
+		};
 		const expectedEventData = {
 			date_range: [
 				new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
@@ -348,17 +411,21 @@ describe("formatRawEventData", () => {
 					],
 				},
 			],
-		}
+		};
 		const resultEventData = formatRawEventDataTest(
 			rawEventData as unknown as RawEventDataFromFirestore
 		);
-		it ("returns correct hours_range", () => {
-			expect(resultEventData.hours_range).to.deep.equal(expectedEventData.hours_range)
-		})
-		it ("returns correct date_range", () => {
-			expect(resultEventData.date_range).to.deep.equal(expectedEventData.date_range);
-		})
-	})
+		it("returns correct hours_range", () => {
+			expect(resultEventData.hours_range).to.deep.equal(
+				expectedEventData.hours_range
+			);
+		});
+		it("returns correct date_range", () => {
+			expect(resultEventData.date_range).to.deep.equal(
+				expectedEventData.date_range
+			);
+		});
+	});
 });
 
 describe("useEventDataBasedOnTimezone", async () => {
@@ -367,7 +434,6 @@ describe("useEventDataBasedOnTimezone", async () => {
 	// will update all time-related stuff to match the timezone selected
 	//todo find a data model that will allow us to make this operation
 	// this would be the data received from calling formatRawEventData
-
 	// describe("CASE A", () => {
 	// 	const eventData = {
 	// 		hours_range: [
@@ -410,8 +476,6 @@ describe("useEventDataBasedOnTimezone", async () => {
 	// 		],
 	// 	};
 	// 	it ('converts date_range from SV to Istanbul', () => {
-			
 	// 	})
-		
 	// })
 });

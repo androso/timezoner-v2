@@ -374,10 +374,32 @@ export const getFormattedFormData = (
 			}/${localHour.getUTCDate()}/${localHour.getUTCFullYear()}`;
 		})
 		.filter((utcDate, index, self) => self.indexOf(utcDate) === index);
-	// console.log(utcDateRange);
 	return {
 		date_range: utcDateRange,
 		hours_range: utcHourRange,
+		description: formData.description,
+		og_timezone: formData.timezone,
+		organizer_ref: doc(firestore, "users", userId),
+		id: eventId,
+		participants: [],
+		participants_schedules: utcDateRange.map((utcDate) => ({
+			date: utcDate,
+			hours_range: utcHourRange
+				.map((utcHour) => {
+					// console.log(hourObj);
+					return {
+						hour: utcHour,
+						participants: [],
+						tableElementIndex: null,
+					};
+				})
+				.filter((item) => {
+					const currentDate = new Date(utcDate);
+					// console.log(currentDate);
+					const localHour = new Date(item.hour);
+					return localHour.getUTCDate() === currentDate.getUTCDate();
+				}),
+		})),
 	};
 };
 
