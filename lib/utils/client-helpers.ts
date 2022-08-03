@@ -379,6 +379,7 @@ export const getFormattedFormData = (
 		hours_range: utcHourRange,
 		description: formData.description,
 		og_timezone: formData.timezone,
+		title: formData.title,
 		organizer_ref: doc(firestore, "users", userId),
 		id: eventId,
 		participants: [],
@@ -386,7 +387,6 @@ export const getFormattedFormData = (
 			date: utcDate,
 			hours_range: utcHourRange
 				.map((utcHour) => {
-					// console.log(hourObj);
 					return {
 						hour: utcHour,
 						participants: [],
@@ -395,7 +395,6 @@ export const getFormattedFormData = (
 				})
 				.filter((item) => {
 					const currentDate = new Date(utcDate);
-					// console.log(currentDate);
 					const localHour = new Date(item.hour);
 					return localHour.getUTCDate() === currentDate.getUTCDate();
 				}),
@@ -451,29 +450,70 @@ export const formatRawEventData = async (
 	if (organizerSnap.exists()) {
 		const organizerData = organizerSnap.data() as UserData;
 
+		// check if hours_range fits into a single day (it is not [23:30pm, 00:00am, 00:30am])
+		let hourRangeFitsSingleDay = true;
+		let hourRangeCrossesTwoDates = false;
+		const newHoursRange = rawEventData.hours_range.map(
+			(hourStr) => new Date(hourStr)
+		);
+
+		newHoursRange.forEach((hour) => {
+			newHoursRange.forEach((hourJ) => {
+				if (
+					hour.getDate() !== hourJ.getDate() &&
+					hour.getUTCDate() !== hourJ.getUTCDate()
+				) {
+					hourRangeFitsSingleDay = false;
+					hourRangeCrossesTwoDates = true;
+					return;
+				}
+			});
+		});
+
+		let newDateRange: Date[] = [];
+		let newParticipantsSchedules: Schedule[] = [];
+
+		if (hourRangeFitsSingleDay && rawEventData.date_range.length == 2) {
+			newDateRange = [new Date(rawEventData.date_range[0])];
+		} else if (
+			!hourRangeCrossesTwoDates &&
+			rawEventData.date_range.length === 1
+		) {
+			const newDate = new Date(newHoursRange[0]);
+			newDateRange = [
+				new Date(
+					`${
+						newDate.getMonth() + 1
+					}/${newDate.getDate()}/${newDate.getFullYear()}`
+				),
+			];
+		}
+		newParticipantsSchedules = newDateRange.map((date, i) => {
+			return {
+				date: new Date(date),
+				hours_range: rawEventData.participants_schedules
+					.map((schedule) => {
+						// one loop over participants_schedules
+						// second loop over participants_schedules.hours_range
+						// return all
+						return schedule.hours_range.map((hourObj) => {
+							return {
+								...hourObj,
+								hour: new Date(hourObj.hour),
+							};
+						});
+					})
+					.flat(),
+			};
+		});
+
 		const formatted = {
 			...rawEventData,
-			date_range: rawEventData.date_range.map(
-				(dateTimestamp, i) => new Date(dateTimestamp)
-			),
-			hours_range: rawEventData.hours_range.map(
-				(utcHour, i) => new Date(utcHour)
-			),
+			hours_range: newHoursRange,
+			date_range: newDateRange,
+			participants_schedules: newParticipantsSchedules,
 			organizer_data: organizerData,
-			participants_schedules: rawEventData.participants_schedules.map(
-				(schedule) => {
-					return {
-						date: new Date(schedule.date),
-						hours_range: schedule.hours_range.map((hourObj) => ({
-							hour: new Date(hourObj.hour),
-							participants: hourObj.participants,
-							tableElementIndex: hourObj.tableElementIndex,
-						})),
-					};
-				}
-			),
 		};
-		console.log({ formatted });
 		return formatted;
 	} else {
 		return Promise.reject(
