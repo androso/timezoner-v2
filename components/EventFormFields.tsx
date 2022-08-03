@@ -78,20 +78,16 @@ export default function EventFormFields({
 				</label>
 
 				<Controller
-					name="dateRange"
+					name="date"
 					control={formMethods.control}
-					defaultValue={[null, null]}
+					defaultValue={null as unknown as Date}
 					render={({ field }) => {
-						const [startingDate, endingDate] = field.value;
+						const startingDate = field.value;
 						return (
 							<DatePicker
 								selected={startingDate}
-								onChange={(dates: dateRange) => {
-									field.onChange(dates);
-								}}
-								selectsRange
+								onChange={field.onChange}
 								startDate={startingDate}
-								endDate={endingDate}
 								className="basic-input-field w-full placeholder:text-shadowWhite2"
 								onBlur={field.onBlur}
 								name={field.name}

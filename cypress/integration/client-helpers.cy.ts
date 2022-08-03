@@ -144,10 +144,9 @@ describe("getFormattedFormData", () => {
 					"Sun Jul 31 2022 18:30:00 GMT-0600 (Central Standard Time)"
 				),
 			},
-			dateRange: [
-				new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
-				new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
-			] as [Date, Date],
+			date: new Date(
+				"Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"
+			),
 		};
 		it("returns correct date_range when provided with case A", () => {
 			const expected = {
@@ -217,10 +216,7 @@ describe("getFormattedFormData", () => {
 					"Aug 01 2022 23:30:00 GMT-0600 (Central Standard Time)"
 				),
 			},
-			dateRange: [
-				new Date("Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
-				new Date("Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
-			] as [Date, Date],
+			date: new Date("Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
 		};
 		const expectedData = {
 			date_range: ["8/2/2022"],
@@ -254,8 +250,10 @@ describe("getFormattedFormData", () => {
 			expect(resultData.hours_range).to.deep.equal(expectedData.hours_range);
 		});
 		it("returns correct participants_schedules", () => {
-			expect(resultData.participants_schedules).to.deep.equal(expectedData.participants_schedules);
-		})
+			expect(resultData.participants_schedules).to.deep.equal(
+				expectedData.participants_schedules
+			);
+		});
 	});
 });
 

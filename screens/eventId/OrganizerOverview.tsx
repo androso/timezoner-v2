@@ -16,7 +16,9 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { firestore } from "../../lib/firebase";
 import {
 	getDatesBetweenRange,
+	getFormattedFormData,
 	getHoursBetweenRange,
+	getTimezoneMetadata,
 	standardizeHours,
 } from "../../lib/utils/client-helpers";
 import useHourRangeBasedOnTimezone from "../../lib/utils/hooks/useHourRangeBasedOnTimezone";
@@ -24,9 +26,12 @@ import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import { EventData, EventFormValues } from "../../lib/utils/types";
 import { LoadingOverview } from "../../pages/event/[eventId]";
 import {
+	defaultTimezone,
 	defaultTimezone as localTimezone,
+	timeZones,
 	timezonesLabels,
 } from "../../lib/timezonesData";
+import { TimeZone } from "@vvo/tzdb";
 
 export default function OrganizerOverview({
 	eventData,
@@ -49,6 +54,10 @@ export default function OrganizerOverview({
 	);
 	const { eventId } = router.query;
 
+	useEffect(() => {
+		console.log(eventData);
+	}, [eventData]);
+	
 	const formMethods = useForm<EventFormValues>({
 		defaultValues: {
 			title: eventData?.title,
@@ -58,10 +67,7 @@ export default function OrganizerOverview({
 				start_hour: eventData?.hours_range[0],
 				end_hour: eventData?.hours_range[eventData.hours_range.length - 1],
 			},
-			dateRange: [
-				eventData?.date_range[0],
-				eventData?.date_range[eventData.date_range.length - 1],
-			],
+			date: eventData?.date_range[0],
 		},
 	});
 
@@ -80,55 +86,88 @@ export default function OrganizerOverview({
 	}, [eventData]);
 
 	const updateEvent = async (data: EventFormValues) => {
-		const { dateRange, hours_range, description, title, timezone } = data;
+		const { date, hours_range, description, title, timezone } = data;
 		const hoursBetweenRange = getHoursBetweenRange(
 			hours_range.start_hour,
 			hours_range.end_hour
 		);
 		const utcHoursRange = standardizeHours(hoursBetweenRange);
-		if (eventData?.id && parsedUser && dateRange[0]) {
+		if (eventData?.id && parsedUser && date) {
 			const eventDocRef = doc(firestore, "events", eventData?.id);
-			const newDateRange = getDatesBetweenRange(
-				dateRange[0],
-				dateRange[1] ?? dateRange[0]
+			const hoursBetweenRange = getHoursBetweenRange(
+				hours_range.start_hour,
+				hours_range.end_hour
+			);
+			const timezoneSelectedMeta = getTimezoneMetadata(timezone) as TimeZone;
+			const localTimezoneMeta = timeZones.find(
+				(tz) =>
+					defaultTimezone.value === tz.name ||
+					tz.group.includes(defaultTimezone.value)
+			) as TimeZone;
+			const totalOffsetInMinutes =
+				timezoneSelectedMeta?.currentTimeOffsetInMinutes -
+				localTimezoneMeta?.currentTimeOffsetInMinutes;
+
+			const hoursConvertedToLocal = hoursBetweenRange.map((hour) => {
+				// convert first to aug 1 then jul 31
+				const formDate = date;
+				const newHour = new Date(
+					`${
+						formDate.getMonth() + 1
+					}/${formDate.getDate()}/${formDate.getFullYear()} ${hour.getHours()}:${hour.getMinutes()}`
+				);
+				newHour.setMinutes(hour.getMinutes() - totalOffsetInMinutes);
+				return newHour;
+			});
+			const dataSentToFirestore = getFormattedFormData(
+				{
+					...data,
+					hours_range: {
+						start_hour: hoursConvertedToLocal[0],
+						end_hour: hoursConvertedToLocal[hoursConvertedToLocal.length - 1],
+					},
+				},
+				parsedUser.id,
+				eventDocRef.id
 			);
 
-			const dataSentToFirestore = {
-				date_range: newDateRange,
-				hours_range: utcHoursRange,
-				title,
-				description: description,
-				og_timezone: timezone,
-				participants_schedules: newDateRange.map((newDateObj, dateIndex) => ({
-					date: newDateObj.toUTCString(),
-					hours_range: utcHoursRange.map((utcHourOBj, hourIndex) => {
-						return {
-							hour: new Date(
-								`${
-									newDateObj.getMonth() + 1
-								}/${newDateObj.getDate()}/${newDateObj.getFullYear()} ${new Date(
-									utcHourOBj
-								).getHours()}:${new Date(utcHourOBj).getMinutes()}`
-							).toUTCString(),
-							participants:
-								eventData.participants_schedules[dateIndex]?.hours_range[
-									hourIndex
-								].participants ?? [],
-							tableElementIndex:
-								eventData.participants_schedules[dateIndex]?.hours_range[
-									hourIndex
-								].tableElementIndex ?? null,
-						};
-					}),
-				})),
-			};
-			try {
-				await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
-				closeDialog();
-				toast.success("Event updated succesfully");
-			} catch (e) {
-				toast.error("There was an error while updating the event");
-			}
+			// const dataSentToFirestore = {
+			// 	date_range: newDateRange,
+			// 	hours_range: utcHoursRange,
+			// 	title,
+			// 	description: description,
+			// 	og_timezone: timezone,
+			// 	participants_schedules: newDateRange.map((newDateObj, dateIndex) => ({
+			// 		date: newDateObj.toUTCString(),
+			// 		hours_range: utcHoursRange.map((utcHourOBj, hourIndex) => {
+			// 			return {
+			// 				hour: new Date(
+			// 					`${
+			// 						newDateObj.getMonth() + 1
+			// 					}/${newDateObj.getDate()}/${newDateObj.getFullYear()} ${new Date(
+			// 						utcHourOBj
+			// 					).getHours()}:${new Date(utcHourOBj).getMinutes()}`
+			// 				).toUTCString(),
+			// 				participants:
+			// 					eventData.participants_schedules[dateIndex]?.hours_range[
+			// 						hourIndex
+			// 					].participants ?? [],
+			// 				tableElementIndex:
+			// 					eventData.participants_schedules[dateIndex]?.hours_range[
+			// 						hourIndex
+			// 					].tableElementIndex ?? null,
+			// 			};
+			// 		}),
+			// 	})),
+			// };
+			console.log(dataSentToFirestore);
+			// try {
+			// 	await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
+			// 	closeDialog();
+			// 	toast.success("Event updated succesfully");
+			// } catch (e) {
+			// 	toast.error("There was an error while updating the event");
+			// }
 		}
 	};
 
@@ -225,9 +264,7 @@ export default function OrganizerOverview({
 							aria-label="Delete event warning"
 							className="!bg-[#3e4559] text-whiteText1 shadow-md !min-w-fit !sm:w-[50vw] relative"
 						>
-							<span role="heading" className="text-2xl font-bold">
-								Delete Event
-							</span>
+							<span className="text-2xl font-bold">Delete Event</span>
 							<button
 								title="Close"
 								className="h-7 absolute top-0 right-0 mr-5 mt-6"

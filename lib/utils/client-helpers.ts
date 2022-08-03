@@ -322,19 +322,16 @@ export const getFormattedFormData = (
 	// we can add a condition to check if it crosses days forwards or backwards
 	let hourRangeCrossesTwoDatesForward = false;
 	let hourRangeCrossesTwoDatesBackwards = false;
-	if (formData.dateRange[0]) {
-		if (
-			formData.hours_range.start_hour.getDate() <
-				formData.dateRange[0]?.getDate() ||
-			formData.hours_range.start_hour.getMonth() <
-				formData.dateRange[0].getMonth()
-		) {
-			hourRangeCrossesTwoDatesBackwards = true;
-			hourRangeCrossesTwoDatesForward = false;
-		} else {
-			hourRangeCrossesTwoDatesBackwards = false;
-			hourRangeCrossesTwoDatesForward = true;
-		}
+
+	if (
+		formData.hours_range.start_hour.getDate() < formData.date.getDate() ||
+		formData.hours_range.start_hour.getMonth() < formData.date.getMonth()
+	) {
+		hourRangeCrossesTwoDatesBackwards = true;
+		hourRangeCrossesTwoDatesForward = false;
+	} else {
+		hourRangeCrossesTwoDatesBackwards = false;
+		hourRangeCrossesTwoDatesForward = true;
 	}
 
 	const hoursBetweenRange = getHoursBetweenRange(
@@ -343,7 +340,7 @@ export const getFormattedFormData = (
 	).map((hour) => {
 		if (hourRangeCrossesTwoDatesForward) {
 			const newHour = new Date(hour.getTime());
-			newHour.setDate(formData.dateRange[0]?.getDate() ?? new Date().getDate());
+			newHour.setDate(formData.date.getDate() ?? new Date().getDate());
 			return newHour;
 		} else {
 			return hour;

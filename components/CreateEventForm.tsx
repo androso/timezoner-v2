@@ -27,8 +27,7 @@ export default function CreateEventForm() {
 	const { parsedUser } = useParsedUserData();
 	const router = useRouter();
 	const submitForm: SubmitHandler<EventFormValues> = async (data) => {
-		const { dateRange, hours_range, description, title, timezone } = data;
-		console.log(hours_range)
+		const { date, hours_range, description, title, timezone } = data;
 		if (parsedUser) {
 			const eventDocRef = doc(collection(firestore, "events"));
 			const hoursBetweenRange = getHoursBetweenRange(
@@ -46,32 +45,31 @@ export default function CreateEventForm() {
 				timezoneSelectedMeta?.currentTimeOffsetInMinutes -
 				localTimezoneMeta?.currentTimeOffsetInMinutes;
 
-			if (dateRange[0]) {
-				const hoursConvertedToLocal = hoursBetweenRange.map((hour) => {
-					// convert first to aug 1 then jul 31
-					const formDate = dateRange[0] ?? new Date();
-					const newHour = new Date(
-						`${
-							formDate.getMonth() + 1
-						}/${formDate.getDate()}/${formDate.getFullYear()} ${hour.getHours()}:${hour.getMinutes()}`
-					);
-					newHour.setMinutes(hour.getMinutes() - totalOffsetInMinutes);
-					return newHour;
-				});
-				const dataSentToFirestore = getFormattedFormData(
-					{
-						...data,
-						hours_range: {
-							start_hour: hoursConvertedToLocal[0],
-							end_hour: hoursConvertedToLocal[hoursConvertedToLocal.length - 1],
-						},
-					},
-					parsedUser.id,
-					eventDocRef.id
+			const hoursConvertedToLocal = hoursBetweenRange.map((hour) => {
+				// convert first to aug 1 then jul 31
+				const formDate = date;
+				const newHour = new Date(
+					`${
+						formDate.getMonth() + 1
+					}/${formDate.getDate()}/${formDate.getFullYear()} ${hour.getHours()}:${hour.getMinutes()}`
 				);
-				await setDoc(eventDocRef, dataSentToFirestore);
-				router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });
-			}
+				newHour.setMinutes(hour.getMinutes() - totalOffsetInMinutes);
+				return newHour;
+			});
+			const dataSentToFirestore = getFormattedFormData(
+				{
+					...data,
+					hours_range: {
+						start_hour: hoursConvertedToLocal[0],
+						end_hour: hoursConvertedToLocal[hoursConvertedToLocal.length - 1],
+					},
+				},
+				parsedUser.id,
+				eventDocRef.id
+			);
+
+			await setDoc(eventDocRef, dataSentToFirestore);
+			router.push(`/event/${eventDocRef.id}`, undefined, { shallow: true });
 		}
 	};
 
