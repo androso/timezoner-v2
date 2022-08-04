@@ -318,7 +318,7 @@ export const getFormattedFormData = (
 	formData: EventFormValues,
 	userId: string,
 	eventId: string
-) => {
+): RawEventDataFromFirestore => {
 	// we can add a condition to check if it crosses days forwards or backwards
 	let hourRangeCrossesTwoDatesForward = false;
 	let hourRangeCrossesTwoDatesBackwards = false;
@@ -371,13 +371,15 @@ export const getFormattedFormData = (
 			}/${localHour.getUTCDate()}/${localHour.getUTCFullYear()}`;
 		})
 		.filter((utcDate, index, self) => self.indexOf(utcDate) === index);
-	return {
+
+	const formatted =  {
 		date_range: utcDateRange,
 		hours_range: utcHourRange,
 		description: formData.description,
 		og_timezone: formData.timezone,
 		title: formData.title,
 		organizer_ref: doc(firestore, "users", userId),
+		organizer_id: userId,
 		id: eventId,
 		participants: [],
 		participants_schedules: utcDateRange.map((utcDate) => ({
@@ -397,6 +399,7 @@ export const getFormattedFormData = (
 				}),
 		})),
 	};
+	return formatted;
 };
 
 export const useEventDataBasedOnTimezone = (

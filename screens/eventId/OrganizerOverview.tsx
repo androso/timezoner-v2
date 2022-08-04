@@ -51,13 +51,9 @@ export default function OrganizerOverview({
 	);
 	const convertedEventData = useEventDataBasedOnTimezone(
 		eventData,
-		eventData?.og_timezone
+		eventData?.og_timezone.replace(" ", "_")
 	);
 	const datesRange = convertedEventData?.date_range;
-	// const convertedHours = useHourRangeBasedOnTimezone(
-	// 	eventData?.hours_range,
-	// 	timezoneSelected
-	// );
 	const convertedHours = convertedEventData?.hours_range;
 	const { eventId } = router.query;
 
@@ -65,11 +61,13 @@ export default function OrganizerOverview({
 		defaultValues: {
 			title: eventData?.title,
 			description: eventData?.description,
-			timezone: eventData?.og_timezone,
+			timezone: convertedEventData?.og_timezone,
 			hours_range: {
 				start_hour: convertedEventData?.hours_range[0],
 				end_hour:
-					convertedEventData?.hours_range[convertedEventData.hours_range.length - 1],
+					convertedEventData?.hours_range[
+						convertedEventData.hours_range.length - 1
+					],
 			},
 			date: convertedEventData?.date_range[0],
 		},
@@ -119,7 +117,7 @@ export default function OrganizerOverview({
 				newHour.setMinutes(hour.getMinutes() - totalOffsetInMinutes);
 				return newHour;
 			});
-			const dataSentToFirestore = getFormattedFormData(
+			let dataSentToFirestore = getFormattedFormData(
 				{
 					...data,
 					hours_range: {
@@ -130,16 +128,51 @@ export default function OrganizerOverview({
 				parsedUser.id,
 				eventDocRef.id
 			);
-			// if the user has changed the date or an hour from hours_range, we alert that this data will be deleted, "do you want to continue?"
-			// if the user has only changed stuff like title, description, etc, we just put the previous data;
-			
-			dataSentToFirestore.participants_schedules = [{}];
-			dataSentToFirestore.participants = [];
 
+			const timezonesAreNotTheSame =
+				data.timezone !== convertedEventData?.og_timezone;
+			const dateIsNotTheSame = !convertedEventData?.date_range.find(
+				(date) => date.toUTCString() === data.date.toUTCString()
+			)
+				? true
+				: false;
+			const hoursAreNotTheSame =
+				convertedEventData?.hours_range[0].toUTCString() !==
+					data.hours_range.start_hour.toUTCString() ||
+				convertedEventData.hours_range[
+					convertedEventData.hours_range.length - 1
+				].toUTCString() !== data.hours_range.end_hour.toUTCString();
+
+			if (timezonesAreNotTheSame || dateIsNotTheSame || hoursAreNotTheSame) {
+				if (
+					!confirm(
+						"This will reset this event's participants, are you sure to continue?"
+					)
+				) {
+					console.log("won't send");
+					return;
+				}
+			} else {
+				// formatting participants_schedules to database format
+				dataSentToFirestore.participants = convertedEventData?.participants;
+				dataSentToFirestore.participants_schedules =
+					convertedEventData.participants_schedules.map((schedule) => {
+						const utcDate = `${schedule.date.getUTCMonth()}/${schedule.date.getUTCDate()}/${schedule.date.getUTCFullYear()}`; // ie: mm/dd/yy
+						return {
+							date: utcDate,
+							hours_range: schedule.hours_range.map((hourObj, i) => {
+								return {
+									...hourObj,
+									hour: hoursConvertedToLocal[i].toUTCString(),
+								};
+							}),
+						};
+					});
+			}
 			try {
-				// await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
-				// closeDialog();
-				// toast.success("Event updated succesfully");
+				await setDoc(eventDocRef, dataSentToFirestore, { merge: true });
+				closeDialog();
+				toast.success("Event updated succesfully");
 			} catch (e) {
 				toast.error("There was an error while updating the event");
 			}
