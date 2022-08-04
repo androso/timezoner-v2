@@ -372,7 +372,7 @@ export const getFormattedFormData = (
 		})
 		.filter((utcDate, index, self) => self.indexOf(utcDate) === index);
 
-	const formatted =  {
+	const formatted = {
 		date_range: utcDateRange,
 		hours_range: utcHourRange,
 		description: formData.description,
@@ -414,11 +414,12 @@ export const useEventDataBasedOnTimezone = (
 		.map((hour) => {
 			const localHour = new Date(hour);
 			return `${
-				localHour.getUTCMonth() + 1
-			}/${localHour.getUTCDate()}/${localHour.getUTCFullYear()}`;
+				localHour.getMonth() + 1
+			}/${localHour.getDate()}/${localHour.getFullYear()}`;
 		})
 		.filter((utcDate, index, self) => self.indexOf(utcDate) === index)
 		.map((hour) => new Date(hour));
+
 	return {
 		...eventData,
 		date_range: newDateRange,

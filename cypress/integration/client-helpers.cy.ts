@@ -1,104 +1,97 @@
-import { doc } from "firebase/firestore";
-import { firestore } from "../../lib/firebase";
 import {
-	formatRawEventData,
 	formatRawEventDataTest,
 	getColorsBasedOnNumberOfParticipants,
 	getFormattedFormData,
 	useEventDataBasedOnTimezone,
 } from "../../lib/utils/client-helpers";
-import {
-	dateRange,
-	EventData,
-	RawEventDataFromFirestore,
-} from "../../lib/utils/types";
+import { EventData, RawEventDataFromFirestore } from "../../lib/utils/types";
 
-// describe("get color palette from participants", () => {
-// 	const strongestColor = "hsl(100, 100%, 30%)";
-// 	const lightestColor = "hsl(100, 43%, 70%)";
+describe("get color palette from participants", () => {
+	const strongestColor = "hsl(100, 100%, 30%)";
+	const lightestColor = "hsl(100, 43%, 70%)";
 
-// 	it("gives back the strongest green color if only one participant", () => {
-// 		const expected = [
-// 			{
-// 				color: strongestColor,
-// 				numberOfParticipants: 1,
-// 			},
-// 		];
-// 		2;
-// 		const eventParticipants = [
-// 			{
-// 				hour: new Date("jul 17 10:00"),
-// 				tableElementIndex: 0,
-// 				numberOfParticipants: 1,
-// 			},
-// 		];
-// 		const exercise = getColorsBasedOnNumberOfParticipants(eventParticipants);
-// 		expect(exercise).to.deep.equal(expected);
-// 	});
-// 	it("gives back strongest and lightest color if only two participant", () => {
-// 		const expected = [
-// 			{
-// 				color: strongestColor,
-// 				numberOfParticipants: 5,
-// 			},
-// 			{
-// 				color: lightestColor,
-// 				numberOfParticipants: 2,
-// 			},
-// 		];
-// 		const eventParticipants = [
-// 			{
-// 				hour: new Date("jul 17 10:00"),
-// 				tableElementIndex: 0,
-// 				numberOfParticipants: 5,
-// 			},
-// 			{
-// 				hour: new Date("jul 17 10:00"),
-// 				tableElementIndex: 1,
-// 				numberOfParticipants: 2,
-// 			},
-// 		];
+	it("gives back the strongest green color if only one participant", () => {
+		const expected = [
+			{
+				color: strongestColor,
+				numberOfParticipants: 1,
+			},
+		];
+		2;
+		const eventParticipants = [
+			{
+				hour: new Date("jul 17 10:00"),
+				tableElementIndex: 0,
+				numberOfParticipants: 1,
+			},
+		];
+		const exercise = getColorsBasedOnNumberOfParticipants(eventParticipants);
+		expect(exercise).to.deep.equal(expected);
+	});
+	it("gives back strongest and lightest color if only two participant", () => {
+		const expected = [
+			{
+				color: strongestColor,
+				numberOfParticipants: 5,
+			},
+			{
+				color: lightestColor,
+				numberOfParticipants: 2,
+			},
+		];
+		const eventParticipants = [
+			{
+				hour: new Date("jul 17 10:00"),
+				tableElementIndex: 0,
+				numberOfParticipants: 5,
+			},
+			{
+				hour: new Date("jul 17 10:00"),
+				tableElementIndex: 1,
+				numberOfParticipants: 2,
+			},
+		];
 
-// 		const result = getColorsBasedOnNumberOfParticipants(eventParticipants);
-// 		expect(result).to.deep.equal(expected);
-// 	});
-// 	it("generates correct color palette when provided more than 2 participants", () => {
-// 		const expected = [
-// 			{
-// 				color: strongestColor,
-// 				numberOfParticipants: 5,
-// 			},
-// 			{
-// 				color: "hsl(100, 71%, 50%)",
-// 				numberOfParticipants: 4,
-// 			},
-// 			{
-// 				color: lightestColor,
-// 				numberOfParticipants: 2,
-// 			},
-// 		];
-// 		const eventsParticipants = [
-// 			{
-// 				hour: new Date("jul 17 10:00"),
-// 				tableElementIndex: 0,
-// 				numberOfParticipants: 4,
-// 			},
-// 			{
-// 				hour: new Date("jul 17 10:00"),
-// 				tableElementIndex: 0,
-// 				numberOfParticipants: 5,
-// 			},
-// 			{
-// 				hour: new Date("jul 17 10:00"),
-// 				tableElementIndex: 0,
-// 				numberOfParticipants: 2,
-// 			},
-// 		];
+		const result = getColorsBasedOnNumberOfParticipants(eventParticipants);
+		expect(result).to.deep.equal(expected);
+	});
+	it("generates correct color palette when provided more than 2 participants", () => {
+		const expected = [
+			{
+				color: strongestColor,
+				numberOfParticipants: 5,
+			},
+			{
+				color: "hsl(100, 71%, 50%)",
+				numberOfParticipants: 4,
+			},
+			{
+				color: lightestColor,
+				numberOfParticipants: 2,
+			},
+		];
+		const eventsParticipants = [
+			{
+				hour: new Date("jul 17 10:00"),
+				tableElementIndex: 0,
+				numberOfParticipants: 4,
+			},
+			{
+				hour: new Date("jul 17 10:00"),
+				tableElementIndex: 0,
+				numberOfParticipants: 5,
+			},
+			{
+				hour: new Date("jul 17 10:00"),
+				tableElementIndex: 0,
+				numberOfParticipants: 2,
+			},
+		];
 
-// 		const result = getColorsBasedOnNumberOfParticipants(eventsParticipants);
-// 		expect(result).to.deep.equal(expected);
-// 	});
-// });
+		const result = getColorsBasedOnNumberOfParticipants(eventsParticipants);
+		expect(result).to.deep.equal(expected);
+	});
+});
 
 describe("getFormattedFormData", () => {
 	// returns data ready to be sent to firestore
@@ -109,25 +102,13 @@ describe("getFormattedFormData", () => {
 	};
 	// CASE A:
 	// timezone: Istanbul
-	// Date: aug 1 => aug 1
-	// start_hour: 2:30am
-	// end_hour: 3:30am
-
-	// CASE B:
-	// timezone: Istanbul
-	// Date: aug 1 => aug 3
+	// Date: aug 1
 	// start_hour: 2:30am
 	// end_hour: 3:30am
 
 	// CASE C:
 	// timezone: El Salvador
 	// Date: aug 1 =>debugger; aug 1
-	// start_hour: 11:00pm
-	// end_hour: 11:30pm
-
-	// CASE D:
-	// timezone: El Salvador
-	// Date: aug 1 => aug 3
 	// start_hour: 11:00pm
 	// end_hour: 11:30pm
 
@@ -428,10 +409,9 @@ describe("formatRawEventData", () => {
 
 describe("useEventDataBasedOnTimezone", async () => {
 	// the function will receive an eventData (queried and formatted from firestore)
-	// and will output a eventData based on the timezone
+	// and will output an eventData based on that timezone
+	// Useful if we add a timezone select for the user to change to whatever timezone they want
 	// will update all time-related stuff to match the timezone selected
-	//todo find a data model that will allow us to make this operation
-	// this would be the data received from calling formatRawEventData
 	describe("CASE A", () => {
 		const eventData = {
 			hours_range: [
@@ -535,75 +515,5 @@ describe("useEventDataBasedOnTimezone", async () => {
 				);
 			});
 		});
-		// describe("America/El Salvador => GMT-0", () => {
-		// 	const expectedEventData = {
-		// 		date_range: [
-		// 			new Date("Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"),
-		// 			new Date("Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"),
-		// 		],
-		// 		hours_range: [
-		// 			new Date(
-		// 				"Sun, 31 Jul 2022 23:30:00 GMT-0600 (Central Standard Time)"
-		// 			), // mocking istanbul timezone
-		// 			new Date(
-		// 				"Mon, 01 Aug 2022 00:00:00 GMT-0600 (Central Standard Time)"
-		// 			),
-		// 			new Date(
-		// 				"Mon, 01 Aug 2022 00:30:00 GMT-0600 (Central Standard Time)"
-		// 			),
-		// 		],
-		// 		participants_schedules: [
-		// 			{
-		// 				date: new Date(
-		// 					"Sun Jul 31 2022 00:00:00 GMT-0600 (Central Standard Time)"
-		// 				),
-		// 				hours_range: [
-		// 					{
-		// 						hour: new Date(
-		// 							"Sun, 31 Jul 2022 23:30:00 GMT-0600 (Central Standard Time)"
-		// 						),
-		// 						participants: [],
-		// 						tableElementIndex: null,
-		// 					},
-		// 				],
-		// 			},
-		// 			{
-		// 				date: new Date(
-		// 					"Mon Aug 01 2022 00:00:00 GMT-0600 (Central Standard Time)"
-		// 				),
-		// 				hours_range: [
-		// 					{
-		// 						hour: new Date(
-		// 							"Mon, 01 Aug 2022 00:00:00 GMT-0600 (Central Standard Time)"
-		// 						),
-		// 						participants: [],
-		// 						tableElementIndex: null,
-		// 					},
-		// 					{
-		// 						hour: new Date(
-		// 							"Mon, 01 Aug 2022 00:30:00 GMT-0600 (Central Standard Time)"
-		// 						),
-		// 						participants: [],
-		// 						tableElementIndex: null,
-		// 					},
-		// 				],
-		// 			},
-		// 		],
-		// 	};
-		// 	const resultEventData = useEventDataBasedOnTimezone(
-		// 		eventData as unknown as EventData,
-		// 		"Atlantic/Azores"
-		// 	);
-		// 	it("converts correctly hours_range", () => {
-		// 		expect(resultEventData.hours_range).to.deep.equal(
-		// 			expectedEventData.hours_range
-		// 		);
-		// 	});
-		// 	it("converts correctly date_range", () => {
-		// 		expect(resultEventData.date_range).to.deep.equal(
-		// 			expectedEventData.date_range
-		// 		);
-		// 	});
-		// });
 	});
 });
