@@ -37,8 +37,8 @@ export default function Dashboard() {
 		error,
 	} = useAllEvents();
 	useEffect(() => {
-		console.log(allEvents)
-	}, [allEvents])
+		console.log(allEvents);
+	}, [allEvents]);
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
 	const currentPageEvents = allEvents?.slice(
 		eventsPageIndex * 5,
@@ -86,11 +86,11 @@ export default function Dashboard() {
 				photoURL={parsedUser?.avatar_url ?? undefined}
 			/>
 			<Container css="pt-4 sm:pt-6">
-				<div className="flex mb-3 sm:mb-9">
+				<div className="flex flex-col xs:flex-row items-start mb-3 sm:mb-9">
 					<LightButtonLink
 						redirectTo="/new-event"
 						innerText="Create Event"
-						css="mr-5 flex items-center"
+						css="mr-5 flex items-center mb-3 sm:mb-0"
 					/>
 
 					<form
@@ -108,7 +108,7 @@ export default function Dashboard() {
 									shallow: true,
 								});
 							} else {
-								toast.error("incorrect event code");
+								toast.error("incorrect event code", { duration: 1500 });
 							}
 						}}
 						className="flex"
@@ -118,11 +118,12 @@ export default function Dashboard() {
 							name="event_code"
 							placeholder="Event code"
 							autoComplete="off"
-							className="bg-[#5a6f74] focus:mr-[2px] auto rounded-l-md px-2 py-4 w-[150px] sm:w-[200px]"
+							className="bg-[#5a6f74] focus:mr-[2px] auto rounded-l-md px-2 py-3 w-[150px] sm:w-[200px]"
 						/>
+
 						<button
 							type="submit"
-							className="bg-gradient-to-b from-[#485051] to-[#292E2E] h-auto px-2 sm:px-3 rounded-r-md"
+							className=" relative bg-gradient-to-b from-[#485051] to-[#292E2E] h-auto px-2 sm:px-3 rounded-r-md dark-btn-transition before:rounded-r-md"
 						>
 							Join
 						</button>

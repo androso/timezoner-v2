@@ -7,6 +7,9 @@ module.exports = {
 	],
 	theme: {
 		extend: {
+			screens: {
+				'xs': '480px'
+			},
 			width: {
 				"avatar-sm-w": "9.375rem",
 				"container-sm": "22.75rem",
