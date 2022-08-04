@@ -20,6 +20,7 @@ export default function TimezonesSelect({
 	const controllerProps = {
 		name: "timezone",
 		defaultValue: defaultTimezone,
+		rules: { required: true },
 	};
 	const { field } = useController(controllerProps);
 	return (
