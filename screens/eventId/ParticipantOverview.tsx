@@ -2,25 +2,13 @@ import React from "react";
 import EventSchedulingTable from "../../components/EventSchedulingTable";
 import Header from "../../components/Header";
 import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
-import { Container } from "../../components/Layouts";
-import {
-	convertHoursToTimezone,
-	getDatesBetweenRange,
-	getHoursBetweenRange,
-	getTimezoneMetadata,
-	standardizeHours,
-} from "../../lib/utils/client-helpers";
+import Container from "../../components/Layouts/Container";
 import { EventData } from "../../lib/utils/types";
 import {
 	defaultTimezone as localTimezone,
-	timezonesLabels,
 } from "../../lib/timezonesData";
 import { LoadingOverview } from "../../pages/event/[eventId]";
-import Downshift from "downshift";
-import { matchSorter } from "match-sorter";
-import { timeZones } from "../../lib/timezonesData";
 import EventAvailabilityTable from "../../components/EventAvailabilityTable";
-import toast from "react-hot-toast";
 import useHourRangeBasedOnTimezone from "../../lib/utils/hooks/useHourRangeBasedOnTimezone";
 
 export default function ParticipantOverview({
@@ -75,7 +63,9 @@ export default function ParticipantOverview({
 				</h1>
 				<p className="mb-4 font-medium text-lg">{eventData.description}</p>
 				<div className="mb-4">
-					<p className="text-gray-300 text-base">Your Timezone: {localTimezone.label}</p>
+					<p className="text-gray-300 text-base">
+						Your Timezone: {localTimezone.label}
+					</p>
 					{/* We'll have a select timezone that will change the hours displayed on the table */}
 					{/* <Downshift
 						itemToString={(item) => (item ? item : "")}
@@ -154,7 +144,7 @@ export default function ParticipantOverview({
 					</Downshift> */}
 				</div>
 				<div className="mb-4 ">
-					{/* //TODO: add styles */}
+					{/* //TODO: improve styles */}
 					<button
 						className={`p-3 rounded-sm mr-3 ${
 							tableView === "scheduling" ? "bg-[#2E2E2E]" : "bg-[#404040] "

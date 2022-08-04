@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import type { AppProps } from "next/app";
 import type { PageWrapperProps } from "../components/Layouts/PageWrapper";
 import type { ToasterProps } from "react-hot-toast";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { EventsProvider } from "../lib/context/allUserEvents";
 const DynamicToaster = dynamic<ToasterProps>(

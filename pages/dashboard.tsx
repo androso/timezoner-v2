@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import dynamic from "next/dynamic";
-import type { BtnLinkProps, BtnProps } from "../components/LightButton";
+import type { BtnLinkProps } from "../components/LightButton";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
 import EventThumbnail from "../components/EventThumbnail";
-
 import { useAllEvents } from "../lib/context/allUserEvents";
 import LoginForm from "../components/LoginForm";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -21,10 +20,6 @@ const LightButtonLink = dynamic<BtnLinkProps>(
 	{
 		ssr: false,
 	}
-);
-const LightButton = dynamic<BtnProps>(
-	() => import("../components/LightButton").then((md) => md.LightButton),
-	{ ssr: false }
 );
 
 export default function Dashboard() {

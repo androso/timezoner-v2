@@ -5,7 +5,6 @@ const useHourRangeBasedOnTimezone = (
 	timezoneSelected: string | null
 ) => {
 	if (!hoursRange || !timezoneSelected) return null;
-	const formattedTimezone = timezoneSelected.replace(" ", "_");
 	const timezoneMetadata = getTimezoneMetadata(timezoneSelected);
 
 	if (timezoneMetadata) {

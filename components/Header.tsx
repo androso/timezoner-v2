@@ -1,6 +1,6 @@
 import React from "react";
 import Image, { StaticImageData } from "next/image";
-import { Container } from "./Layouts";
+import Container from "./Layouts/Container";
 import { capitalizeFirstLetter } from "../lib/utils/client-helpers";
 import LogoutButton from "./LogoutButton";
 import avatarPlaceholder from "../public/placeholder-avatar.webp";

@@ -3,26 +3,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DialogContent, DialogOverlay } from "@reach/dialog";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import EventAvailabilityTable from "../../components/EventAvailabilityTable";
 import EventFormFields from "../../components/EventFormFields";
 import Header from "../../components/Header";
 import HomeBreadcrumbs from "../../components/HomeBreadcrumbs";
-import { Container } from "../../components/Layouts";
+import Container from "../../components/Layouts/Container";
 import { LightButton } from "../../components/LightButton";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { firestore } from "../../lib/firebase";
 import {
-	getDatesBetweenRange,
 	getFormattedFormData,
 	getHoursBetweenRange,
 	getTimezoneMetadata,
 	standardizeHours,
 	useEventDataBasedOnTimezone,
 } from "../../lib/utils/client-helpers";
-import useHourRangeBasedOnTimezone from "../../lib/utils/hooks/useHourRangeBasedOnTimezone";
 import useParsedUserData from "../../lib/utils/hooks/useParsedUserData";
 import { EventData, EventFormValues } from "../../lib/utils/types";
 import { LoadingOverview } from "../../pages/event/[eventId]";
@@ -30,7 +28,6 @@ import {
 	defaultTimezone,
 	defaultTimezone as localTimezone,
 	timeZones,
-	timezonesLabels,
 } from "../../lib/timezonesData";
 import { TimeZone } from "@vvo/tzdb";
 

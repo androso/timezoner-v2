@@ -1,31 +1,12 @@
 import React from "react";
-import {
-	useSelectionContainer,
-	boxesIntersect,
-	Box,
-} from "@air/react-drag-to-select";
-import {
-	arrayUnion,
-	collection,
-	doc,
-	DocumentReference,
-	getDoc,
-	getDocs,
-	setDoc,
-	updateDoc,
-} from "firebase/firestore";
+import { Box } from "@air/react-drag-to-select";
+import { doc, DocumentReference, updateDoc } from "firebase/firestore";
 import { firestore } from "../lib/firebase";
 import { useRouter } from "next/router";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
-import { EventData, RawParticipant, UserData } from "../lib/utils/types";
-import {
-	getDatesBetweenRange,
-	getHoursBetweenRange,
-} from "../lib/utils/client-helpers";
+import { EventData, UserData } from "../lib/utils/types";
 import { queryClient } from "../pages/_app";
-import { timeZones } from "../lib/timezonesData";
 import toast from "react-hot-toast";
-import isEqual from "lodash.isequal";
 
 const getInitialSelectedIndexes = (
 	eventData: EventData,
@@ -166,7 +147,7 @@ export default function EventSchedulingTable({
 			} else {
 				newParticipantsRefs = [...eventData.participants, userRef];
 			}
-			
+
 			try {
 				const eventRef = doc(firestore, "events", eventId);
 				await updateDoc(eventRef, {

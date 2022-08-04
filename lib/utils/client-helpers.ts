@@ -1,12 +1,9 @@
 import { TimeZone } from "@vvo/tzdb";
 import { User } from "firebase/auth";
 import {
-	collection,
 	doc,
 	DocumentData,
-	DocumentReference,
 	getDoc,
-	QueryDocumentSnapshot,
 	QuerySnapshot,
 	setDoc,
 } from "firebase/firestore";

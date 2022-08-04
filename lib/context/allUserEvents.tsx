@@ -1,7 +1,3 @@
-import {
-	DocumentData,
-	QueryDocumentSnapshot,
-} from "firebase/firestore";
 import React from "react";
 import useAllUserEvents from "../utils/hooks/useAllUserEvents";
 import { StatusTypes } from "../utils/hooks/useAsync";

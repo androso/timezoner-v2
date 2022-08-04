@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { getColorsBasedOnNumberOfParticipants } from "../lib/utils/client-helpers";
 import { EventData, UserData } from "../lib/utils/types";
 import { getDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 type PropsTypes = {
 	hoursRange: Date[] | undefined | null;
 	datesRange: Date[] | undefined;
 	eventData: EventData | undefined;
 };
-
-//! when user turns on the dialog, we can calculate the height of this based on how many participants are we requesting and then add it to the style.height of page-wrapper, who in turn, has to have a overflow of hidden
-//! This is just a hack?
 
 export default function EventAvailabilityTable({
 	eventData,
@@ -40,7 +35,7 @@ export default function EventAvailabilityTable({
 		return [];
 	});
 	const [showDialog, setShowDialog] = useState(false);
-	const open = () => setShowDialog(true);
+	const openDialog = () => setShowDialog(true);
 
 	const [selectedHour, setselectedHour] = useState<{
 		participants: UserData[] | null;
@@ -66,8 +61,7 @@ export default function EventAvailabilityTable({
 		const tableElementIndex = $td.dataset.tableElementIndex;
 
 		if (selectedHour?.tableElementIndex === Number(tableElementIndex)) {
-			setselectedHour(null);
-			setShowDialog(false);
+			closeDialog();
 			return;
 		}
 
@@ -78,7 +72,7 @@ export default function EventAvailabilityTable({
 		const hourSelected = scheduleSelected?.hours_range.find(
 			(hourObj) => hourObj.tableElementIndex === Number(tableElementIndex)
 		);
-		
+
 		if (hourSelected && hourSelected.participants.length >= 1) {
 			try {
 				const participants = (await Promise.all(
@@ -100,7 +94,7 @@ export default function EventAvailabilityTable({
 					},
 					tableElementIndex: Number(tableElementIndex),
 				});
-				setShowDialog(true);
+				openDialog()
 			} catch (e) {
 				toast.error("Error while fetching participants");
 				throw new Error("Error while fetching participants");

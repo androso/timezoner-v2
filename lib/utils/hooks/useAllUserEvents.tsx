@@ -31,7 +31,6 @@ export const fetchEvents = async (
 	);
 	const myEventsSnap = await getDocs(myEventsQuery);
 	const participatingEventsSnap = await getDocs(participatingEventsQuery);
-	console.log(await getUserEventsData(participatingEventsSnap, myEventsSnap));
 	run(getUserEventsData(participatingEventsSnap, myEventsSnap));
 };
 

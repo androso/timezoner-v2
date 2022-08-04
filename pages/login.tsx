@@ -11,7 +11,7 @@ const LoadingSpinner = dynamic(() => import("../components/LoadingSpinner"), {
 });
 
 export default function loginPage() {
-	const { user, loading } = useAuth();
+	const { loading } = useAuth();
 
 	if (loading) {
 		return <LoadingSpinner />;

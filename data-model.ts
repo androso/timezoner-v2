@@ -1,3 +1,118 @@
+// Creating events
+
+// There seems to be 4 edge-cases
+// A)
+const dataA = {
+	timezone: "Europe/Istanbul",
+	dateRange: [new Date("1 aug 2022"), new Date("1 aug 2022")],
+	hourRange: {
+		start_hour: new Date("2:30"),
+		end_hour: new Date("3:30"),
+	},
+};
+// expected output
+const dataAOutput = {
+	date_range: ["7/31/2022", "8/1/2022"],
+	hour_range: ["23:30:00 GMT", "00:00:00 GMT", "00:30:00 GMT"],
+	participants_schedule: [
+		{
+			date: "7/31/2022",
+			hours_range: [
+				{
+					hour: "Sun, 31 Jul 2022 23:30:00 GMT",
+					participants: [],
+					tableElementIndex: null,
+				},
+			],
+		},
+		{
+			date: "8/1/2022",
+			hours_range: [
+				{
+					hour: "Sun, 1 Aug 2022 00:00:00 GMT",
+					participants: [],
+					tableElementIndex: null,
+				},
+				{
+					hour: "Sun, 1 Aug 2022 00:30:00 GMT",
+					participants: [],
+					tableElementIndex: null,
+				},
+			],
+		},
+	],
+};
+
+const dataB = {
+	timezone: "Europe/Istanbul",
+	dateRange: [new Date("1 aug 2022"), new Date("3 aug 2022")],
+	hourRange: {
+		start_hour: new Date("2:30"),
+		end_hour: new Date("3:30"),
+	},
+};
+
+const dataBOutput = {
+	date_range: ["7/31/2022", "8/1/2022", "8/2/2022"],
+	hour_range: [
+		// Here only the hours matter
+		"Sun, 31 Jul 2022 23:30:00 GMT",
+		"Mon, 01 Aug 2022 00:00:00 GMT",
+		"Mon, 01 Aug 2022 00:30:00 GMT",
+	],
+	participants_schedule: [
+		{
+			date: "7/31/2022",
+			hours_range: [
+				{
+					hour: "Sun, 31 Jul 2022 23:30:00 GMT",
+					participants: [],
+					tableElementIndex: null,
+				},
+			],
+		},
+		{
+			date: "8/1/2022",
+			hours_range: [
+				{
+					hour: "Mon, 01 Aug 2022 00:00:00 GMT",
+					participants: [],
+					tableElementIndex: null,
+				},
+				{
+					hour: "Mon, 01 Aug 2022 00:30:00 GMT",
+					participants: [],
+					tableElementIndex: null,
+				},
+				{
+					hour: "Mon, 01 Aug 2022 23:30:00 GMT",
+					participants: [],
+					tableElementIndex: null,
+				},
+			],
+		},
+		{
+			date: "8/2/2022",
+			hours_range: [
+				{
+					hour: "Tues, 02 Aug 2022 00:00:00 GMT",
+					participants: [],
+					tableElementIndex: null,
+				},
+				{
+					hour: "Tues, 02 Aug 2022 00:30:00 GMT",
+					participants: [],
+					tableElementIndex: null,
+				},
+				{
+					hour: "Tues, 02 Aug 2022 23:30:00 GMT",
+					participants: [],
+					tableElementIndex: null,
+				},
+			],
+		},
+	],
+};
 const participantsModel = [
 	{
 		user_ref: "",

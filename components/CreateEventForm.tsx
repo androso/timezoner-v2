@@ -1,6 +1,5 @@
 import type {
 	EventFormValues,
-	RawEventDataFromFirestore,
 } from "../lib/utils/types";
 import { LightButton } from "./LightButton";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
@@ -11,13 +10,10 @@ import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
 import EventFormFields from "./EventFormFields";
 import React from "react";
 import {
-	getDatesBetweenRange,
 	getFormattedFormData,
 	getHoursBetweenRange,
 	getTimezoneMetadata,
-	standardizeHours,
 } from "../lib/utils/client-helpers";
-import useHourRangeBasedOnTimezone from "../lib/utils/hooks/useHourRangeBasedOnTimezone";
 import { defaultTimezone } from "../lib/timezonesData";
 import { timeZones } from "../lib/timezonesData";
 import { TimeZone } from "@vvo/tzdb";

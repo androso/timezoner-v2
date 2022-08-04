@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { Controller, UseFormReturn } from "react-hook-form";
-import { dateRange, EventFormValues } from "../lib/utils/types";
+import { EventFormValues } from "../lib/utils/types";
 import Input, { LoadingInput } from "./Input";
 import "react-datepicker/dist/react-datepicker.css";
 import { defaultTimezone as localTimezone } from "../lib/timezonesData";

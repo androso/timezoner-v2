@@ -1,6 +1,6 @@
 import { Credential } from "firebase-admin/app";
 import { Control, UseFormRegister } from "react-hook-form";
-import { DocumentReference, Timestamp } from "firebase/firestore";
+import { DocumentReference } from "firebase/firestore";
 export type adminAppConfig = {
 	credential: Credential;
 };
