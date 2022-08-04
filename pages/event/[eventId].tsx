@@ -31,19 +31,20 @@ export default function EventId() {
 					<button
 						className="py-3 px-4 bg-gradient-to-b from-[#48808E] to-[#2B4C55] rounded-md mr-6 "
 						onClick={async () => {
-							const { state } = await navigator.permissions.query({
-								name: "clipboard-write",
-							});
-
-							if (state == "granted" || state == "prompt") {
-								/* write to the clipboard now */
-								try {
+							try {
+								const { state } = await navigator.permissions.query({
+									name: "clipboard-write",
+								});
+								if (state == "granted" || state == "prompt") {
+									/* write to the clipboard now */
 									navigator.clipboard.writeText(eventData.id);
 									toast.success("Copied succesfully");
-								} catch (e) {
-									toast.error("failed to copy to clipboard");
-									console.error(e);
 								}
+							} catch (e: unknown) {
+								toast.error("Browser doesn't support this feature :(", {
+									duration: 3700,
+								});
+								console.error(e);
 							}
 						}}
 					>
@@ -52,19 +53,21 @@ export default function EventId() {
 					<button
 						className="py-3 px-4 bg-gradient-to-b from-[#48808E] to-[#2B4C55] rounded-md "
 						onClick={async () => {
-							const { state } = await navigator.permissions.query({
-								name: "clipboard-write",
-							});
+							try {
+								const { state } = await navigator.permissions.query({
+									name: "clipboard-write",
+								});
 
-							if (state == "granted" || state == "prompt") {
-								/* write to the clipboard now */
-								try {
+								if (state == "granted" || state == "prompt") {
+									/* write to the clipboard now */
 									navigator.clipboard.writeText(window.location.href);
 									toast.success("Copied succesfully");
-								} catch (e) {
-									toast.error("failed to copy to clipboard");
-									console.error(e);
 								}
+							} catch (e) {
+								toast.error("Browser doesn't support this feature :(", {
+									duration: 3700,
+								});
+								console.error(e);
 							}
 						}}
 					>
