@@ -73,7 +73,7 @@ export default function ParticipantOverview({
 				<h1 className="font-bold text-3xl mb-3">
 					Welcome to {eventData.organizer_data.username}'s Event
 				</h1>
-				<p className="mb-4">{eventData.description}</p>
+				<p className="mb-4 font-medium text-lg">{eventData.description}</p>
 				<div className="mb-4">
 					<p className="text-gray-300 text-base">Your Timezone: {localTimezone.label}</p>
 					{/* We'll have a select timezone that will change the hours displayed on the table */}

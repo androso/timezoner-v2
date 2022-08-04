@@ -200,7 +200,7 @@ export default function OrganizerOverview({
 			/>
 			<Container css="pt-4 sm:pt-6 relative">
 				<HomeBreadcrumbs currentPage="Event Overview" />
-				<h2>Event availability</h2>
+				<h2 className="font-bold text-3xl mt-2 mb-2">Event's availability</h2>
 				<div className=" mb-4">
 					<button
 						className="relative dark-btn-transition bg-gradient-to-t from-darkBtnBottomColor to-darkBtnTopColor py-2 px-5 rounded-md text-sm font-bold before:rounded-md flex "
