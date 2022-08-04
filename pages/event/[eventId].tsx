@@ -32,8 +32,9 @@ export default function EventId() {
 						className="py-3 px-4 bg-gradient-to-b from-[#48808E] to-[#2B4C55] rounded-md mr-6 "
 						onClick={async () => {
 							try {
+								const permissionName = "clipboard-write" as PermissionName;
 								const { state } = await navigator.permissions.query({
-									name: "clipboard-write",
+									name: permissionName,
 								});
 								if (state == "granted" || state == "prompt") {
 									/* write to the clipboard now */
@@ -54,8 +55,9 @@ export default function EventId() {
 						className="py-3 px-4 bg-gradient-to-b from-[#48808E] to-[#2B4C55] rounded-md "
 						onClick={async () => {
 							try {
+								const permissionName = "clipboard-write" as PermissionName;
 								const { state } = await navigator.permissions.query({
-									name: "clipboard-write",
+									name: permissionName,
 								});
 
 								if (state == "granted" || state == "prompt") {
