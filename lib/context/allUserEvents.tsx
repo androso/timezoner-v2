@@ -9,7 +9,6 @@ import { EventData } from "../utils/types";
 
 type AllUserEventsContextType = {
 	allEvents: EventData[] | undefined;
-	lastDocSnap: QueryDocumentSnapshot<DocumentData> | undefined;
 	error: Error | null;
 	reset: () => void;
 	run: (promise: Promise<unknown>) => void;

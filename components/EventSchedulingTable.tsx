@@ -164,9 +164,9 @@ export default function EventSchedulingTable({
 					(participant) => participant.path !== userRef.path
 				);
 			} else {
-				newParticipantsRefs = [...newParticipantsRefs, userRef];
+				newParticipantsRefs = [...eventData.participants, userRef];
 			}
-
+			
 			try {
 				const eventRef = doc(firestore, "events", eventId);
 				await updateDoc(eventRef, {
