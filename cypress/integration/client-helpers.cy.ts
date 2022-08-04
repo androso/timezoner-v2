@@ -7,14 +7,15 @@ import {
 import { EventData, RawEventDataFromFirestore } from "../../lib/utils/types";
 
 describe("get color palette from participants", () => {
-	const strongestColor = "hsl(100, 100%, 30%)";
-	const lightestColor = "hsl(100, 43%, 70%)";
+	const strongestColor = "hsl(142, 99%, 29%)";
+	const lightestColor = "hsl(109, 62%, 70%)";
 
 	it("gives back the strongest green color if only one participant", () => {
 		const expected = [
 			{
 				color: strongestColor,
 				numberOfParticipants: 1,
+				tableElementIndexes: [0],
 			},
 		];
 		2;
@@ -33,10 +34,12 @@ describe("get color palette from participants", () => {
 			{
 				color: strongestColor,
 				numberOfParticipants: 5,
+				tableElementIndexes: [0],
 			},
 			{
 				color: lightestColor,
 				numberOfParticipants: 2,
+				tableElementIndexes: [1],
 			},
 		];
 		const eventParticipants = [
@@ -60,14 +63,17 @@ describe("get color palette from participants", () => {
 			{
 				color: strongestColor,
 				numberOfParticipants: 5,
+				tableElementIndexes: [0],
 			},
 			{
-				color: "hsl(100, 71%, 50%)",
+				color: "hsl(125, 80%, 49%)",
 				numberOfParticipants: 4,
+				tableElementIndexes: [0],
 			},
 			{
 				color: lightestColor,
 				numberOfParticipants: 2,
+				tableElementIndexes: [0],
 			},
 		];
 		const eventsParticipants = [
