@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import type { BtnLinkProps, BtnProps } from "../components/LightButton";
 import useParsedUserData from "../lib/utils/hooks/useParsedUserData";
@@ -7,6 +7,8 @@ import EventThumbnail from "../components/EventThumbnail";
 import { useAllEvents } from "../lib/context/allUserEvents";
 import LoginForm from "../components/LoginForm";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 
 const Container = dynamic(() => import("../components/Layouts/Container"), {
 	ssr: false,
@@ -34,7 +36,6 @@ export default function Dashboard() {
 		refetch,
 		error,
 	} = useAllEvents();
-
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
 	const currentPageEvents = allEvents?.slice(
 		eventsPageIndex * 5,
@@ -42,6 +43,8 @@ export default function Dashboard() {
 	);
 	const handlePreviousPage = () =>
 		setEventsPageIndex((prevIndex) => prevIndex - 1);
+
+	const router = useRouter();
 
 	React.useLayoutEffect(() => {
 		if (!parsedUser) return;
@@ -80,12 +83,49 @@ export default function Dashboard() {
 				photoURL={parsedUser?.avatar_url ?? undefined}
 			/>
 			<Container css="pt-4 sm:pt-6">
-				<LightButtonLink
-					redirectTo="/new-event"
-					innerText="Create Event"
-					css="mr-5 mb-3 sm:mb-9"
-				/>
-				<LightButton innerText="Join Event" css="mb-9" />
+				<div className="flex mb-3 sm:mb-9">
+					<LightButtonLink
+						redirectTo="/new-event"
+						innerText="Create Event"
+						css="mr-5 flex items-center"
+					/>
+
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							const form = e.target as unknown as {
+								event_code: HTMLInputElement;
+							};
+
+							if (
+								typeof form.event_code.value === "string" &&
+								form.event_code.value.length > 19
+							) {
+								router.push(`/event/${form.event_code.value}`, undefined, {
+									shallow: true,
+								});
+							} else {
+								toast.error("incorrect event code");
+							}
+						}}
+						className="flex"
+					>
+						<input
+							type="text"
+							name="event_code"
+							placeholder="Event code"
+							autoComplete="off"
+							className="bg-[#5a6f74] focus:mr-[2px] auto rounded-l-md px-2 py-4 w-[150px] sm:w-[200px]"
+						/>
+						<button
+							type="submit"
+							className="bg-gradient-to-b from-[#485051] to-[#292E2E] h-auto px-2 sm:px-3 rounded-r-md"
+						>
+							Join
+						</button>
+					</form>
+				</div>
+
 				<div>
 					<div className="mb-6 flex flex-col sm:flex-row ">
 						<h1 className="font-bold text-3xl grow mb-5">Upcoming Events</h1>
