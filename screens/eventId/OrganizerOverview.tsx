@@ -146,7 +146,6 @@ export default function OrganizerOverview({
 						"This will reset this event's participants, are you sure to continue?"
 					)
 				) {
-					console.log("won't send");
 					return;
 				}
 			} else {

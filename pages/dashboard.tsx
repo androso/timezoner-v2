@@ -31,9 +31,6 @@ export default function Dashboard() {
 		refetch,
 		error,
 	} = useAllEvents();
-	useEffect(() => {
-		console.log(allEvents);
-	}, [allEvents]);
 	const [eventsPageIndex, setEventsPageIndex] = React.useState(0);
 	const currentPageEvents = allEvents?.slice(
 		eventsPageIndex * 5,
